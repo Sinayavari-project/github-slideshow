@@ -269,6 +269,66 @@
             font-weight: 500;
         }
         .view-toggle button.active { background: #667eea; color: white; }
+        .city-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .city-suggestions.show { display: block; }
+        .city-suggestion {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .city-suggestion:hover { background: #f8f7ff; }
+        .city-suggestion .city-cost {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        .city-match-info {
+            font-size: 0.82rem;
+            color: #4caf50;
+            margin-top: -12px;
+            margin-bottom: 14px;
+            min-height: 18px;
+        }
+        .city-match-info.warn { color: #ff9800; }
+        .feasibility-box {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: -8px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            display: none;
+        }
+        .feasibility-box.show { display: block; }
+        .feasibility-box.ok { border-left: 3px solid #4caf50; }
+        .feasibility-box.tight { border-left: 3px solid #ff9800; }
+        .feasibility-box.low { border-left: 3px solid #e53935; }
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+            margin-top: 8px;
+        }
+        .price-grid span {
+            font-size: 0.8rem;
+            color: #555;
+        }
         @media (max-width: 500px) {
             .container { padding: 24px; }
             h1 { font-size: 1.4rem; }
@@ -291,14 +351,19 @@
             <p class="subtitle">Let's create an optimized travel plan that fits your budget.</p>
 
             <label for="destination">Where are you going?</label>
-            <input type="text" id="destination" placeholder="e.g. Paris, Tokyo, New York">
+            <div style="position:relative;">
+                <input type="text" id="destination" placeholder="e.g. Paris, Tokyo, New York" autocomplete="off" oninput="showCitySuggestions()" onfocus="showCitySuggestions()">
+                <div id="city-suggestions" class="city-suggestions"></div>
+            </div>
+            <p id="city-match-info" class="city-match-info"></p>
 
             <label for="budget">Total budget (USD)</label>
-            <input type="number" id="budget" placeholder="e.g. 2000" min="100">
+            <input type="number" id="budget" placeholder="e.g. 2000" min="100" oninput="updateFeasibility()">
             <p class="error" id="err-budget">Please enter a budget of at least $100.</p>
+            <div id="budget-feasibility" class="feasibility-box"></div>
 
             <label for="days">How many days?</label>
-            <input type="number" id="days" placeholder="e.g. 7" min="1" max="30">
+            <input type="number" id="days" placeholder="e.g. 7" min="1" max="30" oninput="updateFeasibility()">
             <p class="error" id="err-days">Please enter 1-30 days.</p>
 
             <label for="travelers">Number of travelers</label>
@@ -399,6 +464,247 @@
 
     <script>
         let currentStep = 0;
+        let matchedCity = null;
+
+        const cityData = {
+            'paris': { name: 'Paris', country: 'France', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 35, 'budget-hotel': 80, 'mid-hotel': 150, luxury: 400, airbnb: 110 },
+                food: { street: 8, mixed: 18, dining: 35, fine: 90 },
+                transport: { metro: 2.15, bus: 2.15, taxi: 15, rental: 55, dayPass: 16.6 },
+                activities: { museums: 15, outdoors: 0, nightlife: 20, shopping: 0 }
+            },
+            'london': { name: 'London', country: 'UK', currency: 'GBP', rate: 1.27,
+                accom: { hostel: 30, 'budget-hotel': 90, 'mid-hotel': 180, luxury: 450, airbnb: 130 },
+                food: { street: 9, mixed: 20, dining: 40, fine: 110 },
+                transport: { metro: 3.2, bus: 1.75, taxi: 18, rental: 60, dayPass: 15.2 },
+                activities: { museums: 0, outdoors: 0, nightlife: 25, shopping: 0 }
+            },
+            'tokyo': { name: 'Tokyo', country: 'Japan', currency: 'JPY', rate: 0.0067,
+                accom: { hostel: 30, 'budget-hotel': 60, 'mid-hotel': 120, luxury: 350, airbnb: 90 },
+                food: { street: 6, mixed: 14, dining: 30, fine: 120 },
+                transport: { metro: 2, bus: 2, taxi: 12, rental: 50, dayPass: 8 },
+                activities: { museums: 10, outdoors: 0, nightlife: 20, shopping: 0 }
+            },
+            'new york': { name: 'New York', country: 'USA', currency: 'USD', rate: 1,
+                accom: { hostel: 50, 'budget-hotel': 120, 'mid-hotel': 220, luxury: 500, airbnb: 160 },
+                food: { street: 10, mixed: 22, dining: 45, fine: 130 },
+                transport: { metro: 2.9, bus: 2.9, taxi: 20, rental: 70, dayPass: 7.5 },
+                activities: { museums: 25, outdoors: 0, nightlife: 30, shopping: 0 }
+            },
+            'bangkok': { name: 'Bangkok', country: 'Thailand', currency: 'THB', rate: 0.028,
+                accom: { hostel: 12, 'budget-hotel': 30, 'mid-hotel': 65, luxury: 180, airbnb: 45 },
+                food: { street: 3, mixed: 8, dining: 18, fine: 55 },
+                transport: { metro: 1, bus: 0.5, taxi: 5, rental: 30, dayPass: 4 },
+                activities: { museums: 5, outdoors: 2, nightlife: 10, shopping: 0 }
+            },
+            'rome': { name: 'Rome', country: 'Italy', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 28, 'budget-hotel': 70, 'mid-hotel': 130, luxury: 350, airbnb: 95 },
+                food: { street: 6, mixed: 16, dining: 32, fine: 80 },
+                transport: { metro: 1.5, bus: 1.5, taxi: 12, rental: 45, dayPass: 7 },
+                activities: { museums: 16, outdoors: 0, nightlife: 15, shopping: 0 }
+            },
+            'barcelona': { name: 'Barcelona', country: 'Spain', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 25, 'budget-hotel': 65, 'mid-hotel': 120, luxury: 300, airbnb: 90 },
+                food: { street: 6, mixed: 15, dining: 30, fine: 75 },
+                transport: { metro: 2.4, bus: 2.4, taxi: 10, rental: 40, dayPass: 11.2 },
+                activities: { museums: 14, outdoors: 0, nightlife: 15, shopping: 0 }
+            },
+            'istanbul': { name: 'Istanbul', country: 'Turkey', currency: 'TRY', rate: 0.031,
+                accom: { hostel: 15, 'budget-hotel': 40, 'mid-hotel': 80, luxury: 200, airbnb: 55 },
+                food: { street: 4, mixed: 10, dining: 22, fine: 55 },
+                transport: { metro: 0.8, bus: 0.8, taxi: 6, rental: 30, dayPass: 3 },
+                activities: { museums: 10, outdoors: 0, nightlife: 12, shopping: 0 }
+            },
+            'dubai': { name: 'Dubai', country: 'UAE', currency: 'AED', rate: 0.27,
+                accom: { hostel: 25, 'budget-hotel': 60, 'mid-hotel': 140, luxury: 400, airbnb: 100 },
+                food: { street: 7, mixed: 18, dining: 40, fine: 120 },
+                transport: { metro: 2, bus: 1.5, taxi: 10, rental: 40, dayPass: 6 },
+                activities: { museums: 20, outdoors: 10, nightlife: 30, shopping: 0 }
+            },
+            'berlin': { name: 'Berlin', country: 'Germany', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 22, 'budget-hotel': 60, 'mid-hotel': 110, luxury: 280, airbnb: 80 },
+                food: { street: 5, mixed: 14, dining: 28, fine: 70 },
+                transport: { metro: 3.2, bus: 3.2, taxi: 12, rental: 45, dayPass: 8.8 },
+                activities: { museums: 12, outdoors: 0, nightlife: 12, shopping: 0 }
+            },
+            'amsterdam': { name: 'Amsterdam', country: 'Netherlands', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 35, 'budget-hotel': 90, 'mid-hotel': 160, luxury: 380, airbnb: 120 },
+                food: { street: 7, mixed: 17, dining: 35, fine: 85 },
+                transport: { metro: 3.5, bus: 3.5, taxi: 15, rental: 50, dayPass: 9 },
+                activities: { museums: 20, outdoors: 0, nightlife: 18, shopping: 0 }
+            },
+            'lisbon': { name: 'Lisbon', country: 'Portugal', currency: 'EUR', rate: 1.08,
+                accom: { hostel: 20, 'budget-hotel': 55, 'mid-hotel': 100, luxury: 250, airbnb: 75 },
+                food: { street: 5, mixed: 13, dining: 25, fine: 65 },
+                transport: { metro: 1.7, bus: 1.7, taxi: 8, rental: 35, dayPass: 6.8 },
+                activities: { museums: 10, outdoors: 0, nightlife: 12, shopping: 0 }
+            },
+            'sydney': { name: 'Sydney', country: 'Australia', currency: 'AUD', rate: 0.65,
+                accom: { hostel: 35, 'budget-hotel': 100, 'mid-hotel': 180, luxury: 420, airbnb: 130 },
+                food: { street: 10, mixed: 20, dining: 40, fine: 100 },
+                transport: { metro: 3.5, bus: 3.5, taxi: 18, rental: 55, dayPass: 12 },
+                activities: { museums: 15, outdoors: 0, nightlife: 22, shopping: 0 }
+            },
+            'singapore': { name: 'Singapore', country: 'Singapore', currency: 'SGD', rate: 0.74,
+                accom: { hostel: 25, 'budget-hotel': 70, 'mid-hotel': 150, luxury: 380, airbnb: 110 },
+                food: { street: 4, mixed: 12, dining: 30, fine: 100 },
+                transport: { metro: 1.5, bus: 1, taxi: 10, rental: 60, dayPass: 6 },
+                activities: { museums: 15, outdoors: 5, nightlife: 20, shopping: 0 }
+            },
+            'mexico city': { name: 'Mexico City', country: 'Mexico', currency: 'MXN', rate: 0.058,
+                accom: { hostel: 12, 'budget-hotel': 35, 'mid-hotel': 70, luxury: 200, airbnb: 50 },
+                food: { street: 3, mixed: 9, dining: 20, fine: 55 },
+                transport: { metro: 0.3, bus: 0.3, taxi: 5, rental: 25, dayPass: 1.5 },
+                activities: { museums: 4, outdoors: 2, nightlife: 10, shopping: 0 }
+            },
+            'prague': { name: 'Prague', country: 'Czech Republic', currency: 'CZK', rate: 0.043,
+                accom: { hostel: 15, 'budget-hotel': 45, 'mid-hotel': 90, luxury: 230, airbnb: 65 },
+                food: { street: 4, mixed: 12, dining: 22, fine: 55 },
+                transport: { metro: 1.5, bus: 1.5, taxi: 8, rental: 35, dayPass: 5 },
+                activities: { museums: 10, outdoors: 0, nightlife: 8, shopping: 0 }
+            },
+            'bali': { name: 'Bali', country: 'Indonesia', currency: 'IDR', rate: 0.000062,
+                accom: { hostel: 10, 'budget-hotel': 25, 'mid-hotel': 60, luxury: 180, airbnb: 40 },
+                food: { street: 2, mixed: 7, dining: 15, fine: 45 },
+                transport: { metro: 0, bus: 1, taxi: 5, rental: 15, dayPass: 0 },
+                activities: { museums: 5, outdoors: 8, nightlife: 10, shopping: 0 }
+            },
+            'seoul': { name: 'Seoul', country: 'South Korea', currency: 'KRW', rate: 0.00073,
+                accom: { hostel: 20, 'budget-hotel': 50, 'mid-hotel': 100, luxury: 280, airbnb: 70 },
+                food: { street: 5, mixed: 12, dining: 25, fine: 70 },
+                transport: { metro: 1.3, bus: 1.3, taxi: 8, rental: 45, dayPass: 5 },
+                activities: { museums: 8, outdoors: 0, nightlife: 15, shopping: 0 }
+            },
+            'buenos aires': { name: 'Buenos Aires', country: 'Argentina', currency: 'ARS', rate: 0.0011,
+                accom: { hostel: 10, 'budget-hotel': 30, 'mid-hotel': 60, luxury: 160, airbnb: 40 },
+                food: { street: 3, mixed: 8, dining: 18, fine: 45 },
+                transport: { metro: 0.3, bus: 0.3, taxi: 4, rental: 25, dayPass: 1.5 },
+                activities: { museums: 5, outdoors: 0, nightlife: 10, shopping: 0 }
+            },
+            'marrakech': { name: 'Marrakech', country: 'Morocco', currency: 'MAD', rate: 0.099,
+                accom: { hostel: 10, 'budget-hotel': 30, 'mid-hotel': 70, luxury: 200, airbnb: 45 },
+                food: { street: 2, mixed: 7, dining: 16, fine: 40 },
+                transport: { metro: 0, bus: 0.5, taxi: 3, rental: 25, dayPass: 0 },
+                activities: { museums: 5, outdoors: 5, nightlife: 8, shopping: 0 }
+            }
+        };
+
+        function findCity(input) {
+            const lower = input.toLowerCase().trim();
+            if (!lower) return null;
+            if (cityData[lower]) return cityData[lower];
+            for (const key of Object.keys(cityData)) {
+                if (key.startsWith(lower) || cityData[key].name.toLowerCase().startsWith(lower)) return cityData[key];
+            }
+            for (const key of Object.keys(cityData)) {
+                if (key.includes(lower) || cityData[key].country.toLowerCase().includes(lower)) return cityData[key];
+            }
+            return null;
+        }
+
+        function showCitySuggestions() {
+            const input = document.getElementById('destination').value.trim().toLowerCase();
+            const container = document.getElementById('city-suggestions');
+            const infoEl = document.getElementById('city-match-info');
+
+            if (!input) {
+                container.classList.remove('show');
+                container.innerHTML = '';
+                infoEl.textContent = '';
+                matchedCity = null;
+                updateFeasibility();
+                return;
+            }
+
+            const matches = Object.values(cityData).filter(c =>
+                c.name.toLowerCase().includes(input) || c.country.toLowerCase().includes(input)
+            ).slice(0, 5);
+
+            if (matches.length === 0) {
+                container.classList.remove('show');
+                infoEl.className = 'city-match-info warn';
+                infoEl.textContent = 'City not in database — estimates will use your % allocations only';
+                matchedCity = null;
+                updateFeasibility();
+                return;
+            }
+
+            const exactMatch = matches.find(c => c.name.toLowerCase() === input);
+            if (exactMatch) {
+                container.classList.remove('show');
+                matchedCity = exactMatch;
+                infoEl.className = 'city-match-info';
+                infoEl.textContent = `✓ Real pricing data available for ${exactMatch.name}, ${exactMatch.country}`;
+                updateFeasibility();
+                return;
+            }
+
+            container.innerHTML = matches.map(c =>
+                `<div class="city-suggestion" onclick="selectCity('${c.name}')">
+                    <span>${c.name}, ${c.country}</span>
+                    <span class="city-cost">from ~$${c.accom['budget-hotel']}/night</span>
+                </div>`
+            ).join('');
+            container.classList.add('show');
+            matchedCity = null;
+            updateFeasibility();
+        }
+
+        function selectCity(name) {
+            document.getElementById('destination').value = name;
+            document.getElementById('city-suggestions').classList.remove('show');
+            const city = Object.values(cityData).find(c => c.name === name);
+            matchedCity = city;
+            const infoEl = document.getElementById('city-match-info');
+            infoEl.className = 'city-match-info';
+            infoEl.textContent = `✓ Real pricing data available for ${city.name}, ${city.country}`;
+            updateFeasibility();
+        }
+
+        function updateFeasibility() {
+            const box = document.getElementById('budget-feasibility');
+            const budget = parseInt(document.getElementById('budget').value);
+            const days = parseInt(document.getElementById('days').value);
+
+            if (!matchedCity || !budget || !days || days < 1) {
+                box.classList.remove('show');
+                return;
+            }
+
+            const c = matchedCity;
+            const minDaily = c.accom.hostel + c.food.street * 3 + c.transport.bus * 4;
+            const midDaily = c.accom['mid-hotel'] + c.food.mixed * 3 + c.transport.metro * 4 + c.activities.museums;
+            const dailyBudget = budget / days;
+
+            let status, message;
+            if (dailyBudget >= midDaily * 1.2) {
+                status = 'ok';
+                message = `Your budget is comfortable for ${c.name}.`;
+            } else if (dailyBudget >= minDaily) {
+                status = 'tight';
+                message = `Doable but tight — you'll need to be mindful of spending.`;
+            } else {
+                status = 'low';
+                message = `Your budget is below minimum estimates for ${c.name}. Consider more days or a higher budget.`;
+            }
+
+            box.className = `feasibility-box show ${status}`;
+            box.innerHTML = `<strong>${message}</strong>
+                <div class="price-grid">
+                    <span>Budget hotel: ~$${c.accom['budget-hotel']}/night</span>
+                    <span>Mid-range: ~$${c.accom['mid-hotel']}/night</span>
+                    <span>Meal (casual): ~$${c.food.mixed}</span>
+                    <span>Transit ride: ~$${c.transport.metro}</span>
+                    <span>Day pass: ~$${c.transport.dayPass || 'N/A'}</span>
+                    <span>Museum entry: ~$${c.activities.museums}</span>
+                </div>`;
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#destination') && !e.target.closest('#city-suggestions')) {
+                document.getElementById('city-suggestions').classList.remove('show');
+            }
+        });
 
         function updateSlider(type) {
             const val = document.getElementById(type === 'transport' ? 'transport-pct' : 'accom-pct').value;
@@ -455,12 +761,6 @@
             const foodPct = Math.max(foodRemainder * 0.6, 10);
             const activityPct = Math.max(foodRemainder * 0.4, 5);
 
-            const transportBudget = Math.round(budget * transportPct / 100);
-            const accomBudget = Math.round(budget * accomPct / 100);
-            const foodBudget = Math.round(budget * foodPct / 100);
-            const activityBudget = Math.round(budget * activityPct / 100);
-            const dailyBudget = Math.round(budget / days);
-
             const transportModes = [...document.querySelectorAll('input[name="transport"]:checked')].map(c => c.value);
             const activities = [...document.querySelectorAll('input[name="activities"]:checked')].map(c => c.value);
             const accomType = document.getElementById('accom-type').value;
@@ -470,10 +770,33 @@
             const accomLabels = { hostel: 'Hostel / Shared room', 'budget-hotel': 'Budget Hotel', 'mid-hotel': 'Mid-range Hotel', luxury: 'Luxury Hotel', airbnb: 'Apartment / Airbnb' };
             const foodLabels = { street: 'Street food & local spots', mixed: 'Mix of local and restaurants', dining: 'Sit-down restaurants', fine: 'Fine dining' };
 
-            const perNight = Math.round(accomBudget / days);
-            const perMealBudget = Math.round(foodBudget / (days * 3));
-            const dailyActivityBudget = Math.round(activityBudget / days);
-            const dailyTransport = Math.round(transportBudget / days);
+            let perNight, perMealBudget, dailyActivityBudget, dailyTransport, cityInfo;
+            const city = matchedCity || findCity(destination);
+
+            if (city) {
+                perNight = city.accom[accomType];
+                perMealBudget = city.food[foodPref];
+                const primaryMode = transportModes.includes('metro') ? 'metro' : transportModes.includes('bus') ? 'bus' : transportModes.includes('taxi') ? 'taxi' : 'bus';
+                dailyTransport = city.transport.dayPass > 0 ? city.transport.dayPass : city.transport[primaryMode] * 4;
+                const avgActivity = activities.length > 0
+                    ? Math.round(activities.reduce((sum, a) => sum + city.activities[a], 0) / activities.length)
+                    : 10;
+                dailyActivityBudget = avgActivity * 2;
+                cityInfo = city;
+            } else {
+                const transportBudget = Math.round(budget * transportPct / 100);
+                const accomBudget = Math.round(budget * accomPct / 100);
+                const foodBudget = Math.round(budget * foodPct / 100);
+                const activityBudget = Math.round(budget * activityPct / 100);
+                perNight = Math.round(accomBudget / days);
+                perMealBudget = Math.round(foodBudget / (days * 3));
+                dailyActivityBudget = Math.round(activityBudget / days);
+                dailyTransport = Math.round(transportBudget / days);
+                cityInfo = null;
+            }
+
+            const totalEstimate = (perNight + perMealBudget * 3 + dailyTransport + dailyActivityBudget) * days;
+            const dailyBudget = Math.round(budget / days);
 
             document.getElementById('result-subtitle').textContent =
                 `${destination} • ${days} days • ${travelers} traveler${travelers > 1 ? 's' : ''} • $${budget} total`;
@@ -485,14 +808,45 @@
             // Budget summary
             html += `<div class="itinerary">`;
             html += `<div class="itinerary-section">`;
-            html += `<h3>Budget Breakdown</h3>`;
-            html += `<div class="budget-bar">
-                <div style="width:${transportPct}%;background:#667eea">${transportPct}%</div>
-                <div style="width:${accomPct}%;background:#764ba2">${accomPct}%</div>
-                <div style="width:${Math.round(foodPct)}%;background:#e91e63">${Math.round(foodPct)}%</div>
-                <div style="width:${Math.round(activityPct)}%;background:#ff9800">${Math.round(activityPct)}%</div>
-            </div>`;
-            html += `<p><strong>Transport:</strong> $${transportBudget} | <strong>Accommodation:</strong> $${accomBudget} | <strong>Food:</strong> $${foodBudget} | <strong>Activities:</strong> $${activityBudget}</p>`;
+            html += `<h3>Budget Breakdown${cityInfo ? ' <span class="tag">Real ' + cityInfo.name + ' prices</span>' : ''}</h3>`;
+
+            if (cityInfo) {
+                const accomTotal = perNight * days;
+                const foodTotal = perMealBudget * 3 * days;
+                const transportTotal = dailyTransport * days;
+                const actTotal = dailyActivityBudget * days;
+                const spent = accomTotal + foodTotal + transportTotal + actTotal;
+                const remaining = budget - spent;
+
+                html += `<div class="price-grid" style="margin-bottom:12px;">
+                    <span><strong>Accommodation:</strong> $${perNight}/night × ${days} = $${accomTotal}</span>
+                    <span><strong>Food:</strong> ~$${perMealBudget}/meal × ${days * 3} = $${foodTotal}</span>
+                    <span><strong>Transport:</strong> ~$${dailyTransport}/day × ${days} = $${transportTotal}</span>
+                    <span><strong>Activities:</strong> ~$${dailyActivityBudget}/day × ${days} = $${actTotal}</span>
+                </div>`;
+                html += `<div class="budget-bar">
+                    <div style="width:${Math.round(transportTotal/budget*100)}%;background:#667eea">${Math.round(transportTotal/budget*100)}%</div>
+                    <div style="width:${Math.round(accomTotal/budget*100)}%;background:#764ba2">${Math.round(accomTotal/budget*100)}%</div>
+                    <div style="width:${Math.round(foodTotal/budget*100)}%;background:#e91e63">${Math.round(foodTotal/budget*100)}%</div>
+                    <div style="width:${Math.round(actTotal/budget*100)}%;background:#ff9800">${Math.round(actTotal/budget*100)}%</div>
+                </div>`;
+                html += `<p style="margin-top:8px;"><strong>Estimated total:</strong> $${spent} of $${budget} `;
+                if (remaining >= 0) html += `<span style="color:#4caf50;">($${remaining} buffer remaining)</span>`;
+                else html += `<span style="color:#e53935;">($${Math.abs(remaining)} over budget — consider adjustments)</span>`;
+                html += `</p>`;
+            } else {
+                const transportBudget = Math.round(budget * transportPct / 100);
+                const accomBudget = Math.round(budget * accomPct / 100);
+                const foodBudget = Math.round(budget * foodPct / 100);
+                const activityBudget = Math.round(budget * activityPct / 100);
+                html += `<div class="budget-bar">
+                    <div style="width:${transportPct}%;background:#667eea">${transportPct}%</div>
+                    <div style="width:${accomPct}%;background:#764ba2">${accomPct}%</div>
+                    <div style="width:${Math.round(foodPct)}%;background:#e91e63">${Math.round(foodPct)}%</div>
+                    <div style="width:${Math.round(activityPct)}%;background:#ff9800">${Math.round(activityPct)}%</div>
+                </div>`;
+                html += `<p><strong>Transport:</strong> $${transportBudget} | <strong>Accommodation:</strong> $${accomBudget} | <strong>Food:</strong> $${foodBudget} | <strong>Activities:</strong> $${activityBudget}</p>`;
+            }
             html += `<p style="margin-top:8px;color:#888;">Daily budget: ~$${dailyBudget}/day • ${accomLabels[accomType]} (~$${perNight}/night)</p>`;
             html += `</div>`;
 
@@ -526,8 +880,13 @@
             // Tips
             html += `<div class="itinerary-section"><h3>Budget Tips</h3>`;
             html += `<p>• Keep ~$${Math.round(budget * 0.05)} as emergency buffer<br>`;
-            if (transportModes.includes('metro') || transportModes.includes('bus')) html += `• Buy a ${days > 3 ? days + '-day' : 'daily'} transit pass to save on fares<br>`;
+            if (cityInfo && cityInfo.transport.dayPass > 0 && (transportModes.includes('metro') || transportModes.includes('bus'))) {
+                html += `• ${cityInfo.name} day pass: ~$${cityInfo.transport.dayPass} — saves money vs. single rides ($${cityInfo.transport.metro} each)<br>`;
+            } else if (transportModes.includes('metro') || transportModes.includes('bus')) {
+                html += `• Buy a ${days > 3 ? 'multi-day' : 'daily'} transit pass to save on fares<br>`;
+            }
             if (travelers > 1) html += `• Split accommodation & transport costs across ${travelers} travelers<br>`;
+            if (cityInfo && cityInfo.food.street < cityInfo.food.mixed * 0.6) html += `• Street food in ${cityInfo.name} averages ~$${cityInfo.food.street} — a great way to save on meals<br>`;
             html += `• Book popular activities and restaurants in advance<br>`;
             html += `• Check for free museum days and walking tours</p>`;
             html += `</div>`;
