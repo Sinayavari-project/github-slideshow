@@ -191,6 +191,84 @@
             font-size: 0.8rem;
             margin: 3px 4px 3px 0;
         }
+        .day-card {
+            background: white;
+            border: 1px solid #e8e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+        .day-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .day-card h4 .day-cost {
+            font-size: 0.8rem;
+            background: #eef0ff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .time-block {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+        .time-block:last-child { margin-bottom: 0; }
+        .time-label {
+            min-width: 65px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #999;
+            padding-top: 2px;
+        }
+        .time-desc {
+            font-size: 0.88rem;
+            color: #444;
+            line-height: 1.5;
+        }
+        .time-desc .cost-tag {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: 6px;
+        }
+        .day-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .day-tab {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            background: white;
+            transition: all 0.2s;
+        }
+        .day-tab:hover { border-color: #667eea; }
+        .day-tab.active { background: #667eea; color: white; border-color: #667eea; }
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .view-toggle button {
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            border-radius: 6px;
+            background: #f0f0f0;
+            color: #555;
+            font-weight: 500;
+        }
+        .view-toggle button.active { background: #667eea; color: white; }
         @media (max-width: 500px) {
             .container { padding: 24px; }
             h1 { font-size: 1.4rem; }
@@ -388,20 +466,23 @@
             const accomType = document.getElementById('accom-type').value;
             const foodPref = document.getElementById('food-pref').value;
 
+            const transportLabels = { metro: 'Metro/Subway', bus: 'Public Bus', taxi: 'Taxi/Rideshare', rental: 'Car Rental' };
             const accomLabels = { hostel: 'Hostel / Shared room', 'budget-hotel': 'Budget Hotel', 'mid-hotel': 'Mid-range Hotel', luxury: 'Luxury Hotel', airbnb: 'Apartment / Airbnb' };
             const foodLabels = { street: 'Street food & local spots', mixed: 'Mix of local and restaurants', dining: 'Sit-down restaurants', fine: 'Fine dining' };
-            const transportLabels = { metro: 'Metro/Subway', bus: 'Public Bus', taxi: 'Taxi/Rideshare', rental: 'Car Rental' };
-            const activityLabels = { museums: 'Museums & Culture', outdoors: 'Outdoor/Nature', nightlife: 'Nightlife', shopping: 'Shopping' };
 
             const perNight = Math.round(accomBudget / days);
             const perMealBudget = Math.round(foodBudget / (days * 3));
+            const dailyActivityBudget = Math.round(activityBudget / days);
+            const dailyTransport = Math.round(transportBudget / days);
 
             document.getElementById('result-subtitle').textContent =
                 `${destination} • ${days} days • ${travelers} traveler${travelers > 1 ? 's' : ''} • $${budget} total`;
 
+            const dayPlans = buildDayByDayPlan(days, activities, transportModes, foodPref, accomType, destination, dailyActivityBudget, dailyTransport, perMealBudget, perNight);
+
             let html = '';
 
-            // Budget breakdown
+            // Budget summary
             html += `<div class="itinerary">`;
             html += `<div class="itinerary-section">`;
             html += `<h3>Budget Breakdown</h3>`;
@@ -411,80 +492,181 @@
                 <div style="width:${Math.round(foodPct)}%;background:#e91e63">${Math.round(foodPct)}%</div>
                 <div style="width:${Math.round(activityPct)}%;background:#ff9800">${Math.round(activityPct)}%</div>
             </div>`;
-            html += `<p><strong>Transport:</strong> $${transportBudget} &nbsp;|&nbsp; <strong>Accommodation:</strong> $${accomBudget} &nbsp;|&nbsp; <strong>Food:</strong> $${foodBudget} &nbsp;|&nbsp; <strong>Activities:</strong> $${activityBudget}</p>`;
-            html += `<p style="margin-top:8px;color:#888;">Daily budget: ~$${dailyBudget}/day</p>`;
+            html += `<p><strong>Transport:</strong> $${transportBudget} | <strong>Accommodation:</strong> $${accomBudget} | <strong>Food:</strong> $${foodBudget} | <strong>Activities:</strong> $${activityBudget}</p>`;
+            html += `<p style="margin-top:8px;color:#888;">Daily budget: ~$${dailyBudget}/day • ${accomLabels[accomType]} (~$${perNight}/night)</p>`;
             html += `</div>`;
 
-            // Transport plan
-            html += `<div class="itinerary-section"><h3>Transport Plan</h3><p>`;
-            if (transportModes.includes('metro') || transportModes.includes('bus')) {
-                html += `Use public transport (${transportModes.filter(t => t === 'metro' || t === 'bus').map(t => transportLabels[t]).join(', ')}) for daily commutes. `;
-                html += `Consider a ${days > 3 ? 'multi-day pass' : 'daily pass'} to save money. `;
+            // Day tabs
+            html += `<div class="itinerary-section">`;
+            html += `<h3>Day-by-Day Itinerary</h3>`;
+            html += `<div class="view-toggle"><button class="active" onclick="setView('all',this)">All Days</button><button onclick="setView('single',this)">One at a Time</button></div>`;
+            html += `<div class="day-tabs" id="day-tabs" style="display:none;">`;
+            for (let i = 0; i < days; i++) {
+                html += `<div class="day-tab ${i === 0 ? 'active' : ''}" onclick="showDay(${i})">${i === 0 ? 'Day 1' : i === days - 1 ? 'Day ' + days : 'D' + (i + 1)}</div>`;
             }
-            if (transportModes.includes('taxi')) {
-                html += `Use rideshare for late-night returns or heavy luggage days. `;
+            html += `</div>`;
+
+            // Day cards
+            html += `<div id="day-cards">`;
+            for (let i = 0; i < days; i++) {
+                const plan = dayPlans[i];
+                html += `<div class="day-card day-card-item" data-day="${i}">`;
+                html += `<h4>${plan.title} <span class="day-cost">~$${plan.dayCost}</span></h4>`;
+                plan.blocks.forEach(block => {
+                    html += `<div class="time-block">`;
+                    html += `<div class="time-label">${block.time}</div>`;
+                    html += `<div class="time-desc">${block.desc}${block.cost ? `<span class="cost-tag">~$${block.cost}</span>` : ''}</div>`;
+                    html += `</div>`;
+                });
+                html += `</div>`;
             }
-            if (transportModes.includes('rental')) {
-                html += `A rental car works well for day trips outside the city. Budget ~$${Math.round(transportBudget * 0.6)}/day for rental + fuel. `;
-            }
-            if (transportModes.length === 0) {
-                html += `Walking is free and a great way to explore ${destination}! Budget taxi fare for longer distances.`;
-            }
-            html += `</p><p style="margin-top:6px;">`;
-            transportModes.forEach(t => { html += `<span class="tag">${transportLabels[t]}</span>`; });
-            html += `</p></div>`;
-
-            // Accommodation
-            html += `<div class="itinerary-section"><h3>Accommodation</h3>`;
-            html += `<p><strong>${accomLabels[accomType]}</strong> — ~$${perNight}/night for ${days} nights.</p>`;
-            html += `<p style="margin-top:6px;">`;
-            if (accomType === 'hostel') html += `Look for hostels with good reviews near transit. Many include breakfast which saves on food budget.`;
-            else if (accomType === 'budget-hotel') html += `Budget hotels near public transport hubs offer the best value. Book in advance for better rates.`;
-            else if (accomType === 'mid-hotel') html += `Book a centrally-located mid-range hotel. Look for deals that include breakfast.`;
-            else if (accomType === 'luxury') html += `Splurge on a well-located luxury hotel. Many include concierge services that can help plan activities.`;
-            else html += `An apartment gives you kitchen access to save on some meals. Great for ${travelers > 1 ? 'groups' : 'longer stays'}.`;
-            html += `</p></div>`;
-
-            // Food plan
-            html += `<div class="itinerary-section"><h3>Food Plan</h3>`;
-            html += `<p><strong>${foodLabels[foodPref]}</strong> — ~$${perMealBudget}/meal budget.</p>`;
-            html += `<p style="margin-top:6px;">`;
-            if (foodPref === 'street') html += `Explore local markets and street vendors for authentic, affordable meals. Budget a bit extra for one or two special dinners.`;
-            else if (foodPref === 'mixed') html += `Start mornings with local cafes, grab street food for lunch, and enjoy a sit-down restaurant for dinner.`;
-            else if (foodPref === 'dining') html += `Research well-reviewed restaurants in advance. Lunch menus are often cheaper than dinner at the same places.`;
-            else html += `Reserve fine dining spots in advance. Allocate most food budget to 2-3 signature experiences and keep other meals simple.`;
-            html += `</p></div>`;
-
-            // Activities
-            html += `<div class="itinerary-section"><h3>Daily Activity Plan</h3>`;
-            html += `<p>With ~$${Math.round(activityBudget / days)}/day for activities:</p><p style="margin-top:8px;">`;
-            if (activities.includes('museums')) html += `• Check for museum passes or free entry days<br>`;
-            if (activities.includes('outdoors')) html += `• Parks and nature are often free — save budget for paid excursions<br>`;
-            if (activities.includes('nightlife')) html += `• Research happy hours and local spots for affordable nightlife<br>`;
-            if (activities.includes('shopping')) html += `• Set a shopping cap per day to stay on budget<br>`;
-            html += `</p><p style="margin-top:6px;">`;
-            activities.forEach(a => { html += `<span class="tag">${activityLabels[a]}</span>`; });
-            html += `</p></div>`;
-
-            // Sample day
-            html += `<div class="itinerary-section"><h3>Sample Day</h3>`;
-            html += `<p><strong>Morning:</strong> ${foodPref === 'street' ? 'Grab breakfast from a local vendor' : 'Breakfast at your hotel or a nearby cafe'}, then head to ${activities.includes('museums') ? 'a museum or cultural site' : activities.includes('outdoors') ? 'a park or nature spot' : 'explore the neighborhood'}.</p>`;
-            html += `<p><strong>Afternoon:</strong> ${foodPref === 'fine' ? 'Enjoy a leisurely lunch' : 'Quick lunch'}, then ${activities.includes('shopping') ? 'browse local shops and markets' : activities.includes('outdoors') ? 'take a walking tour or hike' : 'explore a new district'}.</p>`;
-            html += `<p><strong>Evening:</strong> ${activities.includes('nightlife') ? 'Dinner followed by local nightlife' : 'Dinner and a relaxed evening walk'}. Use ${transportModes.includes('metro') ? 'the metro' : transportModes.includes('bus') ? 'the bus' : 'a taxi'} to return.</p>`;
+            html += `</div>`;
             html += `</div>`;
 
             // Tips
-            html += `<div class="itinerary-section"><h3>Money-Saving Tips</h3>`;
-            html += `<p>• Keep a $${Math.round(budget * 0.05)} emergency buffer for unexpected expenses<br>`;
-            html += `• ${transportModes.includes('metro') ? 'Buy transit passes in advance for discounts' : 'Compare rideshare apps for best prices'}<br>`;
-            html += `• Book accommodations and popular activities early<br>`;
-            if (travelers > 1) html += `• Split costs on accommodation and transport for ${travelers} travelers<br>`;
-            html += `• Use free walking tours to orient yourself on day one</p>`;
+            html += `<div class="itinerary-section"><h3>Budget Tips</h3>`;
+            html += `<p>• Keep ~$${Math.round(budget * 0.05)} as emergency buffer<br>`;
+            if (transportModes.includes('metro') || transportModes.includes('bus')) html += `• Buy a ${days > 3 ? days + '-day' : 'daily'} transit pass to save on fares<br>`;
+            if (travelers > 1) html += `• Split accommodation & transport costs across ${travelers} travelers<br>`;
+            html += `• Book popular activities and restaurants in advance<br>`;
+            html += `• Check for free museum days and walking tours</p>`;
             html += `</div>`;
 
             html += `</div>`;
-
             document.getElementById('itinerary-output').innerHTML = html;
+        }
+
+        function setView(mode, btn) {
+            document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tabs = document.getElementById('day-tabs');
+            const cards = document.querySelectorAll('.day-card-item');
+            if (mode === 'all') {
+                tabs.style.display = 'none';
+                cards.forEach(c => c.style.display = 'block');
+            } else {
+                tabs.style.display = 'flex';
+                const activeTab = document.querySelector('.day-tab.active');
+                const activeDay = activeTab ? [...activeTab.parentElement.children].indexOf(activeTab) : 0;
+                cards.forEach((c, i) => c.style.display = i === activeDay ? 'block' : 'none');
+            }
+        }
+
+        function showDay(idx) {
+            document.querySelectorAll('.day-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+            document.querySelectorAll('.day-card-item').forEach((c, i) => c.style.display = i === idx ? 'block' : 'none');
+        }
+
+        function buildDayByDayPlan(days, activities, transportModes, foodPref, accomType, destination, dailyActivityBudget, dailyTransport, perMealBudget, perNight) {
+            const plans = [];
+            const primaryTransport = transportModes.includes('metro') ? 'metro' : transportModes.includes('bus') ? 'bus' : transportModes.includes('taxi') ? 'rideshare' : 'walking';
+
+            const morningActivities = {
+                museums: ['Visit a major museum', 'Explore a gallery or cultural center', 'Tour a historic landmark', 'Visit an art exhibition'],
+                outdoors: ['Morning hike or park walk', 'Visit botanical gardens', 'Waterfront or riverside walk', 'Explore a nature reserve'],
+                nightlife: ['Sleep in and brunch', 'Late morning café visit', 'Recovery breakfast and relax', 'Casual morning at a coffee house'],
+                shopping: ['Browse a morning market', 'Visit an artisan district', 'Explore a vintage market', 'Shop at local boutiques']
+            };
+            const afternoonActivities = {
+                museums: ['Visit a second museum or exhibit', 'Guided walking tour of historic district', 'Explore a neighborhood on foot', 'Visit a local workshop or studio'],
+                outdoors: ['Scenic viewpoint hike', 'Bike ride through the area', 'Visit a lake, beach, or park', 'Guided nature tour'],
+                nightlife: ['Explore a trendy neighborhood', 'Visit a rooftop bar or lounge', 'Attend a matinee show', 'Explore the nightlife district by day'],
+                shopping: ['Visit a department store or mall', 'Browse souvenir and craft shops', 'Explore a flea market', 'Shop for local specialties']
+            };
+            const eveningActivities = {
+                museums: ['Evening stroll through the city center', 'Attend a cultural performance', 'Night tour of illuminated landmarks', 'Visit a late-night museum opening'],
+                outdoors: ['Sunset viewpoint visit', 'Evening walk along the waterfront', 'Stargazing spot outside the city', 'Night garden or park visit'],
+                nightlife: ['Live music venue', 'Bar-hopping in a popular district', 'Night club or dance venue', 'Comedy show or live performance'],
+                shopping: ['Night market visit', 'Shopping district evening stroll', 'Browse late-night shops', 'Window shopping with dinner']
+            };
+
+            const breakfastOptions = {
+                street: ['Grab breakfast from a street vendor', 'Local bakery breakfast on the go', 'Morning market food stall'],
+                mixed: ['Breakfast at a local café', 'Hotel breakfast or nearby bistro', 'Try a local breakfast spot'],
+                dining: ['Sit-down breakfast at a restaurant', 'Brunch at a well-reviewed spot', 'Full breakfast at your hotel'],
+                fine: ['Leisurely hotel breakfast', 'Upscale brunch reservation', 'Breakfast at a renowned café']
+            };
+            const lunchOptions = {
+                street: ['Street food lunch near your activity', 'Grab food from a local market stall', 'Quick bite at a food cart'],
+                mixed: ['Casual lunch at a local restaurant', 'Try a recommended lunch spot', 'Café lunch between activities'],
+                dining: ['Lunch at a sit-down restaurant', 'Restaurant lunch (check lunch specials)', 'Midday meal at a reviewed spot'],
+                fine: ['Fine lunch reservation', 'Multi-course lunch at a top restaurant', 'Chef\'s lunch menu experience']
+            };
+            const dinnerOptions = {
+                street: ['Dinner at a night food stall or market', 'Local eatery dinner', 'Street food dinner crawl'],
+                mixed: ['Dinner at a recommended restaurant', 'Try a local specialty restaurant', 'Evening meal at a popular spot'],
+                dining: ['Dinner reservation at a top-rated restaurant', 'Multi-course dinner experience', 'Fine restaurant dinner'],
+                fine: ['Fine dining tasting menu', 'Signature restaurant dinner', 'Chef\'s table or omakase dinner']
+            };
+
+            function pick(arr, dayIdx) {
+                return arr[dayIdx % arr.length];
+            }
+
+            function getActivityForSlot(slot, dayIdx) {
+                const pool = slot === 'morning' ? morningActivities : slot === 'afternoon' ? afternoonActivities : eveningActivities;
+                if (activities.length === 0) return 'Explore ' + destination + ' freely';
+                const category = activities[dayIdx % activities.length];
+                const options = pool[category] || ['Free exploration'];
+                return options[dayIdx % options.length];
+            }
+
+            for (let d = 0; d < days; d++) {
+                const isFirst = d === 0;
+                const isLast = d === days - 1;
+                const blocks = [];
+                let dayCost = 0;
+
+                if (isFirst) {
+                    blocks.push({ time: '8:00 AM', desc: `Arrive in ${destination}. Transfer to your accommodation via ${primaryTransport}`, cost: Math.round(dailyTransport * 0.5) });
+                    blocks.push({ time: '10:30 AM', desc: 'Check in and freshen up. Get oriented with a neighborhood walk', cost: 0 });
+                    blocks.push({ time: '12:30 PM', desc: pick(lunchOptions[foodPref], d), cost: perMealBudget });
+                    blocks.push({ time: '2:00 PM', desc: 'Light exploration — walking tour of immediate area or pick up transit pass', cost: Math.round(dailyActivityBudget * 0.3) });
+                    blocks.push({ time: '5:00 PM', desc: 'Rest and recharge at accommodation', cost: 0 });
+                    blocks.push({ time: '7:00 PM', desc: pick(dinnerOptions[foodPref], d), cost: Math.round(perMealBudget * 1.3) });
+                    blocks.push({ time: '9:00 PM', desc: 'Evening walk to get a feel for the city. Early night for jet lag recovery', cost: 0 });
+                    dayCost = Math.round(dailyTransport * 0.5) + perMealBudget + Math.round(dailyActivityBudget * 0.3) + Math.round(perMealBudget * 1.3);
+                } else if (isLast) {
+                    blocks.push({ time: '8:00 AM', desc: pick(breakfastOptions[foodPref], d), cost: perMealBudget });
+                    blocks.push({ time: '9:30 AM', desc: 'Pack up and check out. Store luggage if possible', cost: 0 });
+                    blocks.push({ time: '10:30 AM', desc: 'Last-minute sightseeing or souvenir shopping nearby', cost: Math.round(dailyActivityBudget * 0.5) });
+                    blocks.push({ time: '12:30 PM', desc: pick(lunchOptions[foodPref], d) + ' — final meal in ' + destination, cost: perMealBudget });
+                    blocks.push({ time: '2:00 PM', desc: `Head to departure point via ${primaryTransport}`, cost: Math.round(dailyTransport * 0.5) });
+                    dayCost = perMealBudget * 2 + Math.round(dailyActivityBudget * 0.5) + Math.round(dailyTransport * 0.5);
+                } else {
+                    const morningAct = getActivityForSlot('morning', d);
+                    const afternoonAct = getActivityForSlot('afternoon', d + 1);
+                    const eveningAct = getActivityForSlot('evening', d + 2);
+
+                    blocks.push({ time: '8:00 AM', desc: pick(breakfastOptions[foodPref], d), cost: perMealBudget });
+                    blocks.push({ time: '9:30 AM', desc: `${primaryTransport === 'walking' ? 'Walk' : 'Take ' + primaryTransport} to today's first spot`, cost: Math.round(dailyTransport * 0.3) });
+                    blocks.push({ time: '10:00 AM', desc: morningAct, cost: Math.round(dailyActivityBudget * 0.4) });
+                    blocks.push({ time: '12:30 PM', desc: pick(lunchOptions[foodPref], d), cost: perMealBudget });
+                    blocks.push({ time: '2:00 PM', desc: afternoonAct, cost: Math.round(dailyActivityBudget * 0.4) });
+                    blocks.push({ time: '5:00 PM', desc: 'Return to accommodation to rest and freshen up', cost: Math.round(dailyTransport * 0.3) });
+                    blocks.push({ time: '7:00 PM', desc: pick(dinnerOptions[foodPref], d), cost: Math.round(perMealBudget * 1.3) });
+                    blocks.push({ time: '9:00 PM', desc: eveningAct, cost: Math.round(dailyActivityBudget * 0.2) });
+                    dayCost = perMealBudget * 2 + Math.round(perMealBudget * 1.3) + dailyActivityBudget + Math.round(dailyTransport * 0.6);
+                }
+
+                let title;
+                if (isFirst) title = `Day 1 — Arrival & Orientation`;
+                else if (isLast) title = `Day ${days} — Departure`;
+                else {
+                    const themes = [];
+                    if (activities.length > 0) {
+                        const focus = activities[(d - 1) % activities.length];
+                        const themeNames = { museums: 'Culture & History', outdoors: 'Nature & Exploration', nightlife: 'Entertainment', shopping: 'Shopping & Markets' };
+                        themes.push(themeNames[focus] || 'Exploration');
+                    } else {
+                        themes.push('Exploration');
+                    }
+                    title = `Day ${d + 1} — ${themes[0]}`;
+                }
+
+                plans.push({ title, blocks, dayCost: dayCost + perNight });
+            }
+            return plans;
         }
     </script>
 </body>
