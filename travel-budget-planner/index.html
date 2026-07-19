@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Budget Planner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        .progress {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: background 0.3s;
+        }
+        .progress-dot.active { background: #667eea; }
+        .progress-dot.done { background: #4caf50; }
+        .step { display: none; }
+        .step.active { display: block; }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .hint {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            margin-bottom: 20px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .slider-group {
+            margin-bottom: 24px;
+        }
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .slider-group .value {
+            font-weight: 400;
+            color: #667eea;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-top: 8px;
+            accent-color: #667eea;
+        }
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .checkbox-group label:hover {
+            border-color: #667eea;
+            background: #f8f7ff;
+        }
+        .checkbox-group input:checked + span { color: #667eea; font-weight: 600; }
+        .checkbox-group input { width: 18px; height: 18px; accent-color: #667eea; }
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        button:active { transform: scale(0.97); }
+        .btn-next {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+        .btn-next:hover { box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .btn-back {
+            background: #f0f0f0;
+            color: #555;
+        }
+        .btn-back:hover { background: #e4e4e4; }
+        .itinerary {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .itinerary h3 {
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+        .itinerary-section {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e8e8f0;
+        }
+        .itinerary-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .itinerary-section p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.92rem;
+        }
+        .budget-bar {
+            display: flex;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        .budget-bar div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: 600;
+        }
+        .error {
+            color: #e53935;
+            font-size: 0.85rem;
+            margin-top: -12px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .tag {
+            display: inline-block;
+            background: #eef0ff;
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 3px 4px 3px 0;
+        }
+        @media (max-width: 500px) {
+            .container { padding: 24px; }
+            h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress">
+            <div class="progress-dot active" id="dot-0"></div>
+            <div class="progress-dot" id="dot-1"></div>
+            <div class="progress-dot" id="dot-2"></div>
+            <div class="progress-dot" id="dot-3"></div>
+            <div class="progress-dot" id="dot-4"></div>
+        </div>
+
+        <!-- Step 1: Basics -->
+        <div class="step active" id="step-0">
+            <h1>Plan Your Trip</h1>
+            <p class="subtitle">Let's create an optimized travel plan that fits your budget.</p>
+
+            <label for="destination">Where are you going?</label>
+            <input type="text" id="destination" placeholder="e.g. Paris, Tokyo, New York">
+
+            <label for="budget">Total budget (USD)</label>
+            <input type="number" id="budget" placeholder="e.g. 2000" min="100">
+            <p class="error" id="err-budget">Please enter a budget of at least $100.</p>
+
+            <label for="days">How many days?</label>
+            <input type="number" id="days" placeholder="e.g. 7" min="1" max="30">
+            <p class="error" id="err-days">Please enter 1-30 days.</p>
+
+            <label for="travelers">Number of travelers</label>
+            <input type="number" id="travelers" placeholder="e.g. 2" min="1" max="20" value="1">
+
+            <div class="btn-row">
+                <button class="btn-next" onclick="nextStep(0)">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Transport Preferences -->
+        <div class="step" id="step-1">
+            <h1>Transport Preferences</h1>
+            <p class="subtitle">How would you like to get around?</p>
+
+            <div class="slider-group">
+                <label>Budget for transport: <span class="value" id="transport-val">30%</span></label>
+                <input type="range" id="transport-pct" min="10" max="60" value="30" oninput="updateSlider('transport')">
+            </div>
+
+            <label>Which transport options are you comfortable with?</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="transport" value="metro" checked><span>Metro / Subway</span></label>
+                <label><input type="checkbox" name="transport" value="bus" checked><span>Public Bus</span></label>
+                <label><input type="checkbox" name="transport" value="taxi"><span>Taxi / Rideshare</span></label>
+                <label><input type="checkbox" name="transport" value="rental"><span>Car Rental</span></label>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-back" onclick="prevStep(1)">Back</button>
+                <button class="btn-next" onclick="nextStep(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Accommodation -->
+        <div class="step" id="step-2">
+            <h1>Accommodation</h1>
+            <p class="subtitle">Where would you like to stay?</p>
+
+            <div class="slider-group">
+                <label>Budget for accommodation: <span class="value" id="accom-val">40%</span></label>
+                <input type="range" id="accom-pct" min="15" max="60" value="40" oninput="updateSlider('accom')">
+            </div>
+
+            <label for="accom-type">Preferred accommodation type</label>
+            <select id="accom-type">
+                <option value="hostel">Hostel / Shared room</option>
+                <option value="budget-hotel">Budget Hotel</option>
+                <option value="mid-hotel" selected>Mid-range Hotel</option>
+                <option value="luxury">Luxury Hotel</option>
+                <option value="airbnb">Apartment / Airbnb</option>
+            </select>
+
+            <div class="btn-row">
+                <button class="btn-back" onclick="prevStep(2)">Back</button>
+                <button class="btn-next" onclick="nextStep(2)">Next</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Activities & Food -->
+        <div class="step" id="step-3">
+            <h1>Activities & Food</h1>
+            <p class="subtitle">What do you enjoy doing and eating?</p>
+
+            <label>What activities interest you?</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="activities" value="museums" checked><span>Museums & Culture</span></label>
+                <label><input type="checkbox" name="activities" value="outdoors"><span>Outdoor / Nature</span></label>
+                <label><input type="checkbox" name="activities" value="nightlife"><span>Nightlife & Entertainment</span></label>
+                <label><input type="checkbox" name="activities" value="shopping"><span>Shopping</span></label>
+            </div>
+
+            <label for="food-pref">Food preference</label>
+            <select id="food-pref">
+                <option value="street">Street food & local eateries</option>
+                <option value="mixed" selected>Mix of local and restaurants</option>
+                <option value="dining">Mostly sit-down restaurants</option>
+                <option value="fine">Fine dining experiences</option>
+            </select>
+
+            <div class="btn-row">
+                <button class="btn-back" onclick="prevStep(3)">Back</button>
+                <button class="btn-next" onclick="nextStep(3)">Generate Itinerary</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Results -->
+        <div class="step" id="step-4">
+            <h1>Your Optimized Itinerary</h1>
+            <p class="subtitle" id="result-subtitle"></p>
+            <div id="itinerary-output"></div>
+            <div class="btn-row">
+                <button class="btn-back" onclick="prevStep(4)">Edit Preferences</button>
+                <button class="btn-next" onclick="location.reload()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+
+        function updateSlider(type) {
+            const val = document.getElementById(type === 'transport' ? 'transport-pct' : 'accom-pct').value;
+            document.getElementById(type === 'transport' ? 'transport-val' : 'accom-val').textContent = val + '%';
+        }
+
+        function validateStep(step) {
+            if (step === 0) {
+                const budget = parseInt(document.getElementById('budget').value);
+                const days = parseInt(document.getElementById('days').value);
+                const dest = document.getElementById('destination').value.trim();
+                let valid = true;
+
+                document.getElementById('err-budget').style.display = (!budget || budget < 100) ? 'block' : 'none';
+                document.getElementById('err-days').style.display = (!days || days < 1 || days > 30) ? 'block' : 'none';
+
+                if (!budget || budget < 100) valid = false;
+                if (!days || days < 1 || days > 30) valid = false;
+                if (!dest) valid = false;
+                return valid;
+            }
+            return true;
+        }
+
+        function nextStep(from) {
+            if (!validateStep(from)) return;
+            document.getElementById('step-' + from).classList.remove('active');
+            document.getElementById('dot-' + from).classList.remove('active');
+            document.getElementById('dot-' + from).classList.add('done');
+            currentStep = from + 1;
+            document.getElementById('step-' + currentStep).classList.add('active');
+            document.getElementById('dot-' + currentStep).classList.add('active');
+
+            if (currentStep === 4) generateItinerary();
+        }
+
+        function prevStep(from) {
+            document.getElementById('step-' + from).classList.remove('active');
+            document.getElementById('dot-' + from).classList.remove('active');
+            currentStep = from - 1;
+            document.getElementById('step-' + currentStep).classList.add('active');
+            document.getElementById('dot-' + currentStep).classList.remove('done');
+            document.getElementById('dot-' + currentStep).classList.add('active');
+        }
+
+        function generateItinerary() {
+            const destination = document.getElementById('destination').value.trim();
+            const budget = parseInt(document.getElementById('budget').value);
+            const days = parseInt(document.getElementById('days').value);
+            const travelers = parseInt(document.getElementById('travelers').value);
+            const transportPct = parseInt(document.getElementById('transport-pct').value);
+            const accomPct = parseInt(document.getElementById('accom-pct').value);
+            const foodRemainder = 100 - transportPct - accomPct;
+            const foodPct = Math.max(foodRemainder * 0.6, 10);
+            const activityPct = Math.max(foodRemainder * 0.4, 5);
+
+            const transportBudget = Math.round(budget * transportPct / 100);
+            const accomBudget = Math.round(budget * accomPct / 100);
+            const foodBudget = Math.round(budget * foodPct / 100);
+            const activityBudget = Math.round(budget * activityPct / 100);
+            const dailyBudget = Math.round(budget / days);
+
+            const transportModes = [...document.querySelectorAll('input[name="transport"]:checked')].map(c => c.value);
+            const activities = [...document.querySelectorAll('input[name="activities"]:checked')].map(c => c.value);
+            const accomType = document.getElementById('accom-type').value;
+            const foodPref = document.getElementById('food-pref').value;
+
+            const accomLabels = { hostel: 'Hostel / Shared room', 'budget-hotel': 'Budget Hotel', 'mid-hotel': 'Mid-range Hotel', luxury: 'Luxury Hotel', airbnb: 'Apartment / Airbnb' };
+            const foodLabels = { street: 'Street food & local spots', mixed: 'Mix of local and restaurants', dining: 'Sit-down restaurants', fine: 'Fine dining' };
+            const transportLabels = { metro: 'Metro/Subway', bus: 'Public Bus', taxi: 'Taxi/Rideshare', rental: 'Car Rental' };
+            const activityLabels = { museums: 'Museums & Culture', outdoors: 'Outdoor/Nature', nightlife: 'Nightlife', shopping: 'Shopping' };
+
+            const perNight = Math.round(accomBudget / days);
+            const perMealBudget = Math.round(foodBudget / (days * 3));
+
+            document.getElementById('result-subtitle').textContent =
+                `${destination} • ${days} days • ${travelers} traveler${travelers > 1 ? 's' : ''} • $${budget} total`;
+
+            let html = '';
+
+            // Budget breakdown
+            html += `<div class="itinerary">`;
+            html += `<div class="itinerary-section">`;
+            html += `<h3>Budget Breakdown</h3>`;
+            html += `<div class="budget-bar">
+                <div style="width:${transportPct}%;background:#667eea">${transportPct}%</div>
+                <div style="width:${accomPct}%;background:#764ba2">${accomPct}%</div>
+                <div style="width:${Math.round(foodPct)}%;background:#e91e63">${Math.round(foodPct)}%</div>
+                <div style="width:${Math.round(activityPct)}%;background:#ff9800">${Math.round(activityPct)}%</div>
+            </div>`;
+            html += `<p><strong>Transport:</strong> $${transportBudget} &nbsp;|&nbsp; <strong>Accommodation:</strong> $${accomBudget} &nbsp;|&nbsp; <strong>Food:</strong> $${foodBudget} &nbsp;|&nbsp; <strong>Activities:</strong> $${activityBudget}</p>`;
+            html += `<p style="margin-top:8px;color:#888;">Daily budget: ~$${dailyBudget}/day</p>`;
+            html += `</div>`;
+
+            // Transport plan
+            html += `<div class="itinerary-section"><h3>Transport Plan</h3><p>`;
+            if (transportModes.includes('metro') || transportModes.includes('bus')) {
+                html += `Use public transport (${transportModes.filter(t => t === 'metro' || t === 'bus').map(t => transportLabels[t]).join(', ')}) for daily commutes. `;
+                html += `Consider a ${days > 3 ? 'multi-day pass' : 'daily pass'} to save money. `;
+            }
+            if (transportModes.includes('taxi')) {
+                html += `Use rideshare for late-night returns or heavy luggage days. `;
+            }
+            if (transportModes.includes('rental')) {
+                html += `A rental car works well for day trips outside the city. Budget ~$${Math.round(transportBudget * 0.6)}/day for rental + fuel. `;
+            }
+            if (transportModes.length === 0) {
+                html += `Walking is free and a great way to explore ${destination}! Budget taxi fare for longer distances.`;
+            }
+            html += `</p><p style="margin-top:6px;">`;
+            transportModes.forEach(t => { html += `<span class="tag">${transportLabels[t]}</span>`; });
+            html += `</p></div>`;
+
+            // Accommodation
+            html += `<div class="itinerary-section"><h3>Accommodation</h3>`;
+            html += `<p><strong>${accomLabels[accomType]}</strong> — ~$${perNight}/night for ${days} nights.</p>`;
+            html += `<p style="margin-top:6px;">`;
+            if (accomType === 'hostel') html += `Look for hostels with good reviews near transit. Many include breakfast which saves on food budget.`;
+            else if (accomType === 'budget-hotel') html += `Budget hotels near public transport hubs offer the best value. Book in advance for better rates.`;
+            else if (accomType === 'mid-hotel') html += `Book a centrally-located mid-range hotel. Look for deals that include breakfast.`;
+            else if (accomType === 'luxury') html += `Splurge on a well-located luxury hotel. Many include concierge services that can help plan activities.`;
+            else html += `An apartment gives you kitchen access to save on some meals. Great for ${travelers > 1 ? 'groups' : 'longer stays'}.`;
+            html += `</p></div>`;
+
+            // Food plan
+            html += `<div class="itinerary-section"><h3>Food Plan</h3>`;
+            html += `<p><strong>${foodLabels[foodPref]}</strong> — ~$${perMealBudget}/meal budget.</p>`;
+            html += `<p style="margin-top:6px;">`;
+            if (foodPref === 'street') html += `Explore local markets and street vendors for authentic, affordable meals. Budget a bit extra for one or two special dinners.`;
+            else if (foodPref === 'mixed') html += `Start mornings with local cafes, grab street food for lunch, and enjoy a sit-down restaurant for dinner.`;
+            else if (foodPref === 'dining') html += `Research well-reviewed restaurants in advance. Lunch menus are often cheaper than dinner at the same places.`;
+            else html += `Reserve fine dining spots in advance. Allocate most food budget to 2-3 signature experiences and keep other meals simple.`;
+            html += `</p></div>`;
+
+            // Activities
+            html += `<div class="itinerary-section"><h3>Daily Activity Plan</h3>`;
+            html += `<p>With ~$${Math.round(activityBudget / days)}/day for activities:</p><p style="margin-top:8px;">`;
+            if (activities.includes('museums')) html += `• Check for museum passes or free entry days<br>`;
+            if (activities.includes('outdoors')) html += `• Parks and nature are often free — save budget for paid excursions<br>`;
+            if (activities.includes('nightlife')) html += `• Research happy hours and local spots for affordable nightlife<br>`;
+            if (activities.includes('shopping')) html += `• Set a shopping cap per day to stay on budget<br>`;
+            html += `</p><p style="margin-top:6px;">`;
+            activities.forEach(a => { html += `<span class="tag">${activityLabels[a]}</span>`; });
+            html += `</p></div>`;
+
+            // Sample day
+            html += `<div class="itinerary-section"><h3>Sample Day</h3>`;
+            html += `<p><strong>Morning:</strong> ${foodPref === 'street' ? 'Grab breakfast from a local vendor' : 'Breakfast at your hotel or a nearby cafe'}, then head to ${activities.includes('museums') ? 'a museum or cultural site' : activities.includes('outdoors') ? 'a park or nature spot' : 'explore the neighborhood'}.</p>`;
+            html += `<p><strong>Afternoon:</strong> ${foodPref === 'fine' ? 'Enjoy a leisurely lunch' : 'Quick lunch'}, then ${activities.includes('shopping') ? 'browse local shops and markets' : activities.includes('outdoors') ? 'take a walking tour or hike' : 'explore a new district'}.</p>`;
+            html += `<p><strong>Evening:</strong> ${activities.includes('nightlife') ? 'Dinner followed by local nightlife' : 'Dinner and a relaxed evening walk'}. Use ${transportModes.includes('metro') ? 'the metro' : transportModes.includes('bus') ? 'the bus' : 'a taxi'} to return.</p>`;
+            html += `</div>`;
+
+            // Tips
+            html += `<div class="itinerary-section"><h3>Money-Saving Tips</h3>`;
+            html += `<p>• Keep a $${Math.round(budget * 0.05)} emergency buffer for unexpected expenses<br>`;
+            html += `• ${transportModes.includes('metro') ? 'Buy transit passes in advance for discounts' : 'Compare rideshare apps for best prices'}<br>`;
+            html += `• Book accommodations and popular activities early<br>`;
+            if (travelers > 1) html += `• Split costs on accommodation and transport for ${travelers} travelers<br>`;
+            html += `• Use free walking tours to orient yourself on day one</p>`;
+            html += `</div>`;
+
+            html += `</div>`;
+
+            document.getElementById('itinerary-output').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
