@@ -1,0 +1,314 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "grid",
+            "media_columns": "two",
+            "image_gap": 4,
+            "large_first_image": false,
+            "slideshow_controls_style": "counter",
+            "slideshow_mobile_controls_style": "dots",
+            "thumbnail_position": "right",
+            "thumbnail_width": 44,
+            "thumbnail_radius": 0,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": true,
+            "media_fit": "contain",
+            "media_radius": 0,
+            "extend_media": false,
+            "zoom": true,
+            "video_loop": false,
+            "hide_variants": true,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 28,
+            "sticky_details_desktop": true,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 24,
+            "padding-block-end": 24,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "eyebrow_usc": {
+              "type": "text",
+              "name": "Eyebrow",
+              "settings": {
+                "text": "<p>FOR YOUR EYES ONLY</p>",
+                "width": "fit-content",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.7rem",
+                "line_height": "normal",
+                "letter_spacing": "0.2em",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "text_color": "#C83232",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "title_usc": {
+              "type": "text",
+              "name": "Product title",
+              "settings": {
+                "text": "<h1>{{ closest.product.title }}</h1>",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "h2",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "price_usc": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": false,
+                "show_tax_info": false,
+                "type_preset": "paragraph",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "",
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "divider_usc": {
+              "type": "_divider",
+              "settings": {
+                "thickness": 1,
+                "corner_radius": "square",
+                "divider_color": "#ddd",
+                "width_percent": 100,
+                "padding-block-start": 4,
+                "padding-block-end": 4
+              },
+              "blocks": {}
+            },
+            "desc_usc": {
+              "type": "text",
+              "name": "Product description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-body--family)",
+                "font_size": "0.9rem",
+                "line_height": "1.6",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "#666666",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_picker_usc": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": false,
+                "option_label_text_color": "",
+                "variant_style_class": "default",
+                "custom_variant_background": "#F5F5F0",
+                "custom_variant_text": "#1A1A1A",
+                "custom_variant_border": "#1A1A1A",
+                "selected_variant_style_class": "default",
+                "custom_selected_variant_background": "#1A1A1A",
+                "custom_selected_variant_text": "#F5F5F0",
+                "custom_selected_variant_border": "#1A1A1A",
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "buy_buttons_usc": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "text_color": "",
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {
+                    "border_width": 1,
+                    "border_radius": 0
+                  },
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button-custom",
+                    "custom_button_background": "#C83232",
+                    "custom_button_text": "#FFFFFF",
+                    "custom_button_border": "#C83232"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "eyebrow_usc",
+            "title_usc",
+            "price_usc",
+            "divider_usc",
+            "desc_usc",
+            "variant_picker_usc",
+            "buy_buttons_usc"
+          ]
+        }
+      },
+      "block_order": [],
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": false,
+        "limit_details_width": false,
+        "gap": 48,
+        "enable_sticky_add_to_cart": true,
+        "background_color": "#F5F5F0",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "uscode_product_details": {
+      "type": "uscode-product-details",
+      "blocks": {
+        "stat_1": { "type": "stat", "settings": { "number": "300", "label": "Pieces made. No restock." } },
+        "stat_2": { "type": "stat", "settings": { "number": "1:1", "label": "NFC-verified to one print" } },
+        "stat_3": { "type": "stat", "settings": { "number": "48h", "label": "Ships from print" } },
+        "stat_4": { "type": "stat", "settings": { "number": "0", "label": "Reprints, ever" } },
+        "feat_1": { "type": "feature", "settings": { "number": "01", "title": "A real pair of eyes", "text": "The back print is a photograph, not an illustration — torn, layered, and screen-printed at true grain." } },
+        "feat_2": { "type": "feature", "settings": { "number": "02", "title": "Tap to remember", "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it — a voice memo, a photo, a date." } },
+        "feat_3": { "type": "feature", "settings": { "number": "03", "title": "Heavyweight, vintage-washed", "text": "Oversized cut, garment-dyed and washed for a worn-in hand from the first day." } }
+      },
+      "block_order": ["stat_1", "stat_2", "stat_3", "stat_4", "feat_1", "feat_2", "feat_3"],
+      "settings": {
+        "features_label": "WHAT YOU’RE WEARING",
+        "story_label": "MADE TO LAST THE MEMORY",
+        "story_heading": "Screen-printed once. Verified forever.",
+        "story_text": "<p>Every shirt is numbered against its NFC chip at print — scan it and you’re looking at the same file we printed, not a knockoff.</p>",
+        "show_nfc": true,
+        "nfc_text": "Tap the hem tag to verify your print number. The chip is locked to one shirt — scanning it anywhere else means it isn’t real.",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "uscode_testimonial": {
+      "type": "uscode-testimonial",
+      "settings": {
+        "quote": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted.",
+        "attribution": "— From the first drop, Essential",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A"
+      }
+    },
+    "uscode_cta_banner": {
+      "type": "uscode-cta-banner",
+      "settings": {
+        "heading": "300 made. None remade.",
+        "cta_label": "Shop before it’s gone",
+        "cta_link": "shopify:\/\/collections\/all",
+        "subtext": "Drop closes when the count hits zero.",
+        "bg_color": "#C83232"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "uscode_product_details",
+    "uscode_testimonial",
+    "uscode_cta_banner"
+  ]
+}

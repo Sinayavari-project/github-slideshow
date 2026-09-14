@@ -1,0 +1,193 @@
+{%- style -%}
+  .uscode-hero {
+    background: {{ section.settings.bg_color }};
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .uscode-hero__images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 100%;
+  }
+  .uscode-hero__images img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .uscode-hero__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+  .uscode-hero__eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .uscode-hero__heading {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 20px;
+    max-width: 600px;
+    font-style: italic;
+  }
+  .uscode-hero__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ccc;
+    max-width: 520px;
+    margin-bottom: 32px;
+  }
+  .uscode-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .uscode-hero__cta {
+    display: inline-block;
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+    padding: 14px 28px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+  }
+  .uscode-hero__cta:hover { opacity: 0.85; }
+  .uscode-hero__link {
+    color: #fff;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .uscode-hero__link:hover { opacity: 0.7; }
+  @media (max-width: 749px) {
+    .uscode-hero__images { grid-template-columns: 1fr; }
+    .uscode-hero__content { padding: 32px 20px 48px; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-hero">
+  <div class="uscode-hero__images">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'image' -%}
+        {%- if block.settings.image != blank -%}
+          <div>
+            {{ block.settings.image | image_url: width: 900 | image_tag: loading: 'lazy' }}
+          </div>
+        {%- else -%}
+          <div style="background:#2a2a2a;aspect-ratio:1/1;"></div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <div class="uscode-hero__content">
+    <p class="uscode-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+    <h1 class="uscode-hero__heading">{{ section.settings.heading }}</h1>
+    <p class="uscode-hero__description">{{ section.settings.description }}</p>
+    <div class="uscode-hero__actions">
+      {%- if section.settings.cta_label != blank -%}
+        <a href="{{ section.settings.cta_link }}" class="uscode-hero__cta">
+          {{ section.settings.cta_label }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.secondary_label != blank -%}
+        <a href="{{ section.settings.secondary_link }}" class="uscode-hero__link">
+          {{ section.settings.secondary_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "FOR YOUR EYES ONLY"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "I'd find you in every lifetime."
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>An oversized tee carrying a real pair of eyes on the back — a memory printed, not drawn. Tap the hem's NFC chip and the moment plays back.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "Shop the drop — $48"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary link label",
+      "default": "How the NFC works"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary link URL"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#C83232"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Hero image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Hero",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

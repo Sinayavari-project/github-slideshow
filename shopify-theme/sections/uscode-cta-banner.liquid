@@ -1,0 +1,99 @@
+{%- style -%}
+  .uscode-cta-banner {
+    background: {{ section.settings.bg_color }};
+    color: #fff;
+  }
+  .uscode-cta-banner__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 24px;
+  }
+  .uscode-cta-banner__heading {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0 0 28px;
+    max-width: 500px;
+  }
+  .uscode-cta-banner__cta {
+    display: inline-block;
+    padding: 14px 28px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    border: 1px solid #fff;
+    color: #fff;
+    background: transparent;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+  }
+  .uscode-cta-banner__cta:hover {
+    background: #fff;
+    color: {{ section.settings.bg_color }};
+  }
+  .uscode-cta-banner__sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+  }
+  @media (max-width: 749px) {
+    .uscode-cta-banner__inner { padding: 48px 20px; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-cta-banner">
+  <div class="uscode-cta-banner__inner">
+    <h2 class="uscode-cta-banner__heading">{{ section.settings.heading }}</h2>
+    {%- if section.settings.cta_label != blank -%}
+      <a href="{{ section.settings.cta_link }}" class="uscode-cta-banner__cta">
+        {{ section.settings.cta_label }}
+      </a>
+    {%- endif -%}
+    {%- if section.settings.subtext != blank -%}
+      <p class="uscode-cta-banner__sub">{{ section.settings.subtext }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE CTA Banner",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "300 made. None remade."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "Shop before it's gone"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA button link"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Drop closes when the count hits zero."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#C83232"
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE CTA Banner"
+    }
+  ]
+}
+{% endschema %}

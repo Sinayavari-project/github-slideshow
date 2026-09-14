@@ -1,0 +1,74 @@
+{%- style -%}
+  .uscode-testimonial {
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-testimonial__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+  .uscode-testimonial__quote {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 20px;
+    max-width: 640px;
+    font-style: italic;
+  }
+  .uscode-testimonial__quote::before { content: "\201C"; }
+  .uscode-testimonial__quote::after { content: "\201D"; }
+  .uscode-testimonial__attribution {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+  }
+  @media (max-width: 749px) {
+    .uscode-testimonial__inner { padding: 56px 20px; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-testimonial">
+  <div class="uscode-testimonial__inner">
+    <p class="uscode-testimonial__quote">{{ section.settings.quote }}</p>
+    <p class="uscode-testimonial__attribution">{{ section.settings.attribution }}</p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Testimonial",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Quote",
+      "default": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted."
+    },
+    {
+      "type": "text",
+      "id": "attribution",
+      "label": "Attribution",
+      "default": "— From the first drop, Essential"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1A1A1A"
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Testimonial"
+    }
+  ]
+}
+{% endschema %}
