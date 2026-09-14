@@ -22,6 +22,13 @@
     margin: 0 auto;
     padding: 48px 24px 64px;
   }
+  .uscode-hero__logo {
+    margin-bottom: 28px;
+  }
+  .uscode-hero__logo img {
+    height: 40px;
+    width: auto;
+  }
   .uscode-hero__eyebrow {
     font-size: 0.7rem;
     letter-spacing: 0.2em;
@@ -91,6 +98,9 @@
     {%- endfor -%}
   </div>
   <div class="uscode-hero__content">
+    <div class="uscode-hero__logo">
+      <img src="{{ 'uscode-logo-light.svg' | asset_url }}" alt="US CODE" height="40">
+    </div>
     <p class="uscode-hero__eyebrow">{{ section.settings.eyebrow }}</p>
     <h1 class="uscode-hero__heading">{{ section.settings.heading }}</h1>
     <p class="uscode-hero__description">{{ section.settings.description }}</p>
