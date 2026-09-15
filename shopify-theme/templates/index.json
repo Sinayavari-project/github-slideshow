@@ -1,0 +1,113 @@
+{
+  "sections": {
+    "uscode_hero": {
+      "type": "uscode-hero",
+      "blocks": {
+        "img_1": { "type": "image", "settings": {} },
+        "img_2": { "type": "image", "settings": {} }
+      },
+      "block_order": ["img_1", "img_2"],
+      "settings": {
+        "eyebrow": "FOR YOUR EYES ONLY",
+        "heading": "I'd find you in every lifetime.",
+        "description": "<p>An oversized tee carrying a real pair of eyes on the back — a memory printed, not drawn. Tap the hem’s NFC chip and the moment plays back.</p>",
+        "cta_label": "Shop the drop — $48",
+        "cta_link": "shopify:\/\/collections\/all",
+        "secondary_label": "How the NFC works",
+        "secondary_link": "",
+        "bg_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "uscode_stats": {
+      "type": "uscode-stats",
+      "blocks": {
+        "stat_1": { "type": "stat", "settings": { "number": "300", "label": "Pieces made. No restock." } },
+        "stat_2": { "type": "stat", "settings": { "number": "1:1", "label": "NFC-verified to one print" } },
+        "stat_3": { "type": "stat", "settings": { "number": "48h", "label": "Ships from print" } },
+        "stat_4": { "type": "stat", "settings": { "number": "0", "label": "Reprints, ever" } }
+      },
+      "block_order": ["stat_1", "stat_2", "stat_3", "stat_4"],
+      "settings": {
+        "bg_color": "#F5F5F0",
+        "number_color": "#1A1A1A"
+      }
+    },
+    "uscode_features": {
+      "type": "uscode-features",
+      "blocks": {
+        "feat_1": { "type": "feature", "settings": { "number": "01", "title": "A real pair of eyes", "text": "The back print is a photograph, not an illustration — torn, layered, and screen-printed at true grain so the eyes stay recognizably someone’s." } },
+        "feat_2": { "type": "feature", "settings": { "number": "02", "title": "Tap to remember", "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it — a voice memo, a photo, a date. Tap a phone to the hem and it plays." } },
+        "feat_3": { "type": "feature", "settings": { "number": "03", "title": "Heavyweight, vintage-washed", "text": "Oversized cut, garment-dyed and washed for a worn-in hand from the first day. Runs true to a size up." } }
+      },
+      "block_order": ["feat_1", "feat_2", "feat_3"],
+      "settings": {
+        "label": "WHAT YOU’RE WEARING",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "uscode_story": {
+      "type": "uscode-story",
+      "blocks": {
+        "gallery_1": { "type": "gallery_image", "settings": {} },
+        "gallery_2": { "type": "gallery_image", "settings": {} },
+        "gallery_3": { "type": "gallery_image", "settings": {} }
+      },
+      "block_order": ["gallery_1", "gallery_2", "gallery_3"],
+      "settings": {
+        "label": "MADE TO LAST THE MEMORY",
+        "heading": "Screen-printed once. Verified forever.",
+        "text": "<p>Every shirt is numbered against its NFC chip at print — scan it and you’re looking at the same file we printed, not a knockoff. When the drop sells out, that number closes.</p>",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "uscode_pricing": {
+      "type": "uscode-pricing",
+      "blocks": {
+        "tier_1": { "type": "tier", "settings": { "name": "Essential", "price": "$48", "description": "The tee, the print, the chip — set to a photo of your choosing.", "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo", "cta_label": "Choose Essential", "cta_link": "shopify:\/\/collections\/all", "featured": false, "badge": "" } },
+        "tier_2": { "type": "tier", "settings": { "name": "Memory", "price": "$68", "description": "Everything in Essential, with the chip linked to a full memory — voice, video, or a place.", "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print", "cta_label": "Choose Memory", "cta_link": "shopify:\/\/collections\/all", "featured": true, "badge": "Most chosen" } },
+        "tier_3": { "type": "tier", "settings": { "name": "Signature", "price": "$98", "description": "Your own eyes on the back — a private commission, printed once, for you alone.", "features": "Everything in Memory|Custom back print from your photo|Boxed with a printed certificate", "cta_label": "Choose Signature", "cta_link": "shopify:\/\/collections\/all", "featured": false, "badge": "" } }
+      },
+      "block_order": ["tier_1", "tier_2", "tier_3"],
+      "settings": {
+        "label": "CHOOSE YOUR PRINT",
+        "heading": "Three ways to keep it.",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "uscode_testimonial": {
+      "type": "uscode-testimonial",
+      "settings": {
+        "quote": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted.",
+        "attribution": "— From the first drop, Essential",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A"
+      }
+    },
+    "uscode_cta_banner": {
+      "type": "uscode-cta-banner",
+      "settings": {
+        "heading": "300 made. None remade.",
+        "cta_label": "Shop before it’s gone",
+        "cta_link": "shopify:\/\/collections\/all",
+        "subtext": "Drop closes when the count hits zero.",
+        "bg_color": "#C83232"
+      }
+    }
+  },
+  "order": [
+    "uscode_hero",
+    "uscode_stats",
+    "uscode_features",
+    "uscode_story",
+    "uscode_pricing",
+    "uscode_testimonial",
+    "uscode_cta_banner"
+  ]
+}

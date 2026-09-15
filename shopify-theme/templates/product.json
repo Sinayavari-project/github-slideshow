@@ -1,0 +1,65 @@
+{
+  "sections": {
+    "product_hero": {
+      "type": "uscode-product-main",
+      "settings": {
+        "eyebrow": "FOR YOUR EYES ONLY",
+        "cta_label": "Shop the drop",
+        "secondary_label": "How the NFC works",
+        "bg_color": "#1A1A1A",
+        "accent_color": "#C83232"
+      }
+    },
+    "stats": {
+      "type": "uscode-stats",
+      "settings": {}
+    },
+    "features": {
+      "type": "uscode-features",
+      "settings": {}
+    },
+    "gallery": {
+      "type": "uscode-product-gallery",
+      "settings": {
+        "bg_color": "#F5F5F0"
+      }
+    },
+    "nfc_verify": {
+      "type": "uscode-nfc-verify",
+      "settings": {
+        "eyebrow": "MADE TO LAST THE MEMORY",
+        "heading": "Screen-printed once. Verified forever.",
+        "body": "<p>Every print is numbered and linked to a tamper-proof NFC chip sewn into the hem. Tap your phone to see the edition number, the print date, and the story behind the image.</p><p>No app needed. No account. Just tap.</p>",
+        "show_chip": true,
+        "chip_label": "NFC VERIFIED",
+        "chip_desc": "Each shirt carries a unique chip — tap to verify your edition.",
+        "bg_color": "#F5F5F0",
+        "text_color": "#1A1A1A",
+        "accent_color": "#C83232",
+        "border_color": "#DDDDDD"
+      }
+    },
+    "pricing": {
+      "type": "uscode-pricing",
+      "settings": {}
+    },
+    "testimonial": {
+      "type": "uscode-testimonial",
+      "settings": {}
+    },
+    "cta_banner": {
+      "type": "uscode-cta-banner",
+      "settings": {}
+    }
+  },
+  "order": [
+    "product_hero",
+    "stats",
+    "features",
+    "gallery",
+    "nfc_verify",
+    "pricing",
+    "testimonial",
+    "cta_banner"
+  ]
+}
