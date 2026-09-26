@@ -1,0 +1,372 @@
+<style>
+  .uscode-pdp2 { color: var(--color-text); font-family: var(--font-body); }
+  .uscode-pdp2__wrap { max-width: 640px; margin: 0 auto; padding: 0 clamp(20px, 6vw, 48px); }
+  .uscode-pdp2 .kicker { margin: 0 0 13px; font-feature-settings: "tnum" 1; }
+  .uscode-pdp2__rule { height: 2px; border: 0; margin: 0; background: var(--color-divider); }
+  .uscode-pdp2__title { font-family: var(--font-heading); font-weight: 700; font-size: 24px; line-height: 36px; letter-spacing: -0.01em; margin: 0; }
+
+  .uscode-pdp2__hero { padding: 65px 0 52px; }
+  .uscode-pdp2__figs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 0 calc(-1 * clamp(20px, 6vw, 48px)) 26px; background: var(--color-divider); }
+  .uscode-pdp2__figs img, .uscode-pdp2__figs .placeholder-svg { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; background: var(--color-surface); }
+  .uscode-pdp2__eyemark { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 13px; }
+  .uscode-pdp2__display { font-family: var(--font-heading); font-weight: 700; font-size: clamp(34px, 8vw, 52px); line-height: clamp(36px, 8.5vw, 55px); letter-spacing: -0.02em; margin: 0 0 0 -0.05em; }
+  .uscode-pdp2__display span { display: block; }
+  .uscode-pdp2__sub { font-size: 16px; line-height: 26px; max-width: 46ch; margin: 22px 0 0; opacity: 0.82; }
+
+  .uscode-pdp2__options { border: 0; padding: 0; margin: 26px 0 0; }
+  .uscode-pdp2__options legend { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 0; margin: 0 0 8px; opacity: 0.7; }
+  .uscode-pdp2__values { display: flex; flex-wrap: wrap; gap: 8px; }
+  .uscode-pdp2__values input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .uscode-pdp2__values label { min-width: 44px; padding: 10px 14px; border: 2px solid var(--color-divider); font-family: var(--font-heading); font-weight: 700; font-size: 13px; text-align: center; cursor: pointer; }
+  .uscode-pdp2__values input:checked + label { border-color: var(--color-text); background: var(--color-text); color: var(--color-bg); }
+  .uscode-pdp2__values input:focus-visible + label { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .uscode-pdp2__values input.is-unavailable + label { text-decoration: line-through; opacity: 0.5; }
+  .uscode-pdp2__row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+  .uscode-pdp2__row .btn { text-decoration: none; }
+  .uscode-pdp2__row .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  .uscode-pdp2__strip { padding: 42px 0; }
+  .uscode-pdp2__strip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px 13px; }
+  @media (min-width: 520px) { .uscode-pdp2__strip-grid { grid-template-columns: repeat(4, 1fr); } }
+  .uscode-pdp2__strip-num { font-family: var(--font-heading); font-weight: 700; font-size: clamp(22px, 5vw, 30px); line-height: 26px; color: var(--color-accent); margin: 0; }
+  .uscode-pdp2__strip-label { font-size: 12px; line-height: 13px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; margin: 6px 0 0; }
+
+  .uscode-pdp2__features { padding: 52px 0 42px; scroll-margin-top: 80px; }
+  .uscode-pdp2__feature { display: grid; grid-template-columns: 40px 1fr; gap: 13px 26px; padding: 29px 0; }
+  .uscode-pdp2__feature + .uscode-pdp2__feature { border-top: 2px solid var(--color-divider); }
+  .uscode-pdp2__fnum { position: relative; font-family: var(--font-heading); font-weight: 700; font-size: 14px; line-height: 26px; font-feature-settings: "tnum" 1; margin: 0 0 0 18px; }
+  .uscode-pdp2__fnum::before { content: ""; position: absolute; left: -18px; top: 9px; width: 8px; height: 8px; background: var(--color-accent); }
+  .uscode-pdp2__ftitle { font-family: var(--font-heading); font-weight: 700; font-size: 19px; line-height: 26px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  .uscode-pdp2__fcopy { font-size: 14.5px; line-height: 22px; margin: 0; opacity: 0.78; }
+
+  .uscode-pdp2__split { padding: 42px 0 52px; }
+  .uscode-pdp2__split figure { margin: 0 0 26px; }
+  .uscode-pdp2__split img, .uscode-pdp2__split .placeholder-svg { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--color-surface); }
+  .uscode-pdp2__note { font-size: 14.5px; line-height: 22px; opacity: 0.78; margin: 10px 0 0; max-width: 48ch; }
+
+  .uscode-pdp2__pricing { padding: 52px 0; scroll-margin-top: 80px; }
+  .uscode-pdp2__tiers { display: grid; gap: 13px; margin-top: 26px; }
+  .uscode-pdp2__tier { border: 2px solid var(--color-divider); padding: 26px clamp(18px, 4vw, 28px); position: relative; }
+  .uscode-pdp2__tier.is-feat { border-color: var(--color-accent); }
+  .uscode-pdp2__tag { position: absolute; top: -12px; left: 20px; background: var(--color-accent); color: var(--color-bg); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px; }
+  .uscode-pdp2__tier-head { display: flex; align-items: baseline; justify-content: space-between; gap: 13px; flex-wrap: wrap; }
+  .uscode-pdp2__tier-name { font-family: var(--font-heading); font-weight: 700; font-size: 20px; margin: 0; letter-spacing: -0.01em; }
+  .uscode-pdp2__tier-price { font-family: var(--font-heading); font-weight: 700; font-size: 28px; margin: 0; }
+  .uscode-pdp2__tier-desc { font-size: 14px; line-height: 20px; margin: 8px 0 0; opacity: 0.78; }
+  .uscode-pdp2__tier ul { list-style: none; margin: 13px 0 0; padding: 0; display: grid; gap: 8px; }
+  .uscode-pdp2__tier li { font-size: 13.5px; line-height: 19px; padding-left: 16px; position: relative; }
+  .uscode-pdp2__tier li::before { content: "—"; position: absolute; left: 0; color: var(--color-accent-700); }
+  .uscode-pdp2__tier .btn { margin-top: 26px; width: 100%; text-decoration: none; }
+
+  .uscode-pdp2__quote { padding: 52px 0 62px; }
+  .uscode-pdp2__quote figure { margin: 0; }
+  .uscode-pdp2__quote blockquote { font-family: var(--font-heading); font-weight: 700; font-size: clamp(20px, 5.5vw, 26px); line-height: 36px; letter-spacing: -0.01em; max-width: 30ch; margin: 0; text-indent: -0.5em; }
+  .uscode-pdp2__quote figcaption { font-size: 13.5px; line-height: 26px; margin: 10px 0 0; opacity: 0.7; }
+
+  .uscode-pdp2__close { background: var(--color-accent); color: var(--color-bg); }
+  .uscode-pdp2__close .uscode-pdp2__wrap { padding-top: 57px; padding-bottom: 57px; }
+  .uscode-pdp2__close h3 { font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 8vw, 40px); line-height: clamp(30px, 8.5vw, 42px); letter-spacing: -0.01em; margin: 0 0 0 -0.05em; color: inherit; }
+  .uscode-pdp2__close h3 span { display: block; }
+  .uscode-pdp2__close .btn { color: var(--color-bg); border-color: var(--color-bg); text-decoration: none; margin-top: 26px; }
+  .uscode-pdp2__close .btn:hover { background: var(--color-accent-600); color: var(--color-bg); }
+  .uscode-pdp2__close p { font-size: 13px; margin: 13px 0 0; opacity: 0.85; }
+</style>
+
+{%- liquid
+  assign current = product.selected_or_first_available_variant
+  assign heading_line1 = section.settings.heading_line1
+  assign heading_line2 = section.settings.heading_line2
+  if heading_line1 == blank and heading_line2 == blank
+    assign heading_line1 = product.title
+  endif
+  assign intro = section.settings.intro
+  if intro == blank
+    assign intro = product.description | strip_html | truncatewords: 40
+  endif
+  assign option_values = ''
+  for option in product.options_with_values
+    for value in option.values
+      assign option_values = option_values | append: '|' | append: value | append: '|'
+    endfor
+  endfor
+-%}
+
+<div class="uscode-pdp2" data-uscode-pdp>
+  <div class="uscode-pdp2__wrap">
+    <section class="uscode-pdp2__hero" id="uscode-buy">
+      <div class="uscode-pdp2__figs">
+        {%- for image in product.images limit: 2 -%}
+          {{ image | image_url: width: 900 | image_tag: loading: 'eager', alt: image.alt | default: product.title }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endfor -%}
+        {%- if product.images.size == 1 -%}
+          {{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+
+      <p class="uscode-pdp2__eyemark">{{ section.settings.eyebrow }}</p>
+      <h1 class="uscode-pdp2__display">
+        <span>{{ heading_line1 }}</span>
+        {%- if heading_line2 != blank %}<span>{{ heading_line2 }}</span>{% endif -%}
+      </h1>
+      {%- if intro != blank -%}<p class="uscode-pdp2__sub">{{ intro }}</p>{%- endif -%}
+
+      {%- form 'product', product, data-uscode-form: '' -%}
+        <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            {%- assign option_index = forloop.index0 -%}
+            <fieldset class="uscode-pdp2__options">
+              <legend>{{ option.name }}</legend>
+              <div class="uscode-pdp2__values">
+                {%- for value in option.values -%}
+                  {%- assign input_id = section.id | append: '-' | append: option_index | append: '-' | append: forloop.index0 -%}
+                  <input type="radio" id="{{ input_id }}" name="option-{{ option_index }}" value="{{ value | escape }}" data-option-index="{{ option_index }}"{% if option.selected_value == value %} checked{% endif %}>
+                  <label for="{{ input_id }}">{{ value }}</label>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        <div class="uscode-pdp2__row">
+          <button type="submit" name="add" class="btn btn-primary" data-add{% unless current.available %} disabled{% endunless %}>
+            <span data-add-label>{% if current.available %}{{ section.settings.cta_label }} — {{ current.price | money }}{% else %}Sold out{% endif %}</span>
+          </button>
+          {%- if section.settings.secondary_label != blank -%}
+            <a href="#how" class="btn btn-ghost">{{ section.settings.secondary_label }}</a>
+          {%- endif -%}
+        </div>
+      {%- endform -%}
+    </section>
+
+    {%- assign stats = section.blocks | where: 'type', 'stat' -%}
+    {%- if stats.size > 0 -%}
+      <hr class="uscode-pdp2__rule">
+      <section class="uscode-pdp2__strip" aria-label="This drop, in numbers">
+        <div class="uscode-pdp2__strip-grid">
+          {%- for block in stats -%}
+            <div {{ block.shopify_attributes }}>
+              <p class="uscode-pdp2__strip-num">{{ block.settings.number }}</p>
+              <p class="uscode-pdp2__strip-label">{{ block.settings.label }}</p>
+            </div>
+          {%- endfor -%}
+        </div>
+      </section>
+      <hr class="uscode-pdp2__rule">
+    {%- endif -%}
+
+    {%- assign features = section.blocks | where: 'type', 'feature' -%}
+    <section class="uscode-pdp2__features" id="how">
+      <span class="kicker">{{ section.settings.features_kicker }}</span>
+      {%- for block in features -%}
+        <div class="uscode-pdp2__feature" {{ block.shopify_attributes }}>
+          <p class="uscode-pdp2__fnum">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
+          <div>
+            <h2 class="uscode-pdp2__ftitle">{{ block.settings.title }}</h2>
+            <p class="uscode-pdp2__fcopy">{{ block.settings.text }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    </section>
+
+    <section class="uscode-pdp2__split">
+      <figure>
+        {%- if section.settings.detail_image != blank -%}
+          {{ section.settings.detail_image | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+        {%- elsif product.images.size > 2 -%}
+          {{ product.images[2] | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </figure>
+      <span class="kicker">{{ section.settings.split_kicker }}</span>
+      <h2 class="uscode-pdp2__title">{{ section.settings.split_title }}</h2>
+      <p class="uscode-pdp2__note">{{ section.settings.split_note }}</p>
+    </section>
+
+    {%- assign tiers = section.blocks | where: 'type', 'tier' -%}
+    {%- if tiers.size > 0 -%}
+      <hr class="uscode-pdp2__rule">
+      <section class="uscode-pdp2__pricing" id="pricing">
+        <span class="kicker">{{ section.settings.pricing_kicker }}</span>
+        <h2 class="uscode-pdp2__title">{{ section.settings.pricing_title }}</h2>
+        <div class="uscode-pdp2__tiers">
+          {%- for block in tiers -%}
+            {%- assign needle = '|' | append: block.settings.name | append: '|' -%}
+            <div class="uscode-pdp2__tier{% if block.settings.featured %} is-feat{% endif %}" {{ block.shopify_attributes }}>
+              {%- if block.settings.badge != blank -%}<span class="uscode-pdp2__tag">{{ block.settings.badge }}</span>{%- endif -%}
+              <div class="uscode-pdp2__tier-head">
+                <p class="uscode-pdp2__tier-name">{{ block.settings.name }}</p>
+                <p class="uscode-pdp2__tier-price">{{ block.settings.price }}</p>
+              </div>
+              <p class="uscode-pdp2__tier-desc">{{ block.settings.description }}</p>
+              <ul>
+                {%- assign items = block.settings.features | split: '|' -%}
+                {%- for item in items -%}<li>{{ item | strip }}</li>{%- endfor -%}
+              </ul>
+              {%- if option_values contains needle -%}
+                <button type="button" class="btn {% if block.settings.featured %}btn-primary{% else %}btn-secondary{% endif %}" data-choose="{{ block.settings.name | escape }}">Choose {{ block.settings.name }}</button>
+              {%- else -%}
+                <a href="#uscode-buy" class="btn {% if block.settings.featured %}btn-primary{% else %}btn-secondary{% endif %}">Choose {{ block.settings.name }}</a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- if section.settings.quote != blank -%}
+      <section class="uscode-pdp2__quote">
+        <figure>
+          <blockquote>&ldquo;{{ section.settings.quote }}&rdquo;</blockquote>
+          {%- if section.settings.quote_by != blank -%}<figcaption>{{ section.settings.quote_by }}</figcaption>{%- endif -%}
+        </figure>
+      </section>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.close_line1 != blank -%}
+    <section class="uscode-pdp2__close">
+      <div class="uscode-pdp2__wrap">
+        <h3><span>{{ section.settings.close_line1 }}</span> <span>{{ section.settings.close_line2 }}</span></h3>
+        <a href="#uscode-buy" class="btn btn-ghost">{{ section.settings.close_cta }}</a>
+        {%- if section.settings.close_hint != blank -%}<p>{{ section.settings.close_hint }}</p>{%- endif -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  <script type="application/json" data-variants>{{ product.variants | json }}</script>
+  <script type="application/json" data-money-format>{{ shop.money_format | json }}</script>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('#shopify-section-{{ section.id }} [data-uscode-pdp]');
+    if (!root) return;
+    var variants = JSON.parse(root.querySelector('[data-variants]').textContent);
+    var moneyFormat = JSON.parse(root.querySelector('[data-money-format]').textContent);
+    var ctaLabel = {{ section.settings.cta_label | json }};
+    var idInput = root.querySelector('[data-variant-id]');
+    var addBtn = root.querySelector('[data-add]');
+    var addLabel = root.querySelector('[data-add-label]');
+    var radios = Array.prototype.slice.call(root.querySelectorAll('input[data-option-index]'));
+
+    function money(cents) {
+      var amount = (cents / 100).toFixed(2);
+      var noDecimals = Math.round(cents / 100).toString();
+      var withCommas = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return moneyFormat
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/, noDecimals)
+        .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/, amount.replace('.', ','))
+        .replace(/\{\{\s*amount\s*\}\}/, withCommas);
+    }
+
+    function selected() {
+      var picked = [];
+      radios.forEach(function (r) { if (r.checked) picked[+r.dataset.optionIndex] = r.value; });
+      return picked;
+    }
+
+    function update() {
+      var picked = selected();
+      var match = variants.find(function (v) {
+        return v.options.every(function (o, i) { return picked[i] === undefined || picked[i] === o; });
+      });
+      radios.forEach(function (r) {
+        var i = +r.dataset.optionIndex;
+        var possible = variants.some(function (v) {
+          return v.available && v.options[i] === r.value && v.options.every(function (o, j) { return j === i || picked[j] === undefined || picked[j] === o; });
+        });
+        r.classList.toggle('is-unavailable', !possible);
+      });
+      if (!match) { addBtn.disabled = true; addLabel.textContent = 'Unavailable'; return; }
+      idInput.value = match.id;
+      addBtn.disabled = !match.available;
+      addLabel.textContent = match.available ? ctaLabel + ' — ' + money(match.price) : 'Sold out';
+      var url = new URL(window.location.href);
+      url.searchParams.set('variant', match.id);
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    radios.forEach(function (r) { r.addEventListener('change', update); });
+
+    root.querySelectorAll('[data-choose]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = radios.find(function (r) { return r.value === btn.dataset.choose; });
+        if (target) { target.checked = true; update(); }
+        root.querySelector('#uscode-buy').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    if (radios.length) update();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "US CODE Product Page",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Hero" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "For your eyes only" },
+    { "type": "text", "id": "heading_line1", "label": "Heading line 1", "default": "I'd find you", "info": "Leave both lines blank to use the product title." },
+    { "type": "text", "id": "heading_line2", "label": "Heading line 2", "default": "in every lifetime." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "info": "Leave blank to use the product description.", "default": "An oversized tee carrying a real pair of eyes on the back — a memory printed, not drawn. Tap the hem's NFC chip and the moment plays back." },
+    { "type": "text", "id": "cta_label", "label": "Add to cart label", "default": "Shop the drop" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary button (jumps to features)", "default": "How the NFC works" },
+    { "type": "header", "content": "Features" },
+    { "type": "text", "id": "features_kicker", "label": "Kicker", "default": "What you're wearing" },
+    { "type": "header", "content": "Detail" },
+    { "type": "image_picker", "id": "detail_image", "label": "Detail photo", "info": "Defaults to the product's third image." },
+    { "type": "text", "id": "split_kicker", "label": "Kicker", "default": "Made to last the memory" },
+    { "type": "text", "id": "split_title", "label": "Title", "default": "Screen-printed once. Verified forever." },
+    { "type": "textarea", "id": "split_note", "label": "Text", "default": "Every shirt is numbered against its NFC chip at print — scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes." },
+    { "type": "header", "content": "Pricing" },
+    { "type": "text", "id": "pricing_kicker", "label": "Kicker", "default": "Choose your print" },
+    { "type": "text", "id": "pricing_title", "label": "Title", "default": "Three ways to keep it." },
+    { "type": "header", "content": "Quote" },
+    { "type": "text", "id": "quote", "label": "Quote", "default": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted." },
+    { "type": "text", "id": "quote_by", "label": "Attribution", "default": "— From the first drop, Essential" },
+    { "type": "header", "content": "Closing banner" },
+    { "type": "text", "id": "close_line1", "label": "Line 1", "default": "300 made." },
+    { "type": "text", "id": "close_line2", "label": "Line 2", "default": "None remade." },
+    { "type": "text", "id": "close_cta", "label": "Button", "default": "Shop before it's gone" },
+    { "type": "text", "id": "close_hint", "label": "Hint", "default": "Drop closes when the count hits zero." }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "300" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Pieces made, no restock" }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "A real pair of eyes" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "tier",
+      "name": "Tier",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Essential", "info": "If the product has an option value with this exact name, the button selects it." },
+        { "type": "text", "id": "price", "label": "Price", "default": "$48" },
+        { "type": "textarea", "id": "description", "label": "Description" },
+        { "type": "text", "id": "features", "label": "Features (separate with |)" },
+        { "type": "checkbox", "id": "featured", "label": "Highlight", "default": false },
+        { "type": "text", "id": "badge", "label": "Badge" }
+      ]
+    }
+  ]
+}
+{% endschema %}

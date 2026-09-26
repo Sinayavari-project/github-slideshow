@@ -1,0 +1,19 @@
+{
+  "sections": {
+    "verify": {
+      "type": "uscode-verify",
+      "settings": {
+        "ok_title": "Verified",
+        "ok_text": "This piece matches what we printed. Nobody else is wearing this exact one.",
+        "bad_title": "Not verified",
+        "bad_text": "We couldn't match this chip to a print on record. If you bought this secondhand, ask the seller for the print number.",
+        "shop_label": "Shop the next drop",
+        "report_label": "Report an issue",
+        "report_link": "shopify://pages/contact"
+      }
+    }
+  },
+  "order": [
+    "verify"
+  ]
+}

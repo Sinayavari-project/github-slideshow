@@ -1,0 +1,136 @@
+{%- liquid
+  assign on_verify_path = false
+  if request.path contains '/pages/verify/'
+    assign on_verify_path = true
+  endif
+  assign show = true
+  if section.settings.only_on_verify_paths and on_verify_path == false
+    assign show = false
+  endif
+
+  assign record = metaobject
+  assign verified = false
+  assign print_code = '—'
+  assign tier = '—'
+  assign drop = 'Drop 01'
+  if record
+    assign print_code = record.print_code.value | default: '—'
+    assign tier = record.tier.value | default: '—'
+    assign drop = record.drop.value | default: 'Drop 01'
+    if record.status.value == 'Authentic'
+      assign verified = true
+    endif
+  endif
+
+  case tier
+    when 'Essential'
+      assign memory_kind = section.settings.kind_essential
+      assign memory_default = section.settings.label_essential
+    when 'Signature'
+      assign memory_kind = section.settings.kind_signature
+      assign memory_default = section.settings.label_signature
+    else
+      assign memory_kind = section.settings.kind_memory
+      assign memory_default = section.settings.label_memory
+  endcase
+  assign memory_label = record.memory_label.value | default: memory_default
+  assign memory_url = record.memory_url.value
+-%}
+
+{%- if show -%}
+<style>
+  {%- if section.settings.only_on_verify_paths -%}
+    #MainContent > .shopify-section:not(#shopify-section-{{ section.id }}) { display: none; }
+  {%- endif -%}
+  .uscode-verify { max-width: 480px; margin: 0 auto; padding: 42px clamp(20px, 6vw, 40px) 52px; color: var(--color-text); font-family: var(--font-body); }
+  .uscode-verify__status { border: 2px solid var(--color-text); background: var(--color-text); color: var(--color-bg); padding: 47px clamp(20px, 6vw, 32px); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .uscode-verify__status.is-bad { border-color: var(--color-accent); background: var(--color-bg); color: var(--color-text); }
+  .uscode-verify__status.is-bad svg { color: var(--color-accent-700); }
+  .uscode-verify__status h1 { font-family: var(--font-heading); font-weight: 700; font-size: 28px; margin: 0; letter-spacing: -0.01em; color: inherit; }
+  .uscode-verify__status p { font-size: 14px; line-height: 21px; margin: 0; max-width: 34ch; opacity: 0.85; }
+  .uscode-verify__status .uscode-verify__printnum { font-feature-settings: "tnum" 1; font-size: 13px; letter-spacing: 0.06em; opacity: 0.7; margin-top: 4px; }
+  .uscode-verify__details { padding: 42px 0; }
+  .uscode-verify__row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 2px solid var(--color-divider); font-size: 14px; }
+  .uscode-verify__row:last-child { border-bottom: 2px solid var(--color-divider); }
+  .uscode-verify__row span:first-child { opacity: 0.65; }
+  .uscode-verify__row span:last-child { font-family: var(--font-heading); font-weight: 700; font-feature-settings: "tnum" 1; }
+  .uscode-verify__player { padding: 0 0 42px; }
+  .uscode-verify__card { border: 2px solid var(--color-divider); padding: 22px; display: flex; align-items: center; gap: 16px; color: var(--color-text); text-decoration: none; }
+  a.uscode-verify__card:hover { border-color: var(--color-text); color: var(--color-text); }
+  .uscode-verify__play { width: 44px; height: 44px; border: 2px solid var(--color-text); flex: none; display: flex; align-items: center; justify-content: center; }
+  .uscode-verify__card p { margin: 0; }
+  .uscode-verify__kind { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent-700); }
+  .uscode-verify__name { font-family: var(--font-heading); font-weight: 700; font-size: 16px; margin-top: 4px !important; }
+  .uscode-verify__cta { padding: 42px 0 0; display: flex; flex-direction: column; gap: 10px; }
+  .uscode-verify__cta .btn { justify-content: center; text-decoration: none; }
+</style>
+
+<div class="uscode-verify">
+  {%- if verified -%}
+    <div class="uscode-verify__status">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+      <h1>{{ section.settings.ok_title }}</h1>
+      <p>{{ section.settings.ok_text }}</p>
+      <p class="uscode-verify__printnum">{{ print_code }}</p>
+    </div>
+  {%- else -%}
+    <div class="uscode-verify__status is-bad">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <h1>{{ section.settings.bad_title }}</h1>
+      <p>{{ section.settings.bad_text }}</p>
+      <p class="uscode-verify__printnum">{{ print_code }}</p>
+    </div>
+  {%- endif -%}
+
+  <section class="uscode-verify__details">
+    <div class="uscode-verify__row"><span>Print</span><span>{{ print_code }}</span></div>
+    <div class="uscode-verify__row"><span>Tier</span><span>{{ tier }}</span></div>
+    <div class="uscode-verify__row"><span>Drop</span><span>{{ drop }}</span></div>
+    <div class="uscode-verify__row"><span>Status</span><span>{% if verified %}Authentic{% else %}Unrecognized{% endif %}</span></div>
+  </section>
+
+  {%- if verified -%}
+    <section class="uscode-verify__player">
+      {%- if memory_url != blank -%}<a class="uscode-verify__card" href="{{ memory_url }}" target="_blank" rel="noopener">{%- else -%}<div class="uscode-verify__card">{%- endif -%}
+        <span class="uscode-verify__play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+        <span>
+          <p class="uscode-verify__kind">{{ memory_kind }}</p>
+          <p class="uscode-verify__name">{{ memory_label }}</p>
+        </span>
+      {%- if memory_url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+    </section>
+  {%- endif -%}
+
+  <section class="uscode-verify__cta">
+    <a href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}" class="btn btn-primary">{{ section.settings.shop_label }}</a>
+    <a href="{{ section.settings.report_link | default: '/pages/contact' }}" class="btn btn-ghost">{{ section.settings.report_label }}</a>
+  </section>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "US CODE Verify",
+  "tag": "section",
+  "settings": [
+    { "type": "checkbox", "id": "only_on_verify_paths", "label": "Only show on /pages/verify/ links", "info": "Turn on when this section is used in the 404 template, so an unknown chip link shows Not verified instead of Page not found.", "default": false },
+    { "type": "text", "id": "ok_title", "label": "Verified title", "default": "Verified" },
+    { "type": "textarea", "id": "ok_text", "label": "Verified text", "default": "This piece matches what we printed. Nobody else is wearing this exact one." },
+    { "type": "text", "id": "bad_title", "label": "Not verified title", "default": "Not verified" },
+    { "type": "textarea", "id": "bad_text", "label": "Not verified text", "default": "We couldn't match this chip to a print on record. If you bought this secondhand, ask the seller for the print number." },
+    { "type": "header", "content": "Memory card" },
+    { "type": "text", "id": "kind_essential", "label": "Essential — kind", "default": "Linked memory — photo" },
+    { "type": "text", "id": "label_essential", "label": "Essential — label", "default": "One photo, set at checkout" },
+    { "type": "text", "id": "kind_memory", "label": "Memory — kind", "default": "Linked memory — video" },
+    { "type": "text", "id": "label_memory", "label": "Memory — label", "default": "Playback ready" },
+    { "type": "text", "id": "kind_signature", "label": "Signature — kind", "default": "Linked memory — custom print" },
+    { "type": "text", "id": "label_signature", "label": "Signature — label", "default": "Your own photo, boxed with certificate" },
+    { "type": "header", "content": "Buttons" },
+    { "type": "text", "id": "shop_label", "label": "Shop button", "default": "Shop the next drop" },
+    { "type": "url", "id": "shop_link", "label": "Shop link" },
+    { "type": "text", "id": "report_label", "label": "Report button", "default": "Report an issue" },
+    { "type": "url", "id": "report_link", "label": "Report link" }
+  ],
+  "presets": [{ "name": "US CODE Verify" }]
+}
+{% endschema %}
