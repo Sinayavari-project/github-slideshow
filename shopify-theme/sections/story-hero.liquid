@@ -1,0 +1,25 @@
+{{ 'story.css' | asset_url | stylesheet_tag }}
+<div class="story-col">
+  <section class="story-hero">
+    {%- if section.settings.kicker != blank -%}<span class="story-kicker">{{ section.settings.kicker }}</span>{%- endif -%}
+    <h1 class="story-hero__title">
+      <span>{{ section.settings.heading_line1 }}</span>
+      {%- if section.settings.heading_line2 != blank %}<span>{{ section.settings.heading_line2 }}</span>{% endif -%}
+    </h1>
+    {%- if section.settings.subtext != blank -%}<p class="story-hero__sub">{{ section.settings.subtext }}</p>{%- endif -%}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Story hero",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "The story" },
+    { "type": "text", "id": "heading_line1", "label": "Heading line 1", "default": "Two people." },
+    { "type": "text", "id": "heading_line2", "label": "Heading line 2", "default": "One memory." },
+    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "US CODE started as a way to keep one night from fading — Sina and Vida, a mural neither of us can un-see, and a memory we didn't want to just remember. We wanted to be able to play it back." }
+  ],
+  "presets": [{ "name": "Story hero" }]
+}
+{% endschema %}
