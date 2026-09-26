@@ -1,0 +1,93 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-newsletter {
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-newsletter__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 52px clamp(20px, 5vw, 64px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+  .uscode-newsletter__heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(24px, 3.4vw, 34px);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .uscode-newsletter__form {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid {{ section.settings.text_color }};
+    min-width: 280px;
+    flex: 1 1 320px;
+    max-width: 420px;
+  }
+  .uscode-newsletter__input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: {{ section.settings.text_color }};
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 10px 4px;
+    outline: none;
+  }
+  .uscode-newsletter__input::placeholder {
+    color: {{ section.settings.text_color }};
+    opacity: 0.65;
+  }
+  .uscode-newsletter__submit {
+    background: transparent;
+    border: none;
+    color: {{ section.settings.text_color }};
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 10px 4px;
+    cursor: pointer;
+  }
+  .uscode-newsletter__submit:hover { opacity: 0.8; }
+  .uscode-newsletter__msg { font-family: 'Inter', sans-serif; font-size: 15px; margin: 10px 0; }
+</style>
+
+<section class="uscode-newsletter">
+  <div class="uscode-newsletter__inner">
+    <h3 class="uscode-newsletter__heading">{{ section.settings.heading }}</h3>
+    {% form 'customer', class: 'uscode-newsletter__form', id: 'uscode-newsletter-form' %}
+      {% if form.posted_successfully? %}
+        <p class="uscode-newsletter__msg">You're on the list. We'll tell you first.</p>
+      {% else %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <input type="email" name="contact[email]" class="uscode-newsletter__input" placeholder="{{ section.settings.placeholder }}" required aria-label="Email address">
+        <button type="submit" class="uscode-newsletter__submit">{{ section.settings.button_text }}</button>
+      {% endif %}
+      {% if form.errors %}
+        <p class="uscode-newsletter__msg">{{ form.errors | default_errors }}</p>
+      {% endif %}
+    {% endform %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Newsletter",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Know when the next drop lands." },
+    { "type": "text", "id": "placeholder", "label": "Placeholder", "default": "Your email" },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "Notify me" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#582123" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#F2F2F2" }
+  ],
+  "presets": [{ "name": "US CODE Newsletter" }]
+}
+{% endschema %}

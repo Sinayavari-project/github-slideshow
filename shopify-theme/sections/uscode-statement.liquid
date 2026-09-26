@@ -1,0 +1,35 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-statement {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 68px clamp(20px, 5vw, 64px);
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-statement blockquote {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 5.6vw, 58px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0;
+    max-width: 20ch;
+    text-indent: -0.03em;
+  }
+</style>
+
+<section class="uscode-statement">
+  <blockquote>&ldquo;{{ section.settings.quote }}&rdquo;</blockquote>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Statement",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "quote", "label": "Quote", "default": "Wear the memory. Not a graphic of one." },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" }
+  ],
+  "presets": [{ "name": "US CODE Statement" }]
+}
+{% endschema %}

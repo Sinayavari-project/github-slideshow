@@ -1,0 +1,89 @@
+{
+  "sections": {
+    "hero": {
+      "type": "uscode-hero-v2",
+      "settings": {
+        "numeral": "US",
+        "kicker": "About US CODE",
+        "heading_line1": "Printed once.",
+        "heading_line2": "Verified forever.",
+        "description": "US CODE started with one photograph — a pair of eyes someone wanted to keep. We print real eyes on the back of an oversized tee and lock a memory behind the hem, so the moment can be played back with a tap.",
+        "cta_label": "Shop the drop",
+        "cta_link": "shopify://products/us-code-eyes-only-memory-tee-personalized-edition",
+        "secondary_label": "Read the FAQ",
+        "secondary_link": "shopify://pages/faq",
+        "bg_color": "#F2F2F2",
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123"
+      }
+    },
+    "story_1": {
+      "type": "uscode-editorial",
+      "settings": {
+        "number": "01",
+        "heading": "A memory, not a graphic.",
+        "text": "Every back print starts as a real photograph — someone's actual eyes, torn and layered by hand before it's screen-printed at true grain. Nothing on the shirt is generated.",
+        "reverse": false,
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123"
+      }
+    },
+    "story_2": {
+      "type": "uscode-editorial",
+      "settings": {
+        "number": "02",
+        "heading": "Verified, not mass-produced.",
+        "text": "Each piece is numbered against its own NFC chip at print. When a drop's 300 are gone, that number closes — no restock, no reprint, ever.",
+        "reverse": true,
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123"
+      }
+    },
+    "story_3": {
+      "type": "uscode-editorial",
+      "settings": {
+        "number": "03",
+        "heading": "Tap to remember.",
+        "text": "A hidden NFC chip sewn into the hem links to whatever you choose to keep behind it — a photo, a voice note, a video. Tap any modern phone to the hem and it plays back. No app needed.",
+        "reverse": false,
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123"
+      }
+    },
+    "nfc": {
+      "type": "uscode-nfc-verify",
+      "settings": {
+        "bg_color": "#F2F2F2",
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123",
+        "border_color": "#D8D6D1"
+      }
+    },
+    "statement": {
+      "type": "uscode-statement",
+      "settings": {
+        "quote": "Wear the memory. Not a graphic of one.",
+        "text_color": "#1F1E1C"
+      }
+    },
+    "newsletter": {
+      "type": "uscode-newsletter",
+      "settings": {
+        "heading": "Know when the next drop lands.",
+        "placeholder": "Your email",
+        "button_text": "Notify me",
+        "bg_color": "#582123",
+        "text_color": "#F2F2F2"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "story_1",
+    "story_2",
+    "story_3",
+    "nfc",
+    "statement",
+    "newsletter"
+  ]
+}
