@@ -15,7 +15,7 @@
     flex-wrap: wrap;
   }
   .uscode-newsletter__heading {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 700;
     font-size: clamp(24px, 3.4vw, 34px);
     margin: 0;
@@ -34,7 +34,7 @@
     background: transparent;
     border: none;
     color: {{ section.settings.text_color }};
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 15px;
     padding: 10px 4px;
     outline: none;
@@ -47,7 +47,7 @@
     background: transparent;
     border: none;
     color: {{ section.settings.text_color }};
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-heading);
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 0.04em;
@@ -56,7 +56,7 @@
     cursor: pointer;
   }
   .uscode-newsletter__submit:hover { opacity: 0.8; }
-  .uscode-newsletter__msg { font-family: 'Inter', sans-serif; font-size: 15px; margin: 10px 0; }
+  .uscode-newsletter__msg { font-family: var(--font-body); font-size: 15px; margin: 10px 0; }
 </style>
 
 <section class="uscode-newsletter">
