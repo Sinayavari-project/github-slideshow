@@ -14,7 +14,8 @@
         "secondary_link": "shopify://pages/about",
         "bg_color": "#F2F2F2",
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-tee-back-split.png"
       }
     },
     "tiers": {
@@ -81,7 +82,8 @@
         "text": "Every back print starts as a real photograph — someone's actual eyes, torn and layered by hand before it's screen-printed at true grain. Nothing on the shirt is generated.",
         "reverse": false,
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-tee-back-lifetime.png"
       }
     },
     "story_2": {
@@ -92,7 +94,8 @@
         "text": "Each piece is numbered against its own NFC chip at print. When a drop's 300 are gone, that number closes — no restock, no reprint, ever.",
         "reverse": true,
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-card-set.webp"
       }
     },
     "proof": {
@@ -100,11 +103,15 @@
       "blocks": {
         "ugc_1": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/uscode-packaging-black.webp"
+          }
         },
         "ugc_2": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/uscode-packaging-cream.webp"
+          }
         },
         "quote": {
           "type": "quote",
@@ -115,11 +122,15 @@
         },
         "ugc_3": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/uscode-card-set.webp"
+          }
         },
         "ugc_4": {
           "type": "image",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/uscode-tee-back-split.png"
+          }
         }
       },
       "block_order": [

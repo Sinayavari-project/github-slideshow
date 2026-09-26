@@ -28,7 +28,8 @@
         "text": "Every back print starts as a real photograph — someone's actual eyes, torn and layered by hand before it's screen-printed at true grain. Nothing on the shirt is generated.",
         "reverse": false,
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-tee-back-lifetime.png"
       }
     },
     "story_2": {
@@ -39,7 +40,8 @@
         "text": "Each piece is numbered against its own NFC chip at print. When a drop's 300 are gone, that number closes — no restock, no reprint, ever.",
         "reverse": true,
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-card-set.webp"
       }
     },
     "story_3": {
@@ -50,7 +52,8 @@
         "text": "A hidden NFC chip sewn into the hem links to whatever you choose to keep behind it — a photo, a voice note, a video. Tap any modern phone to the hem and it plays back. No app needed.",
         "reverse": false,
         "text_color": "#1F1E1C",
-        "accent_color": "#582123"
+        "accent_color": "#582123",
+        "image": "shopify://shop_images/uscode-packaging-black.webp"
       }
     },
     "nfc": {
