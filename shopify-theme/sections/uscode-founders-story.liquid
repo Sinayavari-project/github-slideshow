@@ -129,7 +129,14 @@
 
 {%- liquid
   assign has_video = false
-  assign src_size = section.settings.video_src | strip | size
+  assign video_src = section.settings.video_src | strip
+  assign src_size = video_src | size
+  if src_size > 0
+    assign first_char = video_src | slice: 0
+    unless video_src contains '://' or first_char == '/'
+      assign video_src = video_src | asset_url
+    endunless
+  endif
   if section.settings.video or src_size > 0
     assign has_video = true
   endif
@@ -175,7 +182,7 @@
       {% if section.settings.video %}
         {{ section.settings.video | video_tag: controls: true, playsinline: true, preload: 'none' }}
       {% else %}
-        <video src="{{ section.settings.video_src }}" controls playsinline preload="none"></video>
+        <video src="{{ video_src }}" controls playsinline preload="none"></video>
       {% endif %}
       <div class="uscode-fstory__foot">
         <span>{{ section.settings.video_label }}</span>
@@ -217,7 +224,7 @@
     { "type": "richtext", "id": "body", "label": "Story", "default": "<p>We were standing in front of a wall that looked like it was watching us back, and one of us said the kind of thing you only say at 2am: \"I never want to forget this exact feeling.\" We took a video instead of a photo, because a photo freezes a moment and we wanted to keep the sound of it too.</p><p>A few weeks later we were still watching that clip more than we'd like to admit. That's the whole idea behind US CODE: most things you want to remember don't fit in a picture. So we built a shirt that holds the video instead — a real memory, tapped back into existence whenever you want it.</p>" },
     { "type": "header", "content": "Tap to remember" },
     { "type": "video", "id": "video", "label": "Memory video", "info": "Upload the founders' clip. The Tap to remember block only shows once a video is set." },
-    { "type": "text", "id": "video_src", "label": "Or video file URL (.mp4)" },
+    { "type": "text", "id": "video_src", "label": "Or video file URL (.mp4)", "info": "A full link, or the filename of a theme asset such as founders-memory.mp4." },
     { "type": "text", "id": "video_label", "label": "Video label", "default": "CODE-001 — the original" },
     { "type": "text", "id": "demo_kicker", "label": "Demo kicker", "default": "See it work" },
     { "type": "text", "id": "demo_label", "label": "Button label", "default": "Tap to remember" },

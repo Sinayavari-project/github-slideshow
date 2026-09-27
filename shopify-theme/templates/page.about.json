@@ -7,7 +7,7 @@
         "heading_line1": "Two people.",
         "heading_line2": "One memory.",
         "intro": "US CODE started as a way to keep one night from fading — Sina and Vida, a mural neither of us can un-see, and a memory we didn't want to just remember. We wanted to be able to play it back.",
-        "grayscale": true,
+        "grayscale": false,
         "caption": "Sina & Vida — the night it started.",
         "body": "<p>We were standing in front of a wall that looked like it was watching us back, and one of us said the kind of thing you only say at 2am: \"I never want to forget this exact feeling.\" We took a video instead of a photo, because a photo freezes a moment and we wanted to keep the sound of it too.</p><p>A few weeks later we were still watching that clip more than we'd like to admit. That's the whole idea behind US CODE: most things you want to remember don't fit in a picture. So we built a shirt that holds the video instead — a real memory, tapped back into existence whenever you want it.</p>",
         "video_label": "CODE-001 — the original",
@@ -17,7 +17,9 @@
         "bg_color": "#F2F2F2",
         "text_color": "#1F1E1C",
         "accent_color": "#582123",
-        "divider_color": "#D8D6D1"
+        "divider_color": "#D8D6D1",
+        "image": "shopify://shop_images/founders-sina-vida.jpg",
+        "video_src": "founders-memory.mp4"
       }
     },
     "story_1": {
