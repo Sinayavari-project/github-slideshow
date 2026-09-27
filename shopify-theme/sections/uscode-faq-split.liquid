@@ -1,0 +1,41 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<div class="uh">
+  <section class="uh-sec uh-rule" id="{{ section.settings.anchor | default: 'faq' | handleize }}">
+    <div class="uh-wrap uh-faq">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h2 class="uh-h2">{{ section.settings.heading }}</h2>
+        {%- if section.settings.text != blank -%}<div class="uh-lede">{{ section.settings.text }}</div>{%- endif -%}
+      </div>
+      <div>
+        {%- for block in section.blocks -%}
+          <details class="uh-qa" name="faq-{{ section.id }}" {% if forloop.first and section.settings.open_first %}open{% endif %} {{ block.shopify_attributes }}>
+            <summary><span>{{ block.settings.question }}</span><span class="uh-pm" aria-hidden="true"></span></summary>
+            <div class="uh-qa__a">{{ block.settings.answer }}</div>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE FAQ (short)",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "FAQ" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Before you tap." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Anything else? <a href=\"/pages/faq\">Read the full FAQ</a> or write to hello@uscode.co.</p>" },
+    { "type": "text", "id": "anchor", "label": "Link anchor", "default": "faq" },
+    { "type": "checkbox", "id": "open_first", "label": "Open the first question", "default": true }
+  ],
+  "blocks": [
+    { "type": "question", "name": "Question", "settings": [
+      { "type": "text", "id": "question", "label": "Question", "default": "Which phones work?" },
+      { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Any iPhone from XS onward and almost every Android phone with NFC switched on.</p>" }
+    ] }
+  ],
+  "presets": [{ "name": "US CODE FAQ (short)", "blocks": [{ "type": "question" }] }]
+}
+{% endschema %}

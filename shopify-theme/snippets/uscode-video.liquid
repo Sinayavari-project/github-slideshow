@@ -1,0 +1,34 @@
+{%- doc -%}
+  A <video> from a Shopify-hosted video (Files) or a link / theme asset filename.
+  @param {object} [video] - Video setting value (Shopify Files)
+  @param {string} [url] - Full URL, or a theme asset filename such as founders-memory.mp4
+  @param {object} [poster] - Image to show before playback
+  @param {string} [attrs] - Extra attributes, e.g. muted loop playsinline
+  @param {string} [label] - Accessible label
+{%- enddoc -%}
+{%- liquid
+  assign src = url | strip
+  if src != blank
+    assign lead = src | slice: 0
+    unless src contains '//' or lead == '/'
+      assign src = src | asset_url
+    endunless
+  endif
+  assign poster_url = ''
+  if poster != blank
+    assign poster_url = poster | image_url: width: 900
+  elsif video != blank
+    assign poster_url = video.preview_image | image_url: width: 900
+  endif
+-%}
+{%- if video != blank or src != blank -%}
+  <video {{ attrs }} preload="metadata"{% if poster_url != '' %} poster="{{ poster_url }}"{% endif %}{% if label != blank %} aria-label="{{ label | escape }}"{% endif %}>
+    {%- if video != blank -%}
+      {%- for source in video.sources -%}
+        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+      {%- endfor -%}
+    {%- else -%}
+      <source src="{{ src }}" type="video/mp4">
+    {%- endif -%}
+  </video>
+{%- endif -%}

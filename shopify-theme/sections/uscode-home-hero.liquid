@@ -1,0 +1,126 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-home.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign cta_label = section.settings.cta_label
+  if section.settings.price_product != blank
+    assign from_price = section.settings.price_product.price_min | money_without_trailing_zeros
+    assign cta_label = cta_label | append: ' — from ' | append: from_price
+  endif
+  assign total = section.settings.edition_total | default: 300
+  capture left
+    render 'uscode-drop-left', collection: section.settings.drop_collection, fallback: section.settings.left_fallback, total: total
+  endcapture
+  assign left = left | strip | plus: 0
+-%}
+
+<div class="uh" data-section="{{ section.id }}">
+  <div class="uh-wrap">
+    <section class="uh-hero" aria-label="{{ section.settings.heading | escape }}">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h1 class="uh-h1">{{ section.settings.heading }}</h1>
+        {%- if section.settings.subheading != blank -%}<p class="uh-hero__sub">{{ section.settings.subheading }}</p>{%- endif -%}
+        <div class="uh-ctas" data-uh-sticky-anchor>
+          {%- if section.settings.cta_label != blank -%}
+            <a class="btn btn-primary" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ cta_label }}</a>
+          {%- endif -%}
+          {%- if section.settings.cta2_label != blank -%}
+            <a class="btn btn-ghost" href="{{ section.settings.cta2_link | default: '#how' }}">{{ section.settings.cta2_label }}</a>
+          {%- endif -%}
+        </div>
+        {%- if section.blocks.size > 0 -%}
+          <ul class="uh-trustrow" role="list">
+            {%- for block in section.blocks -%}
+              <li {{ block.shopify_attributes }}>{% render 'uscode-icon', name: block.settings.icon %}{{ block.settings.text }}</li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+      <div class="uh-herofig{% if section.settings.numeral == blank %} uh-herofig--nonum{% endif %}">
+        {%- if section.settings.numeral != blank -%}
+          <span class="uh-numeral" aria-hidden="true">{{ section.settings.numeral }}</span>
+        {%- endif -%}
+        <figure class="uh-shot">
+          <div class="uh-frame">
+            {%- if section.settings.image != blank -%}
+              {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480, 720, 960, 1200, 1400', sizes: '(min-width: 861px) 45vw, 100vw' }}
+            {%- else -%}
+              {{ 'product-apparel-1' | placeholder_svg_tag }}
+            {%- endif -%}
+          </div>
+          {%- if section.settings.caption != blank -%}<figcaption>{{ section.settings.caption }}</figcaption>{%- endif -%}
+        </figure>
+        {%- if section.settings.inset_video != blank or section.settings.inset_video_url != blank or section.settings.inset_image != blank -%}
+          <div class="uh-inset">
+            {%- if section.settings.inset_video != blank or section.settings.inset_video_url != blank -%}
+              {% render 'uscode-video', video: section.settings.inset_video, url: section.settings.inset_video_url, poster: section.settings.inset_image, attrs: 'muted loop playsinline data-uh-autoplay', label: section.settings.inset_label %}
+            {%- else -%}
+              {{ section.settings.inset_image | image_url: width: 400 | image_tag: loading: 'lazy' }}
+            {%- endif -%}
+            {%- if section.settings.inset_label != blank -%}<p><i></i>{{ section.settings.inset_label }}</p>{%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </section>
+  </div>
+
+  {%- if section.settings.sticky_bar -%}
+    <div class="uh-sticky" data-uh-sticky inert>
+      <p><b>{{ section.settings.sticky_title }}{% if from_price %} — from {{ from_price }}{% endif %}</b><span>{{ left }} of {{ total }} left</span></p>
+      <a class="btn btn-primary" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.sticky_button }}</a>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "US CODE hero (v3)",
+  "tag": "div",
+  "class": "section-uh-hero",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Drop 01 — For your eyes only" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "default": "A tee that remembers you." },
+    { "type": "textarea", "id": "subheading", "label": "Text", "default": "Real eyes printed on the back. A private memory in the chest — tap it with any phone and it plays." },
+    { "type": "text", "id": "cta_label", "label": "Button", "default": "Shop the drop" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "product", "id": "price_product", "label": "Show \"from\" price of", "info": "Adds the product's lowest price to the button, in the shopper's currency." },
+    { "type": "text", "id": "cta2_label", "label": "Second button", "default": "See how it works" },
+    { "type": "url", "id": "cta2_link", "label": "Second button link", "info": "Defaults to #how (the How it works section)." },
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "caption", "label": "Caption" },
+    { "type": "text", "id": "numeral", "label": "Background numeral", "default": "01" },
+    { "type": "video", "id": "inset_video", "label": "Inset video", "info": "Pick a video from Shopify Files." },
+    { "type": "text", "id": "inset_video_url", "label": "Or inset video link", "info": "A full video link, or a theme asset filename. Used when no video is picked above." },
+    { "type": "image_picker", "id": "inset_image", "label": "Inset poster image" },
+    { "type": "text", "id": "inset_label", "label": "Inset label", "default": "Tap → memory plays" },
+    { "type": "header", "content": "Sticky bar on phones" },
+    { "type": "checkbox", "id": "sticky_bar", "label": "Show", "default": true },
+    { "type": "text", "id": "sticky_title", "label": "Title", "default": "Drop 01" },
+    { "type": "text", "id": "sticky_button", "label": "Button", "default": "Shop the drop" },
+    { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
+    { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
+    { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust point",
+      "limit": 4,
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "nfc", "label": "Phone tap" }, { "value": "drop", "label": "Water drop" }, { "value": "globe", "label": "Globe" },
+          { "value": "lock", "label": "Lock" }, { "value": "eye", "label": "Eye" }, { "value": "check", "label": "Check" }
+        ], "default": "nfc" },
+        { "type": "text", "id": "text", "label": "Text", "default": "No app needed" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "US CODE hero (v3)", "blocks": [
+    { "type": "trust", "settings": { "icon": "nfc", "text": "No app needed" } },
+    { "type": "trust", "settings": { "icon": "drop", "text": "Washable chip" } },
+    { "type": "trust", "settings": { "icon": "globe", "text": "Ships worldwide" } }
+  ] }]
+}
+{% endschema %}
