@@ -1,0 +1,36 @@
+{
+  "sections": {
+    "main": {
+      "type": "uscode-collection",
+      "settings": {
+        "filter_layout": "sidebar",
+        "open_groups": 5,
+        "enable_sorting": true,
+        "products_per_page": 24,
+        "hover_swap": true,
+        "quick_add": true,
+        "show_stock": true,
+        "edition_size": 300,
+        "low_stock": 50,
+        "background_color": "#F2F2F2",
+        "text_color": "#1F1E1C",
+        "show_tabs": true,
+        "shop_url": "/collections/all",
+        "head_style": "auto",
+        "drop_collections": [
+          "drop-01"
+        ],
+        "tab_collections": [
+          "drop-01"
+        ],
+        "subheading": "Every print still open, plus commissions and gift cards. Each tee is numbered to the chip in its hem.",
+        "numeral": "01",
+        "restocks": "0",
+        "edition_total": 1500
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
