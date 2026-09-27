@@ -59,7 +59,8 @@
 
   assign media_count = product.media.size
   assign current_media_index = 0
-  if current.featured_media
+  # Start on the first image (admin order); only a shared ?variant= link opens on its image
+  if product.selected_variant and current.featured_media
     for m in product.media
       if m.id == current.featured_media.id
         assign current_media_index = forloop.index0
@@ -487,8 +488,8 @@
 
   {%- if section.settings.sticky_bar -%}
     <div class="uscode-pdp__sticky" data-sticky inert>
-      {%- if product.featured_media -%}
-        {{ product.featured_media.preview_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+      {%- if product.media.size > 0 -%}
+        {{ product.media[0].preview_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
       {%- endif -%}
       <div class="uscode-pdp__stickytext">
         <p class="uscode-pdp__st">{{ product.title }} — <span data-price>{{ current.price | money_without_trailing_zeros }}</span></p>

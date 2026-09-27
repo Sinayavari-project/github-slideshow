@@ -449,14 +449,9 @@
             <ul class="uscode-col__grid" data-grid data-cols="{{ dens_b }}" role="list">
               {%- for product in collection.products -%}
                 {%- liquid
-                  assign media_1 = product.featured_media
-                  assign media_2 = nil
-                  for m in product.media
-                    if m.id != media_1.id and m.media_type == 'image'
-                      assign media_2 = m
-                      break
-                    endif
-                  endfor
+                  # Admin media order: first image on the card, second on hover
+                  assign media_1 = product.media[0]
+                  assign media_2 = product.media[1]
 
                   assign p_left = 0
                   assign p_tracked = false
