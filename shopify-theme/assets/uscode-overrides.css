@@ -1,0 +1,15 @@
+/* US CODE brand overrides — maps the base theme's font variables onto the brand tokens (assets/uscode-tokens.css). */
+:root {
+  --font-heading--family: var(--font-heading);
+  --font-body--family: var(--font-body);
+  --font-subheading--family: var(--font-body);
+  --font-accent--family: var(--font-heading);
+}
+
+body {
+  letter-spacing: 0.01em;
+}
+
+.header-menu, .menu-list__link {
+  letter-spacing: 0.06em;
+}

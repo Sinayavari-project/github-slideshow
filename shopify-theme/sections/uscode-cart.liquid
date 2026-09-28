@@ -1,0 +1,331 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-cart {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 6vw, 48px);
+    color: {{ section.settings.text_color }};
+    font-family: var(--font-body);
+  }
+  .uscode-cart__head {
+    padding: 52px 0 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 13px;
+    flex-wrap: wrap;
+  }
+  .uscode-cart__head h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(28px, 5vw, 38px);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .uscode-cart__count {
+    font-size: 13px;
+    opacity: 0.65;
+  }
+  .uscode-cart__line {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    gap: 13px clamp(14px, 3vw, 22px);
+    padding: 28px 0;
+    border-top: 2px solid {{ section.settings.divider_color }};
+    align-items: center;
+  }
+  .uscode-cart__thumb {
+    width: 88px;
+    aspect-ratio: 4/5;
+    border: 2px solid {{ section.settings.divider_color }};
+    overflow: hidden;
+  }
+  .uscode-cart__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .uscode-cart__name {
+    font-weight: 700;
+    font-size: 17px;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+  .uscode-cart__meta {
+    font-size: 12.5px;
+    margin: 6px 0 0;
+    opacity: 0.65;
+  }
+  .uscode-cart__actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .uscode-cart__stepper {
+    display: flex;
+    align-items: center;
+    border: 2px solid {{ section.settings.divider_color }};
+  }
+  .uscode-cart__stepper button {
+    background: none;
+    border: none;
+    width: 30px;
+    height: 30px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-cart__stepper button:hover { color: {{ section.settings.accent_color }}; }
+  .uscode-cart__stepper span {
+    width: 28px;
+    text-align: center;
+    font-size: 13px;
+    font-feature-settings: "tnum" 1;
+  }
+  .uscode-cart__remove {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-decoration: underline;
+    color: {{ section.settings.text_color }};
+    opacity: 0.6;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .uscode-cart__remove:hover { color: {{ section.settings.accent_color }}; opacity: 1; }
+  .uscode-cart__line-price {
+    font-weight: 700;
+    font-size: 17px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .uscode-cart__promo {
+    display: flex;
+    gap: 0;
+    border: 2px solid {{ section.settings.divider_color }};
+    margin: 26px 0;
+    max-width: 340px;
+  }
+  .uscode-cart__promo input {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    outline: none;
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-cart__promo button {
+    border: none;
+    border-left: 2px solid {{ section.settings.divider_color }};
+    background: none;
+    padding: 12px 16px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-cart__promo button:hover { color: {{ section.settings.accent_color }}; }
+  .uscode-cart__summary {
+    padding: 26px 0;
+    border-top: 2px solid {{ section.settings.text_color }};
+  }
+  .uscode-cart__srow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 8px 0;
+  }
+  .uscode-cart__srow .muted { opacity: 0.65; }
+  .uscode-cart__srow--total {
+    font-weight: 700;
+    font-size: 20px;
+    border-top: 2px solid {{ section.settings.divider_color }};
+    margin-top: 8px;
+    padding-top: 16px;
+  }
+  .uscode-cart__checkout {
+    padding: 13px 0 52px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .uscode-cart__checkout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 28px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    background: {{ section.settings.accent_color }};
+    color: {{ section.settings.bg_color }};
+  }
+  .uscode-cart__checkout-btn:hover { opacity: 0.85; }
+  .uscode-cart__continue {
+    font-size: 13px;
+    color: {{ section.settings.text_color }};
+    text-decoration: underline;
+  }
+  .uscode-cart__trust {
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.6;
+    margin: 0;
+  }
+  .uscode-cart__empty {
+    padding: 52px 0;
+    text-align: center;
+    border-top: 2px solid {{ section.settings.divider_color }};
+    border-bottom: 2px solid {{ section.settings.divider_color }};
+  }
+  .uscode-cart__empty p {
+    font-size: 15px;
+    opacity: 0.75;
+    margin: 0 0 13px;
+  }
+  .uscode-cart__empty a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: {{ section.settings.accent_color }};
+    color: {{ section.settings.bg_color }};
+  }
+</style>
+
+<div class="uscode-cart">
+  <div class="uscode-cart__head">
+    <h1>Your cart</h1>
+    <span class="uscode-cart__count">{{ cart.item_count }} item{{ cart.item_count | pluralize: '', 's' }}</span>
+  </div>
+
+  {% if cart.item_count > 0 %}
+    <form action="{{ routes.cart_url }}" method="post" id="cart-form">
+      {% for item in cart.items %}
+        <div class="uscode-cart__line">
+          <div class="uscode-cart__thumb">
+            {% if item.image %}
+              <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.title | escape }}" loading="lazy">
+            {% endif %}
+          </div>
+          <div>
+            <p class="uscode-cart__name">{{ item.product.title }}</p>
+            <p class="uscode-cart__meta">
+              {% unless item.product.has_only_default_variant %}
+                {{ item.variant.title }}
+              {% endunless %}
+              {% if item.selling_plan_allocation %}
+                — {{ item.selling_plan_allocation.selling_plan.name }}
+              {% endif %}
+            </p>
+            <div class="uscode-cart__actions">
+              <div class="uscode-cart__stepper">
+                <button type="button" aria-label="Decrease quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | minus: 1 }})">–</button>
+                <span>{{ item.quantity }}</span>
+                <button type="button" aria-label="Increase quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | plus: 1 }})">+</button>
+              </div>
+              <button type="button" class="uscode-cart__remove" onclick="updateCartQty('{{ item.key }}', 0)">Remove</button>
+            </div>
+          </div>
+          <p class="uscode-cart__line-price">{{ item.final_line_price | money }}</p>
+        </div>
+      {% endfor %}
+
+      <div class="uscode-cart__promo">
+        <input type="text" id="uscode-promo" placeholder="Promo code" aria-label="Promo code">
+        <button type="button" onclick="applyPromo()">Apply</button>
+      </div>
+      {% if cart.cart_level_discount_applications.size > 0 %}
+        {% for discount in cart.cart_level_discount_applications %}
+          <div class="uscode-cart__srow"><span class="muted">Discount ({{ discount.title }})</span><span>−{{ discount.total_allocated_amount | money }}</span></div>
+        {% endfor %}
+      {% endif %}
+
+      <section class="uscode-cart__summary">
+        <div class="uscode-cart__srow">
+          <span class="muted">Subtotal</span>
+          <span>{{ cart.items_subtotal_price | money }}</span>
+        </div>
+        <div class="uscode-cart__srow">
+          <span class="muted">Shipping</span>
+          {% assign free_threshold = section.settings.free_shipping_threshold | times: 100 %}
+          <span>{% if free_threshold > 0 and cart.total_price >= free_threshold %}Free{% else %}Calculated at checkout{% endif %}</span>
+        </div>
+        <div class="uscode-cart__srow uscode-cart__srow--total">
+          <span>Total</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+      </section>
+
+      <div class="uscode-cart__checkout">
+        <button type="submit" name="checkout" class="uscode-cart__checkout-btn">Checkout — {{ cart.total_price | money }}</button>
+        <a href="{{ routes.all_products_collection_url }}" class="uscode-cart__continue">Continue shopping</a>
+        <p class="uscode-cart__trust">{{ section.settings.trust_line }}</p>
+      </div>
+    </form>
+  {% else %}
+    <div class="uscode-cart__empty">
+      <p>{{ section.settings.empty_message }}</p>
+      <a href="{{ routes.all_products_collection_url }}">Shop the drop</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function updateCartQty(key, qty) {
+  document.querySelectorAll('.uscode-cart__stepper button, .uscode-cart__remove').forEach(function (b) { b.disabled = true; });
+  fetch('{{ routes.cart_change_url }}.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ id: key, quantity: Math.max(0, qty) })
+  }).finally(function () { window.location.reload(); });
+}
+function applyPromo() {
+  var code = document.getElementById('uscode-promo').value.trim();
+  if (!code) return;
+  window.location.href = '/discount/' + encodeURIComponent(code) + '?redirect={{ routes.cart_url | url_encode }}';
+}
+document.getElementById('uscode-promo')?.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+});
+</script>
+
+{% schema %}
+{
+  "name": "US CODE Cart",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "trust_line", "label": "Trust line", "default": "NFC-verified · ships in 48 hours · no restock" },
+    { "type": "text", "id": "empty_message", "label": "Empty message", "default": "Your cart is empty — the drop is still live." },
+    { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold ($, 0 to hide)", "info": "Display only — must match a free shipping rate in Settings → Shipping.", "default": 60 },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F2F2F2" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },
+    { "type": "color", "id": "divider_color", "label": "Divider color", "default": "#D8D6D1" }
+  ],
+  "presets": [{ "name": "US CODE Cart" }]
+}
+{% endschema %}

@@ -1,0 +1,400 @@
+{
+  "sections": {
+    "hero": {
+      "type": "uscode-home-hero",
+      "blocks": {
+        "trust_1": {
+          "type": "trust",
+          "settings": {
+            "icon": "nfc",
+            "text": "No app needed"
+          }
+        },
+        "trust_2": {
+          "type": "trust",
+          "settings": {
+            "icon": "drop",
+            "text": "Washable chip"
+          }
+        },
+        "trust_3": {
+          "type": "trust",
+          "settings": {
+            "icon": "globe",
+            "text": "Ships worldwide"
+          }
+        }
+      },
+      "block_order": [
+        "trust_1",
+        "trust_2",
+        "trust_3"
+      ],
+      "settings": {
+        "eyebrow": "Drop 01 — For your eyes only",
+        "heading": "A tee that remembers you.",
+        "subheading": "Real eyes printed on the back. A private memory in the chest — tap it with any phone and it plays.",
+        "cta_label": "Shop the drop",
+        "cta_link": "shopify://collections/drop-01",
+        "cta2_label": "See how it works",
+        "cta2_link": "#how",
+        "image": "shopify://shop_images/uscode-tee-back-lifetime.png",
+        "numeral": "01",
+        "inset_video_url": "founders-memory.mp4",
+        "inset_label": "Tap → memory plays",
+        "sticky_bar": true,
+        "sticky_title": "Drop 01",
+        "sticky_button": "Shop the drop",
+        "drop_collection": "drop-01",
+        "edition_total": 300
+      }
+    },
+    "how": {
+      "type": "uscode-steps",
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "icon": "layers",
+            "title": "Choose your tier",
+            "text": "Essential, Memory or Signature. Every tee carries the same print and the same chip."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "icon": "upload",
+            "title": "Upload your memory",
+            "text": "After checkout, add a photo, voice note, video or song. Swap it whenever you like."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "icon": "tap",
+            "title": "Tap to play it back, anytime",
+            "text": "Hold a phone to the chest logo. The memory opens in seconds, right in the browser."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3"
+      ],
+      "settings": {
+        "eyebrow": "How it works",
+        "heading": "Three steps. No app.",
+        "anchor": "how",
+        "rule_above": true
+      }
+    },
+    "demo": {
+      "type": "uscode-tap-demo",
+      "blocks": {
+        "point_1": {
+          "type": "point",
+          "settings": {
+            "text": "Photo, voice note, video or song — up to 2 minutes on Memory"
+          }
+        },
+        "point_2": {
+          "type": "point",
+          "settings": {
+            "text": "Works on iPhone and Android, straight from the lock screen"
+          }
+        },
+        "point_3": {
+          "type": "point",
+          "settings": {
+            "text": "Private by default — nothing is listed or searchable"
+          }
+        }
+      },
+      "block_order": [
+        "point_1",
+        "point_2",
+        "point_3"
+      ],
+      "settings": {
+        "eyebrow": "What they see",
+        "heading": "Tap. It plays.",
+        "text": "<p>The chip sits in a small diamond pocket behind the chest logo. One tap opens a private page that holds exactly what you left there.</p>",
+        "flush_top": true,
+        "number": "042 / 300",
+        "image": "shopify://shop_images/founders-sina-vida.jpg",
+        "video_url": "founders-memory.mp4",
+        "kicker": "A memory for you",
+        "message": "“The night at the wall. I’d find you in every lifetime.”",
+        "audio_length": "0:48",
+        "lock_text": "Only people you share this with can open it."
+      }
+    },
+    "tiers": {
+      "type": "uscode-tiers-home",
+      "blocks": {
+        "tier_1": {
+          "type": "tier",
+          "settings": {
+            "name": "Essential",
+            "image": "shopify://shop_images/uscode-tee-back-split.png",
+            "option_value": "Essential",
+            "price": "$48",
+            "description": "The tee, the print, and a chip linked to one photo.",
+            "features": "Drop 01 eye print on the back\nNFC linked to one photo\nOversized heavyweight tee\n-Voice or video memory",
+            "link": "shopify://collections/drop-01",
+            "featured": false
+          }
+        },
+        "tier_2": {
+          "type": "tier",
+          "settings": {
+            "name": "Memory",
+            "image": "shopify://shop_images/uscode-tee-white-fragment-veil.webp",
+            "option_value": "Memory",
+            "price": "$68",
+            "description": "Everything in Essential, with a voice note or video they can play back.",
+            "features": "Everything in Essential\nNFC linked to voice or video, 1–2 min\nNumbered, verified print — e.g. 042/300\nChange the memory anytime",
+            "link": "shopify://collections/drop-01",
+            "featured": true,
+            "badge": "Most chosen"
+          }
+        },
+        "tier_3": {
+          "type": "tier",
+          "settings": {
+            "name": "Signature",
+            "image": "shopify://shop_images/uscode-print-circle-art.png",
+            "contain": true,
+            "option_value": "Signature",
+            "price": "$98",
+            "description": "A back print made from your own eye photo. Printed once, for you alone.",
+            "features": "Custom back print from your photo\nBoxed with a printed certificate\nLonger video allowance, up to 5 min\nEverything in Memory",
+            "note": "Made to order — ships in 3–4 weeks.",
+            "link": "shopify://collections/drop-01",
+            "featured": false
+          }
+        }
+      },
+      "block_order": [
+        "tier_1",
+        "tier_2",
+        "tier_3"
+      ],
+      "settings": {
+        "eyebrow": "Choose your tier",
+        "heading": "Three ways to keep it.",
+        "show_counter": true,
+        "drop_collection": "drop-01",
+        "edition_total": 300,
+        "foot_text": "Oversized fit · sizes S–XXL",
+        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26\nXXL, 70, 78, 27",
+        "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size."
+      }
+    },
+    "gifting": {
+      "type": "uscode-gifting",
+      "blocks": {
+        "occ_1": {
+          "type": "occasion",
+          "settings": {
+            "label": "Anniversary",
+            "idea": "Record the song from your first dance and let it play every time they wear it."
+          }
+        },
+        "occ_2": {
+          "type": "occasion",
+          "settings": {
+            "label": "Valentine's",
+            "idea": "Hide a 60-second video only they can open — then watch them find it."
+          }
+        },
+        "occ_3": {
+          "type": "occasion",
+          "settings": {
+            "label": "Long distance",
+            "idea": "Leave a voice note they can tap before sleep, whatever the time zone."
+          }
+        },
+        "occ_4": {
+          "type": "occasion",
+          "settings": {
+            "label": "Just because",
+            "idea": "One photo from a day nobody else remembers. That’s the point."
+          }
+        }
+      },
+      "block_order": [
+        "occ_1",
+        "occ_2",
+        "occ_3",
+        "occ_4"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/founders-sina-vida.jpg",
+        "eyebrow": "Gifting",
+        "heading": "Made for two.",
+        "text": "<p>One of you wears it. The other left something inside it. For anniversaries, distance, and everything in between.</p>",
+        "cta_label": "Shop as a gift",
+        "cta_link": "shopify://collections/drop-01",
+        "note": "Free gift wrap and a handwritten card. Choose a delivery date at checkout — the memory can be added after they open it."
+      }
+    },
+    "craft": {
+      "type": "uscode-feature-row",
+      "settings": {
+        "number": "01",
+        "heading": "A memory, not a graphic.",
+        "text": "<p>Every back print starts as a real photograph of real eyes. We tear, layer and rephotograph it by hand, then screen-print it at true grain. Nothing on the shirt is generated.</p>",
+        "image": "shopify://shop_images/uscode-print-circle-art.png",
+        "contain": true,
+        "reverse": false,
+        "rule_above": true,
+        "flush_top": false,
+        "show_verify": false
+      }
+    },
+    "verified": {
+      "type": "uscode-feature-row",
+      "settings": {
+        "number": "02",
+        "heading": "Verified, not mass-produced.",
+        "text": "<p>Each piece is numbered at print and paired 1:1 with its chip. When all 300 are gone, the number closes — no restock, no reprint.</p>",
+        "image": "shopify://shop_images/uscode-card-set.webp",
+        "reverse": true,
+        "rule_above": false,
+        "flush_top": true,
+        "show_verify": true,
+        "verify_template": "/pages/verify/[number]",
+        "verify_label": "Number on your tag",
+        "verify_button": "Verify a piece",
+        "verify_hint": "Find it printed on the hang tag and inside the chest pocket."
+      }
+    },
+    "first300": {
+      "type": "uscode-first-300",
+      "settings": {
+        "eyebrow": "Drop 01 is live",
+        "heading": "Be one of the first [total] — your number is waiting.",
+        "text": "<p>When the first pieces land, this space fills with photos from the people wearing them. Until then, every square is a number still open.</p>",
+        "cta_label": "Claim your number",
+        "cta_link": "shopify://collections/drop-01",
+        "drop_collection": "drop-01",
+        "edition_total": 300
+      }
+    },
+    "quote": {
+      "type": "uscode-statement",
+      "settings": {
+        "quote": "Some things should only be seen by two people.",
+        "text_color": "#1F1E1C"
+      }
+    },
+    "faq": {
+      "type": "uscode-faq-split",
+      "blocks": {
+        "q_1": {
+          "type": "question",
+          "settings": {
+            "question": "Which phones work?",
+            "answer": "<p>Any iPhone from XS onward and almost every Android phone with NFC switched on. There’s no app — the memory opens in the browser. Each tag also carries a QR code as a backup.</p>"
+          }
+        },
+        "q_2": {
+          "type": "question",
+          "settings": {
+            "question": "Does the chip survive washing?",
+            "answer": "<p>Yes. The chip is sealed and sits in a small diamond pocket behind the chest logo. Wash cold and inside out, and skip the tumble dryer — the same care the print needs.</p>"
+          }
+        },
+        "q_3": {
+          "type": "question",
+          "settings": {
+            "question": "Who can see my memory?",
+            "answer": "<p>Only people who tap your shirt or open your private link. Memory pages aren’t listed or searchable, and you can add a passcode.</p>"
+          }
+        },
+        "q_4": {
+          "type": "question",
+          "settings": {
+            "question": "Can I change the memory later?",
+            "answer": "<p>Anytime. Swap the photo, voice note, video or song from the link in your order email. The chip never needs rewriting.</p>"
+          }
+        },
+        "q_5": {
+          "type": "question",
+          "settings": {
+            "question": "How long is it hosted?",
+            "answer": "<p>For as long as you own the piece, included in the price. No subscription.</p>"
+          }
+        },
+        "q_6": {
+          "type": "question",
+          "settings": {
+            "question": "Shipping times by region?",
+            "answer": "<p>Ships within 48 hours of print. US & Canada 3–6 business days · UK & EU 3–7 · GCC 4–8 · Australia 5–9. Duties and taxes are shown at checkout.</p>"
+          }
+        },
+        "q_7": {
+          "type": "question",
+          "settings": {
+            "question": "Returns on personalized items?",
+            "answer": "<p>Essential and Memory can be returned unworn within 14 days — the memory links after delivery, so the tee itself isn’t personalized. Signature pieces are printed from your photo and are final sale.</p>"
+          }
+        },
+        "q_8": {
+          "type": "question",
+          "settings": {
+            "question": "Sizing for oversized fit?",
+            "answer": "<p>Cut oversized with a dropped shoulder. Take your usual size for the intended fit, or size down for a closer one. Measurements are in the size guide.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q_1",
+        "q_2",
+        "q_3",
+        "q_4",
+        "q_5",
+        "q_6",
+        "q_7",
+        "q_8"
+      ],
+      "settings": {
+        "eyebrow": "FAQ",
+        "heading": "Before you tap.",
+        "text": "<p>Anything else? <a href=\"/pages/faq\" title=\"FAQ\">Read the full FAQ</a> or write to hello@uscode.co.</p>",
+        "anchor": "faq",
+        "open_first": true
+      }
+    },
+    "signup": {
+      "type": "uscode-signup",
+      "settings": {
+        "eyebrow": "Drop 02",
+        "heading": "Get first access to Drop 02.",
+        "text": "One email when it opens — 24 hours before everyone else. Nothing in between.",
+        "placeholder": "Your email",
+        "button": "Get first access",
+        "success": "You’re on the list. We’ll write once, when Drop 02 opens.",
+        "consent": "<p>By signing up you agree to receive emails from US CODE. Unsubscribe anytime. See our <a href=\"/policies/privacy-policy\" title=\"Privacy Policy\">Privacy Policy</a>.</p>",
+        "tag": "newsletter, drop-02",
+        "bg_color": "#582123",
+        "text_color": "#F2F2F2"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "how",
+    "demo",
+    "tiers",
+    "gifting",
+    "craft",
+    "verified",
+    "first300",
+    "quote",
+    "faq",
+    "signup"
+  ]
+}

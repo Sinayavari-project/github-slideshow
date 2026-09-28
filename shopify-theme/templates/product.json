@@ -1,0 +1,188 @@
+{
+  "sections": {
+    "main": {
+      "type": "uscode-pdp",
+      "blocks": {
+        "trust_1": {
+          "type": "trust",
+          "settings": {
+            "value": "48h",
+            "label": "Ships from print"
+          }
+        },
+        "trust_2": {
+          "type": "trust",
+          "settings": {
+            "value": "Free",
+            "label": "Shipping over $60"
+          }
+        },
+        "trust_3": {
+          "type": "trust",
+          "settings": {
+            "value": "1:1",
+            "label": "NFC-verified"
+          }
+        },
+        "acc_1": {
+          "type": "accordion",
+          "settings": {
+            "title": "Details & fit",
+            "content": "<p>Heavyweight 260gsm cotton, garment-dyed and vintage-washed.</p><p>Oversized, dropped shoulder, boxy length. Model is 180cm wearing L.</p><p>Screen-printed back, embroidered eye mark on the chest.</p>"
+          }
+        },
+        "acc_2": {
+          "type": "accordion",
+          "settings": {
+            "title": "Shipping & returns",
+            "content": "<p>Ships within 48 hours of print. Free shipping over $60.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
+          }
+        },
+        "acc_3": {
+          "type": "accordion",
+          "settings": {
+            "title": "How the NFC works",
+            "content": "<p>After checkout you upload your memory — photo, voice, or video. It links to the chip in the hem.</p><p>Tap any phone to the hem to play it. No app needed. You can change the memory anytime.</p>"
+          }
+        },
+        "stat_1": {
+          "type": "stat",
+          "settings": {
+            "number": "300",
+            "label": "Pieces made, no restock"
+          }
+        },
+        "stat_2": {
+          "type": "stat",
+          "settings": {
+            "number": "1:1",
+            "label": "NFC-verified to one print"
+          }
+        },
+        "stat_3": {
+          "type": "stat",
+          "settings": {
+            "number": "48h",
+            "label": "Ships from print"
+          }
+        },
+        "stat_4": {
+          "type": "stat",
+          "settings": {
+            "number": "0",
+            "label": "Reprints, ever"
+          }
+        },
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "title": "A real pair of eyes",
+            "text": "The back print is a photograph, not an illustration — torn, layered, and screen-printed at true grain so the eyes stay recognizably someone's."
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "title": "Tap to remember",
+            "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it — a voice memo, a photo, a date. Tap a phone to the hem and it plays."
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "title": "Heavyweight, vintage-washed",
+            "text": "Oversized cut, garment-dyed and washed for a worn-in hand from the first day. Runs true to a size up."
+          }
+        },
+        "tier_1": {
+          "type": "tier",
+          "settings": {
+            "name": "Essential",
+            "price": "$48",
+            "description": "The tee, the print, the chip — set to a photo of your choosing.",
+            "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo",
+            "featured": false,
+            "short_description": "The tee, the print, the chip — linked to one photo of your choosing."
+          }
+        },
+        "tier_2": {
+          "type": "tier",
+          "settings": {
+            "name": "Memory",
+            "price": "$68",
+            "description": "Everything in Essential, with the chip linked to a full memory — voice, video, or a place.",
+            "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print",
+            "featured": true,
+            "badge": "Most chosen",
+            "short_description": "Chip linked to a full memory — voice, video, or a place. Numbered, verified print."
+          }
+        },
+        "tier_3": {
+          "type": "tier",
+          "settings": {
+            "name": "Signature",
+            "price": "$98",
+            "description": "Your own eyes on the back — a private commission, printed once, for you alone.",
+            "features": "Everything in Memory|Custom back print from your photo|Boxed with a printed certificate",
+            "featured": false,
+            "short_description": "Your own eyes on the back — a private commission, printed once. Boxed with a certificate."
+          }
+        }
+      },
+      "block_order": [
+        "trust_1",
+        "trust_2",
+        "trust_3",
+        "acc_1",
+        "acc_2",
+        "acc_3",
+        "stat_1",
+        "stat_2",
+        "stat_3",
+        "stat_4",
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "tier_1",
+        "tier_2",
+        "tier_3"
+      ],
+      "settings": {
+        "features_kicker": "What you're wearing",
+        "detail_image": "shopify://shop_images/uscode-tee-back-split.png",
+        "split_kicker": "Made to last the memory",
+        "split_title": "Screen-printed once. Verified forever.",
+        "split_note": "Every shirt is numbered against its NFC chip at print — scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes.",
+        "pricing_kicker": "Compare tiers",
+        "pricing_title": "Three ways to keep it.",
+        "quote": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted.",
+        "quote_by": "— From the first drop, Essential",
+        "close_line1": "300 made.",
+        "close_line2": "None remade.",
+        "close_cta": "Shop before it's gone",
+        "close_hint": "Drop closes when the count hits zero.",
+        "kicker": "Drop 01",
+        "tagline": "“I’d find you in every lifetime.” A real pair of eyes on the back, a memory in the hem. Tap it and the moment plays back.",
+        "show_stock": true,
+        "edition_size": 300,
+        "tier_option": "Tier",
+        "default_tier": "Memory",
+        "popular_tier": "Memory",
+        "popular_label": "Most chosen",
+        "size_option": "Size",
+        "require_size": true,
+        "fit_note": "Oversized, dropped shoulder. Take your usual size for the intended fit.",
+        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26\nXXL, 70, 78, 27",
+        "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size.",
+        "upload_tier": "Signature",
+        "upload_title": "Your eye photo",
+        "upload_note": "a clear, front-lit close-up. We’ll send a proof before printing.",
+        "sticky_bar": true,
+        "mobile_thumbs": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

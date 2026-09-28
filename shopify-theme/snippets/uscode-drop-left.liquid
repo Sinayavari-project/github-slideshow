@@ -1,0 +1,30 @@
+{%- doc -%}
+  Pieces left in a drop: tracked stock across a collection's products.
+  Falls back to the given number, then to the edition total (nothing claimed yet).
+  @param {object} [collection] - Drop collection
+  @param {number} [fallback] - Used when stock isn't tracked
+  @param {number} total - Edition size
+{%- enddoc -%}
+{%- liquid
+  assign left = 0
+  assign tracked = false
+  if collection != blank
+    for p in collection.products limit: 50
+      for v in p.variants
+        if v.inventory_management == 'shopify'
+          assign tracked = true
+          if v.inventory_quantity > 0
+            assign left = left | plus: v.inventory_quantity
+          endif
+        endif
+      endfor
+    endfor
+  endif
+  unless tracked
+    assign left = fallback | default: total
+  endunless
+  if left > total
+    assign left = total
+  endif
+  echo left
+-%}

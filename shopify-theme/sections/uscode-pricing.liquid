@@ -1,0 +1,259 @@
+{%- style -%}
+  .uscode-pricing {
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-pricing__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 24px;
+  }
+  .uscode-pricing__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .uscode-pricing__heading {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin: 0 0 40px;
+    line-height: 1.2;
+  }
+  .uscode-pricing__tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .uscode-tier {
+    border: 1px solid #ddd;
+    border-bottom: none;
+    padding: 28px 24px;
+    position: relative;
+    background: {{ section.settings.bg_color }};
+  }
+  .uscode-tier:last-child { border-bottom: 1px solid #ddd; }
+  .uscode-tier--featured {
+    border-color: {{ section.settings.accent_color }};
+    border-bottom: 1px solid {{ section.settings.accent_color }};
+  }
+  .uscode-tier--featured + .uscode-tier { border-top: none; }
+  .uscode-tier__badge {
+    position: absolute;
+    top: -1px;
+    left: 24px;
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    font-weight: 600;
+  }
+  .uscode-tier__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .uscode-tier__name {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .uscode-tier__price {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .uscode-tier__desc {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    max-width: 480px;
+  }
+  .uscode-tier__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+  }
+  .uscode-tier__features li {
+    font-size: 0.85rem;
+    color: #444;
+    padding: 3px 0;
+    padding-left: 16px;
+    position: relative;
+  }
+  .uscode-tier__features li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: #999;
+  }
+  .uscode-tier__cta {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    border: 1px solid {{ section.settings.text_color }};
+    color: {{ section.settings.text_color }};
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .uscode-tier__cta:hover {
+    background: {{ section.settings.text_color }};
+    color: {{ section.settings.bg_color }};
+  }
+  .uscode-tier--featured .uscode-tier__cta {
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+    border-color: {{ section.settings.accent_color }};
+  }
+  .uscode-tier--featured .uscode-tier__cta:hover { opacity: 0.85; }
+  @media (max-width: 749px) {
+    .uscode-pricing__inner { padding: 48px 20px; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-pricing">
+  <div class="uscode-pricing__inner">
+    <p class="uscode-pricing__label">{{ section.settings.label }}</p>
+    <h2 class="uscode-pricing__heading">{{ section.settings.heading }}</h2>
+    <div class="uscode-pricing__tiers">
+      {%- for block in section.blocks -%}
+        <div class="uscode-tier{% if block.settings.featured %} uscode-tier--featured{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.featured and block.settings.badge != blank -%}
+            <span class="uscode-tier__badge">{{ block.settings.badge }}</span>
+          {%- endif -%}
+          <div class="uscode-tier__header">
+            <span class="uscode-tier__name">{{ block.settings.name }}</span>
+            <span class="uscode-tier__price">{{ block.settings.price }}</span>
+          </div>
+          {%- if block.settings.description != blank -%}
+            <p class="uscode-tier__desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+          {%- if block.settings.features != blank -%}
+            <ul class="uscode-tier__features">
+              {%- assign features = block.settings.features | split: '|' -%}
+              {%- for feature in features -%}
+                <li>{{ feature | strip }}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+          {%- if block.settings.cta_label != blank -%}
+            <a href="{{ block.settings.cta_link }}" class="uscode-tier__cta">
+              {{ block.settings.cta_label }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Pricing",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Section label",
+      "default": "CHOOSE YOUR PRINT"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Three ways to keep it."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#C83232"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "Pricing tier",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Tier name",
+          "default": "Essential"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$48"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "The tee, the print, the chip — set to a photo of your choosing."
+        },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "Features (separate with |)",
+          "default": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Button label",
+          "default": "Choose Essential"
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "Button link"
+        },
+        {
+          "type": "checkbox",
+          "id": "featured",
+          "label": "Featured tier",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge text",
+          "default": "Most chosen"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Pricing",
+      "blocks": [
+        { "type": "tier", "settings": { "name": "Essential", "price": "$48", "description": "The tee, the print, the chip — set to a photo of your choosing.", "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo", "cta_label": "Choose Essential", "featured": false } },
+        { "type": "tier", "settings": { "name": "Memory", "price": "$68", "description": "Everything in Essential, with the chip linked to a full memory — voice, video, or a place.", "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print", "cta_label": "Choose Memory", "featured": true, "badge": "Most chosen" } },
+        { "type": "tier", "settings": { "name": "Signature", "price": "$98", "description": "Your own eyes on the back — a private commission, printed once, for you alone.", "features": "Everything in Memory|Custom back print from your photo|Boxed with a printed certificate", "cta_label": "Choose Signature", "featured": false } }
+      ]
+    }
+  ]
+}
+{% endschema %}

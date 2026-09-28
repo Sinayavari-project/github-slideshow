@@ -1,0 +1,34 @@
+{{ 'story.css' | asset_url | stylesheet_tag }}
+<div class="story-col">
+  <figure class="story-photo">
+    {%- if section.settings.image != blank -%}
+      {%- assign alt = section.settings.alt | default: section.settings.image.alt | default: section.settings.caption -%}
+      {{
+        section.settings.image
+        | image_url: width: 1440
+        | image_tag:
+          widths: '480, 720, 1080, 1440',
+          sizes: '(min-width: 720px) 720px, 100vw',
+          loading: 'lazy',
+          alt: alt,
+          class: 'story-photo__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'story-photo__img' }}
+    {%- endif -%}
+    {%- if section.settings.caption != blank -%}<figcaption class="story-photo__caption">{{ section.settings.caption }}</figcaption>{%- endif -%}
+  </figure>
+</div>
+
+{% schema %}
+{
+  "name": "Story photo",
+  "tag": "div",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photo" },
+    { "type": "text", "id": "alt", "label": "Alt text", "default": "Sina and Vida, the night the idea started" },
+    { "type": "text", "id": "caption", "label": "Caption", "default": "Sina & Vida — the night it started." }
+  ],
+  "presets": [{ "name": "Story photo" }]
+}
+{% endschema %}

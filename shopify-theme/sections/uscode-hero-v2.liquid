@@ -1,0 +1,160 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-hero2 {
+    position: relative;
+    padding: 52px 0 0;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding-left: clamp(20px, 5vw, 64px);
+    padding-right: clamp(20px, 5vw, 64px);
+    display: grid;
+    grid-template-columns: minmax(0,7fr) minmax(0,5fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+    overflow: hidden;
+    background: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-hero2__numeral {
+    position: absolute;
+    top: -0.28em;
+    left: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(180px, 26vw, 340px);
+    line-height: 1;
+    color: {{ section.settings.accent_color }}1A;
+    z-index: 0;
+    user-select: none;
+    pointer-events: none;
+  }
+  .uscode-hero2__copy {
+    position: relative;
+    z-index: 1;
+    padding-bottom: 52px;
+  }
+  .uscode-hero2__kicker {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    margin: 0 0 20px;
+  }
+  .uscode-hero2__display {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(40px, 6.4vw, 80px);
+    line-height: clamp(42px, 6.7vw, 84px);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .uscode-hero2__display span { display: block; }
+  .uscode-hero2__sub {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 26px;
+    max-width: 42ch;
+    margin: 24px 0 0;
+    opacity: 0.82;
+  }
+  .uscode-hero2__actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+  }
+  .uscode-hero2__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .uscode-hero2__btn:hover { opacity: 0.85; }
+  .uscode-hero2__btn--primary {
+    background: {{ section.settings.accent_color }};
+    color: {{ section.settings.bg_color }};
+    border-color: {{ section.settings.accent_color }};
+  }
+  .uscode-hero2__btn--ghost {
+    background: transparent;
+    color: {{ section.settings.text_color }};
+    border-color: {{ section.settings.text_color }};
+  }
+  .uscode-hero2__fig {
+    position: relative;
+    z-index: 1;
+  }
+  .uscode-hero2__fig img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    display: block;
+  }
+  .uscode-hero2__fig .placeholder-svg { width: 100%; aspect-ratio: 4/5; }
+  @media (max-width: 800px) {
+    .uscode-hero2 { grid-template-columns: 1fr; padding-top: 32px; }
+    .uscode-hero2__copy { padding-bottom: 24px; }
+    .uscode-hero2__numeral { font-size: 140px; }
+  }
+</style>
+
+<section class="uscode-hero2">
+  <span class="uscode-hero2__numeral" aria-hidden="true">{{ section.settings.numeral }}</span>
+  <div class="uscode-hero2__copy">
+    <span class="uscode-hero2__kicker">{{ section.settings.kicker }}</span>
+    <h1 class="uscode-hero2__display">
+      <span>{{ section.settings.heading_line1 }}</span>
+      <span>{{ section.settings.heading_line2 }}</span>
+    </h1>
+    <p class="uscode-hero2__sub">{{ section.settings.description }}</p>
+    <div class="uscode-hero2__actions">
+      {% if section.settings.cta_label != blank %}
+        <a href="{{ section.settings.cta_link }}" class="uscode-hero2__btn uscode-hero2__btn--primary">{{ section.settings.cta_label }}</a>
+      {% endif %}
+      {% if section.settings.secondary_label != blank %}
+        <a href="{{ section.settings.secondary_link }}" class="uscode-hero2__btn uscode-hero2__btn--ghost">{{ section.settings.secondary_label }}</a>
+      {% endif %}
+    </div>
+  </div>
+  <figure class="uscode-hero2__fig">
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 800 | image_tag: loading: 'eager' }}
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+  </figure>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Hero V2",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "numeral", "label": "Background numeral", "default": "01" },
+    { "type": "text", "id": "kicker", "label": "Kicker text", "default": "Drop 01 — for your eyes only" },
+    { "type": "text", "id": "heading_line1", "label": "Heading line 1", "default": "A tee that" },
+    { "type": "text", "id": "heading_line2", "label": "Heading line 2", "default": "remembers you." },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "US CODE prints real eyes on the back of an oversized tee and locks a memory behind the hem. Tap it, and the moment plays back." },
+    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Shop the drop — $48" },
+    { "type": "url", "id": "cta_link", "label": "CTA link" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary label", "default": "Read the story" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary link" },
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F2F2F2" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" }
+  ],
+  "presets": [{ "name": "US CODE Hero V2" }]
+}
+{% endschema %}

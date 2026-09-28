@@ -1,0 +1,85 @@
+{%- style -%}
+  .uscode-pgallery {
+    background: {{ section.settings.bg_color }};
+    padding: 0;
+  }
+  .uscode-pgallery__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .uscode-pgallery__item {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background: #eee;
+  }
+  .uscode-pgallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 749px) {
+    .uscode-pgallery__grid { grid-template-columns: 1fr; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-pgallery">
+  <div class="uscode-pgallery__grid">
+    {%- if product.images.size > 4 -%}
+      {%- for image in product.images offset: 4 limit: 4 -%}
+        <div class="uscode-pgallery__item">
+          {{ image | image_url: width: 900 | image_tag: loading: 'lazy' }}
+        </div>
+      {%- endfor -%}
+    {%- elsif product.images.size > 0 -%}
+      {%- for image in product.images limit: 4 -%}
+        <div class="uscode-pgallery__item">
+          {{ image | image_url: width: 900 | image_tag: loading: 'lazy' }}
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'image' -%}
+          {%- if block.settings.image != blank -%}
+            <div class="uscode-pgallery__item">
+              {{ block.settings.image | image_url: width: 900 | image_tag: loading: 'lazy' }}
+            </div>
+          {%- else -%}
+            <div class="uscode-pgallery__item"></div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Product Gallery",
+  "tag": "section",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F5F5F0" }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Gallery image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Product Gallery",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

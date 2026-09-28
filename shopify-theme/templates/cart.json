@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "cart_main": {
+      "type": "uscode-cart",
+      "settings": {
+        "trust_line": "NFC-verified · ships in 48 hours · no restock",
+        "empty_message": "Your cart is empty — the drop is still live.",
+        "free_shipping_threshold": 60
+      }
+    }
+  },
+  "order": [
+    "cart_main"
+  ]
+}

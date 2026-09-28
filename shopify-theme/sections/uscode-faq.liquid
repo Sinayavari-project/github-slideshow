@@ -1,0 +1,176 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-faq {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 6vw, 48px);
+    color: {{ section.settings.text_color }};
+    font-family: var(--font-body);
+  }
+  .uscode-faq__head {
+    padding: 62px 0 36px;
+  }
+  .uscode-faq__kicker {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    margin: 0 0 10px;
+  }
+  .uscode-faq__head h1 {
+    font-weight: 700;
+    font-size: clamp(32px, 6vw, 46px);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .uscode-faq__head p {
+    font-size: 15px;
+    line-height: 22px;
+    max-width: 50ch;
+    margin: 10px 0 0;
+    opacity: 0.78;
+  }
+  .uscode-faq__group {
+    padding: 36px 0;
+  }
+  .uscode-faq__group-title {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+    opacity: 0.6;
+  }
+  .uscode-faq__item {
+    border-top: 2px solid {{ section.settings.divider_color }};
+  }
+  .uscode-faq__item:last-child {
+    border-bottom: 2px solid {{ section.settings.divider_color }};
+  }
+  .uscode-faq__question {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 18px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 13px;
+    color: {{ section.settings.text_color }};
+    font-family: var(--font-body);
+    list-style: none;
+  }
+  .uscode-faq__question::-webkit-details-marker { display: none; }
+  .uscode-faq__question:hover { color: {{ section.settings.accent_color }}; }
+  .uscode-faq__question:focus-visible { outline: 2px solid {{ section.settings.accent_color }}; outline-offset: 2px; }
+  .uscode-faq__qtext {
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+  }
+  .uscode-faq__mark {
+    font-weight: 700;
+    font-size: 20px;
+    color: {{ section.settings.accent_color }};
+    flex: none;
+    transition: transform 0.2s;
+  }
+  .uscode-faq__item[open] .uscode-faq__mark { transform: rotate(45deg); }
+  .uscode-faq__answer {
+    font-size: 14.5px;
+    line-height: 22px;
+    margin: 0 0 20px;
+    max-width: 56ch;
+    opacity: 0.78;
+  }
+  .uscode-faq__footer {
+    padding: 42px 0;
+    font-size: 12px;
+    line-height: 26px;
+    opacity: 0.65;
+    display: flex;
+    justify-content: space-between;
+    gap: 13px;
+    flex-wrap: wrap;
+  }
+</style>
+
+<div class="uscode-faq">
+  <section class="uscode-faq__head">
+    <span class="uscode-faq__kicker">{{ section.settings.kicker }}</span>
+    <h1>{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subheading }}</p>
+  </section>
+
+  {% assign current_group = '' %}
+  {% for block in section.blocks %}
+    {% if block.settings.group != current_group %}
+      {% if current_group != '' %}
+        </section>
+      {% endif %}
+      {% assign current_group = block.settings.group %}
+      <section class="uscode-faq__group">
+        <p class="uscode-faq__group-title">{{ current_group }}</p>
+    {% endif %}
+    <details class="uscode-faq__item" {{ block.shopify_attributes }}>
+      <summary class="uscode-faq__question">
+        <span class="uscode-faq__qtext">{{ block.settings.question }}</span>
+        <span class="uscode-faq__mark">+</span>
+      </summary>
+      <p class="uscode-faq__answer">{{ block.settings.answer }}</p>
+    </details>
+  {% endfor %}
+  {% if current_group != '' %}
+    </section>
+  {% endif %}
+
+  <footer class="uscode-faq__footer">
+    <span>US CODE — uscode.co</span>
+    <span>{{ section.settings.contact_line }}</span>
+  </footer>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE FAQ",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Before you tap" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Questions." },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Everything about sizing, the NFC chip, shipping, and keeping the print alive." },
+    { "type": "text", "id": "contact_line", "label": "Contact line", "default": "Still stuck? hello@uscode.co" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },
+    { "type": "color", "id": "divider_color", "label": "Divider color", "default": "#D8D6D1" }
+  ],
+  "blocks": [
+    {
+      "type": "qa",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "group", "label": "Group name", "default": "Sizing & fit" },
+        { "type": "text", "id": "question", "label": "Question" },
+        { "type": "textarea", "id": "answer", "label": "Answer" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE FAQ",
+      "blocks": [
+        { "type": "qa", "settings": { "group": "Sizing & fit", "question": "How does US CODE fit?", "answer": "Oversized and boxy by design — most people take their normal size or one down. It's heavyweight and pre-washed, so it holds its shape." } },
+        { "type": "qa", "settings": { "group": "Sizing & fit", "question": "Will it shrink?", "answer": "Cold wash, inside out, no dryer — do that and it won't move much. The wash was baked in before you got it." } },
+        { "type": "qa", "settings": { "group": "The NFC chip & memories", "question": "How does tap to remember work?", "answer": "A hidden NFC chip is sewn into the hem. Tap almost any modern phone to it and it opens whatever you've linked — a photo, a voice note, or a video, depending on your tier." } },
+        { "type": "qa", "settings": { "group": "The NFC chip & memories", "question": "What if I don't have a phone with NFC?", "answer": "Every piece ships with a QR fallback inside the box — scan that instead and you'll land on the same memory." } },
+        { "type": "qa", "settings": { "group": "The NFC chip & memories", "question": "Can I change the linked memory later?", "answer": "Yes, from your verification page — the chip points to a link you control, not a fixed file." } },
+        { "type": "qa", "settings": { "group": "Shipping & verification", "question": "When does it ship?", "answer": "Within 48 hours of your print being pulled — you'll get the tracking number and your print code at the same time." } },
+        { "type": "qa", "settings": { "group": "Shipping & verification", "question": "What does \"verified\" mean?", "answer": "Every shirt is numbered against its own chip at print. Tapping it confirms you're holding the exact piece we made — not a copy." } },
+        { "type": "qa", "settings": { "group": "Shipping & verification", "question": "Will this drop restock?", "answer": "No. 300 pieces, once. When they're gone, that print number closes for good." } },
+        { "type": "qa", "settings": { "group": "Care", "question": "How do I keep the print sharp?", "answer": "Wash cold, inside out, hang dry. Heat is the only thing that fades a screen print early." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,217 @@
+{%- style -%}
+  .uscode-pdp {
+    background: {{ section.settings.bg_color }};
+    color: #fff;
+  }
+  .uscode-pdp__gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .uscode-pdp__gallery-item {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background: #2a2a2a;
+  }
+  .uscode-pdp__gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .uscode-pdp__info {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+  .uscode-pdp__logo {
+    margin-bottom: 28px;
+  }
+  .uscode-pdp__logo img {
+    height: 40px;
+    width: auto;
+  }
+  .uscode-pdp__eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .uscode-pdp__heading {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0 0 20px;
+    max-width: 600px;
+    font-style: italic;
+  }
+  .uscode-pdp__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ccc;
+    max-width: 520px;
+    margin-bottom: 32px;
+  }
+  .uscode-pdp__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .uscode-pdp__add-btn {
+    display: inline-block;
+    background: {{ section.settings.accent_color }};
+    color: #fff;
+    padding: 14px 28px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .uscode-pdp__add-btn:hover { opacity: 0.85; }
+  .uscode-pdp__add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .uscode-pdp__link {
+    color: #fff;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .uscode-pdp__link:hover { opacity: 0.7; }
+  .uscode-pdp__variants {
+    margin-bottom: 24px;
+  }
+  .uscode-pdp__variant-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: #999;
+  }
+  .uscode-pdp__variant-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .uscode-pdp__variant-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    background: transparent;
+    color: #fff;
+    border: 1px solid #555;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .uscode-pdp__variant-btn:hover { border-color: #fff; }
+  .uscode-pdp__variant-btn.active {
+    border-color: #fff;
+    background: #fff;
+    color: {{ section.settings.bg_color }};
+  }
+  .uscode-pdp__price {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  @media (max-width: 749px) {
+    .uscode-pdp__gallery { grid-template-columns: 1fr; }
+    .uscode-pdp__info { padding: 32px 20px 48px; }
+  }
+{%- endstyle -%}
+
+<section class="uscode-pdp">
+  <div class="uscode-pdp__gallery">
+    {%- if product.images.size > 0 -%}
+      {%- for image in product.images limit: 4 -%}
+        <div class="uscode-pdp__gallery-item">
+          {{ image | image_url: width: 900 | image_tag: loading: 'lazy' }}
+        </div>
+      {%- endfor -%}
+      {%- if product.images.size < 4 -%}
+        {%- assign remaining = 4 | minus: product.images.size -%}
+        {%- for i in (1..remaining) -%}
+          <div class="uscode-pdp__gallery-item"></div>
+        {%- endfor -%}
+      {%- endif -%}
+    {%- else -%}
+      <div class="uscode-pdp__gallery-item"></div>
+      <div class="uscode-pdp__gallery-item"></div>
+      <div class="uscode-pdp__gallery-item"></div>
+      <div class="uscode-pdp__gallery-item"></div>
+    {%- endif -%}
+  </div>
+
+  <div class="uscode-pdp__info">
+    <div class="uscode-pdp__logo">
+      <img src="{{ 'uscode-logo-light.svg' | asset_url }}" alt="US CODE" height="40">
+    </div>
+    <p class="uscode-pdp__eyebrow">{{ section.settings.eyebrow }}</p>
+    <h1 class="uscode-pdp__heading">{{ product.title }}</h1>
+    <div class="uscode-pdp__description">{{ product.description }}</div>
+
+    {%- form 'product', product -%}
+      {%- if product.has_only_default_variant == false -%}
+        <div class="uscode-pdp__variants">
+          {%- for option in product.options_with_values -%}
+            <p class="uscode-pdp__variant-label">{{ option.name }}</p>
+            <div class="uscode-pdp__variant-options">
+              {%- for value in option.values -%}
+                <button type="button" class="uscode-pdp__variant-btn{% if option.selected_value == value %} active{% endif %}" data-option-index="{{ forloop.parentloop.index0 }}" data-value="{{ value }}">
+                  {{ value }}
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+        <select name="id" class="no-js" style="display:none;">
+          {%- for variant in product.variants -%}
+            <option value="{{ variant.id }}"{% if variant == product.selected_or_first_available_variant %} selected{% endif %}>
+              {{ variant.title }} — {{ variant.price | money }}
+            </option>
+          {%- endfor -%}
+        </select>
+      {%- else -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      {%- endif -%}
+
+      <div class="uscode-pdp__actions">
+        <button type="submit" class="uscode-pdp__add-btn"{% unless product.available %} disabled{% endunless %}>
+          {%- if product.available -%}
+            {{ section.settings.cta_label }} — {{ product.selected_or_first_available_variant.price | money }}
+          {%- else -%}
+            Sold out
+          {%- endif -%}
+        </button>
+        {%- if section.settings.secondary_label != blank -%}
+          <a href="{{ section.settings.secondary_link }}" class="uscode-pdp__link">
+            {{ section.settings.secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Product Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow text", "default": "FOR YOUR EYES ONLY" },
+    { "type": "text", "id": "cta_label", "label": "CTA button label", "default": "Shop the drop" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary link label", "default": "How the NFC works" },
+    { "type": "url", "id": "secondary_link", "label": "Secondary link URL" },
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#1A1A1A" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#C83232" }
+  ]
+}
+{% endschema %}
