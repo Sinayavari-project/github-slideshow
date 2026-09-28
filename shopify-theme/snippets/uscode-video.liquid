@@ -1,9 +1,14 @@
 {%- doc -%}
   A <video> from a Shopify-hosted video (Files) or a link / theme asset filename.
+  Shopify videos list HLS first, then MP4 renditions picked by screen width.
   @param {object} [video] - Video setting value (Shopify Files)
   @param {string} [url] - Full URL, or a theme asset filename such as founders-memory.mp4
-  @param {object} [poster] - Image to show before playback
+  @param {object} [poster] - Image to show before playback (defaults to the video's preview image)
+  @param {number} [poster_width] - Poster width in px (default 900)
   @param {string} [attrs] - Extra attributes, e.g. muted loop playsinline
+  @param {string} [preload] - none | metadata | auto (default metadata)
+  @param {string} [size] - 'small' serves only the lightest rendition (previews)
+  @param {string} [track] - Captions (.vtt) URL
   @param {string} [label] - Accessible label
 {%- enddoc -%}
 {%- liquid
@@ -14,21 +19,37 @@
       assign src = src | asset_url
     endunless
   endif
+  assign pw = poster_width | default: 900
   assign poster_url = ''
   if poster != blank
-    assign poster_url = poster | image_url: width: 900
-  elsif video != blank
-    assign poster_url = video.preview_image | image_url: width: 900
+    assign poster_url = poster | image_url: width: pw
+  elsif video != blank and video.preview_image != blank
+    assign poster_url = video.preview_image | image_url: width: pw
   endif
 -%}
 {%- if video != blank or src != blank -%}
-  <video {{ attrs }} preload="metadata"{% if poster_url != '' %} poster="{{ poster_url }}"{% endif %}{% if label != blank %} aria-label="{{ label | escape }}"{% endif %}>
+  <video {{ attrs }} preload="{{ preload | default: 'metadata' }}"{% if poster_url != '' %} poster="{{ poster_url }}"{% endif %}{% if label != blank %} aria-label="{{ label | escape }}"{% endif %}>
     {%- if video != blank -%}
-      {%- for source in video.sources -%}
-        <source src="{{ source.url }}" type="{{ source.mime_type }}">
-      {%- endfor -%}
+      {%- liquid
+        assign hls = video.sources | where: 'mime_type', 'application/x-mpegURL' | first
+        assign mp4s = video.sources | where: 'mime_type', 'video/mp4' | sort: 'height'
+        assign big = mp4s | last
+      -%}
+      {%- if hls -%}<source src="{{ hls.url }}" type="application/x-mpegURL">{%- endif -%}
+      {%- if size == 'small' -%}
+        {%- if mp4s.size > 0 -%}<source src="{{ mp4s.first.url }}" type="video/mp4">{%- endif -%}
+      {%- else -%}
+        {%- for s in mp4s -%}
+          {%- if s.height <= 540 and mp4s.size > 1 -%}<source src="{{ s.url }}" type="video/mp4" media="(max-width: 767px)">{%- endif -%}
+        {%- endfor -%}
+        {%- if big.height > 720 and mp4s.size > 1 -%}<source src="{{ big.url }}" type="video/mp4" media="(min-width: 1400px)">{%- endif -%}
+        {%- assign fallback = mp4s.first -%}
+        {%- for s in mp4s -%}{%- if s.height <= 720 -%}{%- assign fallback = s -%}{%- endif -%}{%- endfor -%}
+        {%- if fallback -%}<source src="{{ fallback.url }}" type="video/mp4">{%- endif -%}
+      {%- endif -%}
     {%- else -%}
       <source src="{{ src }}" type="video/mp4">
     {%- endif -%}
+    {%- if track != blank -%}<track kind="captions" src="{{ track }}" srclang="en" label="English" default>{%- endif -%}
   </video>
 {%- endif -%}
