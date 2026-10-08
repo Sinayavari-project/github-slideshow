@@ -241,6 +241,15 @@
                 — {{ item.selling_plan_allocation.selling_plan.name }}
               {% endif %}
             </p>
+            {%- for property in item.properties -%}
+              {%- assign first_char = property.first | slice: 0 -%}
+              {%- if property.last != blank and first_char != '_' -%}
+                <p class="uscode-cart__meta">
+                  {{ property.first }}:
+                  {% if property.last contains '/uploads/' %}<a href="{{ property.last }}" target="_blank" rel="noopener">{{ property.last | split: '/' | last }}</a>{% else %}{{ property.last }}{% endif %}
+                </p>
+              {%- endif -%}
+            {%- endfor -%}
             <div class="uscode-cart__actions">
               <div class="uscode-cart__stepper">
                 <button type="button" aria-label="Decrease quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | minus: 1 }})">–</button>

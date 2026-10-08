@@ -135,6 +135,13 @@
     const stickyBtn = root.querySelector('[data-sticky-atc]');
     const stickyMeta = root.querySelector('[data-sticky-meta]');
     const toastEl = root.querySelector('[data-toast]');
+    const lineStep = root.querySelector('[data-line-step]');
+    const lineOwn = root.querySelector('[data-line-own]');
+    const lineInput = root.querySelector('[data-line-input]');
+    const lineConfirm = root.querySelector('[data-line-confirm]');
+    const atcHint = root.querySelector('[data-atc-hint]');
+    const photoStep = root.querySelector('[data-upload-filled]');
+    let photoOk = false;
     const left = root.dataset.left;
     const gal = gallery(root);
     const optionCount = variants.length ? variants[0].options.length : 0;
@@ -151,6 +158,92 @@
       return picked;
     }
     const matches = (v, picked, skip) => v.options.every((o, i) => i === skip || picked[i] == null || picked[i] === o);
+
+    const HINTS = { size: 'Choose your size to continue.', line: 'Write your line to continue.', confirm: 'Confirm your line to continue.', photo: 'Add your eye photo to continue.' };
+    const STICKY = { size: 'Select size', line: 'Write your line', confirm: 'Confirm your line', photo: 'Add eye photo' };
+    const lineType = () => { const r = lineStep && lineStep.querySelector('input[name="uscode-line"]:checked'); return r ? r.dataset.lineType : 'set'; };
+    function needed(needSize) {
+      if (needSize) return 'size';
+      if (lineStep) {
+        if (lineType() === 'custom' && !lineInput.value.trim()) return 'line';
+        if (!lineConfirm.checked) return 'confirm';
+      }
+      if (upload && !upload.hidden && !photoOk) return 'photo';
+      return '';
+    }
+
+    // the printed line: set list, write your own, or none
+    function syncLine(untick) {
+      if (!lineStep) return;
+      const type = lineType();
+      const radio = lineStep.querySelector('input[name="uscode-line"]:checked');
+      const max = Number(lineStep.dataset.max) || 36;
+      if (lineOwn) lineOwn.hidden = type !== 'custom';
+      let text = '';
+      if (type === 'custom') {
+        const clean = lineInput.value.replace(/[^\p{L}\p{N} .,!?'’&-]/gu, '').slice(0, max);
+        if (clean !== lineInput.value) lineInput.value = clean;
+        root.querySelector('[data-line-count]').textContent = `${clean.length}/${max}`;
+        text = clean.replace(/\s+/g, ' ').trim().toUpperCase();
+      } else if (type === 'set' && radio) {
+        text = radio.value.toUpperCase();
+      }
+      const preview = root.querySelector('[data-line-preview]');
+      preview.textContent = text;
+      preview.hidden = !text;
+      root.querySelector('[data-line-value]').value = type === 'none' ? '—' : text;
+      root.querySelector('[data-line-type-value]').value = type;
+      root.querySelector('[data-line-confirm-text]').textContent = type === 'none'
+        ? 'Print no line — eyes only. I understand this can’t be changed after printing.'
+        : `Print “${text || '…'}” exactly as shown. I understand the line can’t be changed after printing.`;
+      if (untick) lineConfirm.checked = false;
+    }
+
+    // eye photo: JPG/PNG, checked for width before it can be added
+    function clearPhoto(msg) {
+      photoOk = false;
+      if (uploadInput) uploadInput.value = '';
+      const drop = root.querySelector('[data-upload-drop]');
+      if (drop) drop.hidden = false;
+      if (photoStep) photoStep.hidden = true;
+      const th = root.querySelector('[data-upload-thumb]');
+      if (th) th.textContent = '';
+      if (uploadError) { uploadError.textContent = msg || 'Add your photo to continue.'; uploadError.hidden = !msg; }
+    }
+    function checkPhoto() {
+      const file = uploadInput.files[0];
+      if (!file) { clearPhoto(); update(false); return; }
+      if (!/^image\/(jpeg|png)$/.test(file.type)) { clearPhoto('Use a JPG or PNG photo.'); update(false); return; }
+      const min = Number(uploadInput.dataset.minWidth) || 0;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        if (img.naturalWidth < min) {
+          URL.revokeObjectURL(url);
+          clearPhoto(`That photo is ${img.naturalWidth}px wide. Use one at least ${min}px wide.`);
+        } else {
+          photoOk = true;
+          img.alt = '';
+          const th = root.querySelector('[data-upload-thumb]');
+          th.textContent = '';
+          th.appendChild(img);
+          root.querySelector('[data-upload-name]').textContent = file.name;
+          root.querySelector('[data-upload-meta]').textContent = `${img.naturalWidth} × ${img.naturalHeight}px · ${(file.size / 1048576).toFixed(1)} MB`;
+          root.querySelector('[data-upload-drop]').hidden = true;
+          photoStep.hidden = false;
+          uploadError.hidden = true;
+        }
+        update(false);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); clearPhoto('We couldn’t read that photo. Try another JPG or PNG.'); update(false); };
+      img.src = url;
+    }
+
+    function scrollToEl(el, focusEl) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top, behavior: reduceMotion() ? 'auto' : 'smooth' });
+      if (focusEl) focusEl.focus({ preventScroll: true });
+    }
 
     let lastMedia = null;
     function update(fromUser) {
@@ -204,6 +297,17 @@
         atcLabel.textContent = `Add to cart — ${price}`;
       }
       if (variant) idInput.value = variant.id;
+      const soldOut = atc.disabled;
+      const missing = lineStep ? needed(needSize) : '';
+      if (lineStep) {
+        if (missing) atc.disabled = true;
+        if (atcHint) {
+          const onUpload = upload && tierIndex >= 0 && picked[tierIndex] === uploadTier;
+          atcHint.textContent = soldOut ? '' : HINTS[missing] || (onUpload ? atcHint.dataset.shipUpload : atcHint.dataset.ship) || '';
+          atcHint.classList.toggle('is-todo', !!missing);
+          if (atcHint.textContent) atc.setAttribute('aria-describedby', atcHint.id); else atc.removeAttribute('aria-describedby');
+        }
+      }
 
       if (tierIndex >= 0) {
         root.querySelectorAll('[data-tier-desc]').forEach((p) => { p.hidden = p.dataset.tierDesc !== picked[tierIndex]; });
@@ -214,10 +318,17 @@
         uploadInput.disabled = !on;
         if (!on && uploadError) uploadError.hidden = true;
       }
+      if (lineStep && upload && atcHint && !soldOut) {
+        // photo step visibility can change the hint after the tier switch
+        const m = needed(needSize);
+        atc.disabled = !!m;
+        if (m) atcHint.textContent = HINTS[m];
+        atcHint.classList.toggle('is-todo', !!m);
+      }
       if (!needSize && sizeGroup) {
         sizeGroup.classList.remove('is-needed');
         if (sizeError) sizeError.hidden = true;
-        atc.removeAttribute('aria-describedby');
+        if (!lineStep) atc.removeAttribute('aria-describedby');
       }
 
       if (stickyMeta) {
@@ -228,8 +339,14 @@
         stickyMeta.textContent = bits.join(' · ');
       }
       if (stickyBtn) {
-        stickyBtn.textContent = atc.disabled ? 'Sold out' : needSize ? 'Select size' : 'Add to cart';
-        stickyBtn.disabled = atc.disabled;
+        if (lineStep) {
+          const m = needed(needSize);
+          stickyBtn.textContent = soldOut ? 'Sold out' : STICKY[m] || 'Add to cart';
+          stickyBtn.disabled = soldOut;
+        } else {
+          stickyBtn.textContent = atc.disabled ? 'Sold out' : needSize ? 'Select size' : 'Add to cart';
+          stickyBtn.disabled = atc.disabled;
+        }
       }
 
       if (fromUser && variant) {
@@ -274,15 +391,16 @@
         if (first) first.focus({ preventScroll: true });
         return;
       }
-      if (upload && !upload.hidden && !uploadInput.files.length) {
+      if (upload && !upload.hidden && !photoOk) {
         uploadError.hidden = false;
         uploadInput.focus();
         return;
       }
+      if (lineStep && needed(false)) return;
       atc.setAttribute('aria-busy', 'true');
       try {
         const body = new FormData(form);
-        [...body.keys()].forEach((k) => { if (k.startsWith('uscode-option-')) body.delete(k); });
+        [...body.keys()].forEach((k) => { if (k.startsWith('uscode-option-') || k === 'uscode-line') body.delete(k); });
         const res = await fetch(`${root.dataset.cartAddUrl}.js`, { method: 'POST', headers: { Accept: 'application/json' }, body });
         const data = await res.json();
         if (!res.ok) throw new Error(data.description || data.message || 'Could not add that piece.');
@@ -299,10 +417,24 @@
     }
 
     if (form) {
-      form.addEventListener('change', (e) => { if (e.target.matches('[data-option]')) update(true); if (e.target === uploadInput && uploadError) uploadError.hidden = true; });
+      form.addEventListener('change', (e) => {
+        if (e.target.matches('[data-option]')) update(true);
+        if (e.target.name === 'uscode-line') { syncLine(true); update(false); if (lineType() === 'custom') lineInput.focus(); }
+        if (e.target === lineConfirm) update(false);
+        if (e.target === uploadInput) checkPhoto();
+      });
+      if (lineInput) lineInput.addEventListener('input', () => { syncLine(true); update(false); });
       form.addEventListener('submit', (e) => { e.preventDefault(); add(); });
     }
-    if (stickyBtn) stickyBtn.addEventListener('click', add);
+    if (stickyBtn) stickyBtn.addEventListener('click', () => {
+      const m = lineStep ? needed(selected()[sizeIndex] == null && sizeIndex >= 0) : '';
+      if (!m) { add(); return; }
+      if (m === 'size') { scrollToEl(sizeGroup, sizeGroup.querySelector('input:not(:disabled)')); return; }
+      if (m === 'photo') { scrollToEl(upload, uploadInput); return; }
+      scrollToEl(lineStep, m === 'line' ? lineInput : m === 'confirm' ? lineConfirm : lineStep.querySelector('input[name="uscode-line"]:checked'));
+    });
+    const removeBtn = root.querySelector('[data-upload-remove]');
+    if (removeBtn) removeBtn.addEventListener('click', () => { clearPhoto(); update(false); uploadInput.focus(); });
 
     root.querySelectorAll('[data-choose]').forEach((btn) => btn.addEventListener('click', () => {
       const target = inputsFor(tierIndex).find((el) => el.value === btn.dataset.choose);
@@ -339,6 +471,7 @@
       check();
     }
 
+    syncLine(false);
     update(false);
   }
 
