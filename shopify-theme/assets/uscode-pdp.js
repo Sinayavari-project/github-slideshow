@@ -125,8 +125,11 @@
     const sizeIndex = Number(root.dataset.sizeIndex);
     const tierIndex = Number(root.dataset.tierIndex);
     const uploadTier = root.dataset.uploadTier;
-    const sizeGroup = sizeIndex >= 0 ? root.querySelector(`[data-option-group="${sizeIndex}"]`) : null;
-    const sizeError = root.querySelector('[data-size-error]');
+    const sizeIdxs = (root.dataset.sizeIndexes || '').split(',').filter((x) => x !== '').map(Number);
+    if (!sizeIdxs.length && sizeIndex >= 0) sizeIdxs.push(sizeIndex);
+    const groupOf = (i) => root.querySelector(`[data-option-group="${i}"]`);
+    const errorOf = (i) => root.querySelector(`[data-size-error="${i}"]`);
+    const missingSize = (picked) => { const i = sizeIdxs.find((k) => picked[k] == null); return i === undefined ? -1 : i; };
     const upload = root.querySelector('[data-upload]');
     const uploadInput = root.querySelector('[data-upload-input]');
     const uploadError = root.querySelector('[data-upload-error]');
@@ -159,7 +162,7 @@
     }
     const matches = (v, picked, skip) => v.options.every((o, i) => i === skip || picked[i] == null || picked[i] === o);
 
-    const HINTS = { size: 'Choose your size to continue.', line: 'Write your line to continue.', confirm: 'Confirm your line to continue.', photo: 'Add your eye photo to continue.' };
+    const HINTS = { size: sizeIdxs.length > 1 ? 'Choose both sizes to continue.' : 'Choose your size to continue.', line: 'Write your line to continue.', confirm: 'Confirm your line to continue.', photo: 'Add your eye photo to continue.' };
     const STICKY = { size: 'Select size', line: 'Write your line', confirm: 'Confirm your line', photo: 'Add eye photo' };
     const lineType = () => { const r = lineStep && lineStep.querySelector('input[name="uscode-line"]:checked'); return r ? r.dataset.lineType : 'set'; };
     function needed(needSize) {
@@ -253,13 +256,13 @@
         inputsFor(i).forEach((el) => {
           if (el.type !== 'radio') return;
           const ok = variants.some((v) => v.available && v.options[i] === el.value && matches(v, picked, i));
-          if (i === sizeIndex) {
+          if (sizeIdxs.includes(i)) {
             el.disabled = !ok;
-            if (!ok) soldSizes.push(el.value);
+            if (!ok && !soldSizes.includes(el.value)) soldSizes.push(el.value);
             if (!ok && el.checked) { el.checked = false; picked[i] = null; }
           }
           const label = root.querySelector(`label[for="${el.id}"]`);
-          if (label && i === sizeIndex) label.setAttribute('aria-label', ok ? el.value : `${el.value}, sold out`);
+          if (label && sizeIdxs.includes(i)) label.setAttribute('aria-label', ok ? el.value : `${el.value}, sold out`);
         });
         const out = root.querySelector(`[data-option-value="${i}"]`);
         if (out) out.textContent = picked[i] || '';
@@ -268,7 +271,7 @@
         soldNote.textContent = soldSizes.length ? `${soldSizes.join(', ')} sold out.` : '';
       }
 
-      const needSize = sizeIndex >= 0 && picked[sizeIndex] == null;
+      const needSize = missingSize(picked) >= 0;
       const candidates = variants.filter((v) => matches(v, picked));
       const variant = needSize ? null : candidates[0] || null;
       const priceFrom = candidates.filter((v) => v.available).concat(candidates)[0];
@@ -288,7 +291,7 @@
         atcLabel.textContent = 'Sold out';
       } else if (needSize) {
         atc.disabled = false;
-        atcLabel.textContent = `Select a size — ${price}`;
+        atcLabel.textContent = `${sizeIdxs.length > 1 ? 'Select sizes' : 'Select a size'} — ${price}`;
       } else {
         atc.disabled = false;
         atcLabel.textContent = `Add to cart — ${price}`;
@@ -322,16 +325,18 @@
         if (m) atcHint.textContent = HINTS[m];
         atcHint.classList.toggle('is-todo', !!m);
       }
-      if (!needSize && sizeGroup) {
-        sizeGroup.classList.remove('is-needed');
-        if (sizeError) sizeError.hidden = true;
-        if (!lineStep) atc.removeAttribute('aria-describedby');
-      }
+      sizeIdxs.forEach((i) => {
+        if (picked[i] == null) return;
+        groupOf(i).classList.remove('is-needed');
+        if (errorOf(i)) errorOf(i).hidden = true;
+      });
+      if (!needSize && !lineStep) atc.removeAttribute('aria-describedby');
 
       if (stickyMeta) {
         const bits = [];
         if (tierIndex >= 0 && picked[tierIndex]) bits.push(picked[tierIndex]);
-        if (sizeIndex >= 0) bits.push(picked[sizeIndex] ? `Size ${picked[sizeIndex]}` : 'Choose size');
+        if (sizeIdxs.length === 1) bits.push(picked[sizeIdxs[0]] ? `Size ${picked[sizeIdxs[0]]}` : 'Choose size');
+        else if (sizeIdxs.length) bits.push(needSize ? 'Choose sizes' : `Sizes ${sizeIdxs.map((i) => picked[i]).join(' / ')}`);
         if (left) bits.push(`${left} left`);
         stickyMeta.textContent = bits.join(' · ');
       }
@@ -341,7 +346,7 @@
           stickyBtn.textContent = soldOut ? 'Sold out' : STICKY[m] || 'Add to cart';
           stickyBtn.disabled = soldOut;
         } else {
-          stickyBtn.textContent = atc.disabled ? 'Sold out' : needSize ? 'Select size' : 'Add to cart';
+          stickyBtn.textContent = atc.disabled ? 'Sold out' : needSize ? (sizeIdxs.length > 1 ? 'Select sizes' : 'Select size') : 'Add to cart';
           stickyBtn.disabled = atc.disabled;
         }
       }
@@ -378,7 +383,9 @@
     async function add() {
       if (atc.disabled || atc.getAttribute('aria-busy') === 'true') return;
       const picked = selected();
-      if (sizeIndex >= 0 && picked[sizeIndex] == null) {
+      const miss = missingSize(picked);
+      if (miss >= 0) {
+        const sizeGroup = groupOf(miss), sizeError = errorOf(miss);
         sizeGroup.classList.add('is-needed');
         sizeError.hidden = false;
         atc.setAttribute('aria-describedby', sizeError.id);
@@ -402,8 +409,8 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.description || data.message || 'Could not add that piece.');
         const parts = [root.dataset.productTitle];
-        if (sizeIndex >= 0) parts.push(picked[sizeIndex]);
-        picked.forEach((v, i) => { if (i !== sizeIndex && v && inputsFor(i).some((el) => el.type === 'radio')) parts.push(v); });
+        sizeIdxs.forEach((i) => parts.push(picked[i]));
+        picked.forEach((v, i) => { if (!sizeIdxs.includes(i) && v && inputsFor(i).some((el) => el.type === 'radio')) parts.push(v); });
         toast(`Added — ${parts.join(', ')}`);
         syncCart();
       } catch (err) {
@@ -424,9 +431,10 @@
       form.addEventListener('submit', (e) => { e.preventDefault(); add(); });
     }
     if (stickyBtn) stickyBtn.addEventListener('click', () => {
-      const m = lineStep ? needed(selected()[sizeIndex] == null && sizeIndex >= 0) : '';
+      const miss = missingSize(selected());
+      const m = lineStep ? needed(miss >= 0) : '';
       if (!m) { add(); return; }
-      if (m === 'size') { scrollToEl(sizeGroup, sizeGroup.querySelector('input:not(:disabled)')); return; }
+      if (m === 'size') { const g = groupOf(miss); scrollToEl(g, g.querySelector('input:not(:disabled)')); return; }
       if (m === 'photo') { scrollToEl(upload, uploadInput); return; }
       scrollToEl(lineStep, m === 'line' ? lineInput : m === 'confirm' ? lineConfirm : lineStep.querySelector('input[name="uscode-line"]:checked'));
     });

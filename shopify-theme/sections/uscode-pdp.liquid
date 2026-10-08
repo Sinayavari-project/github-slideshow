@@ -7,14 +7,21 @@
   assign size_name = section.settings.size_option | default: 'Size' | downcase
   assign tier_index = -1
   assign size_index = -1
+  assign size_last = -1
+  assign size_keys = ','
   for option in product.options_with_values
     assign oname = option.name | downcase
     if oname == tier_name
       assign tier_index = forloop.index0
-    elsif oname == size_name
-      assign size_index = forloop.index0
+    elsif oname == size_name or oname contains 'size'
+      if size_index < 0
+        assign size_index = forloop.index0
+      endif
+      assign size_last = forloop.index0
+      assign size_keys = size_keys | append: forloop.index0 | append: ','
     endif
   endfor
+  assign size_indexes = size_keys | remove_first: ',' | split: ',' | join: ','
 
   assign current = product.selected_or_first_available_variant
   if product.selected_variant == blank and tier_index >= 0 and section.settings.default_tier != blank
@@ -110,6 +117,7 @@
   data-uscode-pdp
   data-section-id="{{ section.id }}"
   data-size-index="{{ size_index }}"
+  data-size-indexes="{{ size_indexes }}"
   data-tier-index="{{ tier_index }}"
   data-upload-tier="{{ section.settings.upload_tier | escape }}"
   data-cart-add-url="{{ routes.cart_add_url }}"
@@ -238,16 +246,33 @@
             {%- liquid
               assign oi = forloop.index0
               assign selected = current.options[oi]
-              if oi == size_index and size_open
+              assign okey = ',' | append: oi | append: ','
+              assign is_size = false
+              if size_keys contains okey
+                assign is_size = true
+              endif
+              if is_size and size_open
                 assign selected = ''
               endif
+              assign olabel = option.name
+              assign label_rows = section.settings.option_labels | newline_to_br | split: '<br />'
+              for row in label_rows
+                assign pair = row | strip | split: ':'
+                if pair.size > 1
+                  assign pname = pair[0] | strip | downcase
+                  assign lname = option.name | downcase
+                  if pname == lname
+                    assign olabel = row | strip | remove_first: pair[0] | remove_first: ':' | strip
+                  endif
+                endif
+              endfor
             -%}
             {%- if option.values.size == 1 -%}
               <input type="hidden" value="{{ option.values.first | escape }}" data-option="{{ oi }}">
             {%- elsif oi == tier_index -%}
               {%- assign step = step | plus: 1 -%}
               <fieldset class="uscode-pdp__fieldset" data-option-group="{{ oi }}">
-                <legend class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ option.name }}</span><b data-option-value="{{ oi }}">{{ selected }}</b></legend>
+                <legend class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ olabel }}</span><b data-option-value="{{ oi }}">{{ selected }}</b></legend>
                 <div class="uscode-pdp__tiersel">
                   {%- for value in option.values -%}
                     {%- liquid
@@ -300,9 +325,9 @@
               </fieldset>
             {%- else -%}
               {%- assign step = step | plus: 1 -%}
-              <fieldset class="uscode-pdp__fieldset{% if oi == size_index %} uscode-pdp__fieldset--size{% endif %}" data-option-group="{{ oi }}">
+              <fieldset class="uscode-pdp__fieldset{% if is_size %} uscode-pdp__fieldset--size{% endif %}" data-option-group="{{ oi }}">
                 <legend class="uscode-pdp__olabel">
-                  <span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ option.name }}</span>
+                  <span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ olabel }}</span>
                   {%- if oi == size_index and section.settings.size_guide != blank -%}
                     <button type="button" class="uscode-pdp__guidebtn" data-guide-open aria-haspopup="dialog">Size guide</button>
                   {%- else -%}
@@ -326,10 +351,12 @@
                     <label class="uscode-pdp__sopt" for="{{ input_id }}">{{ value }}</label>
                   {%- endfor -%}
                 </div>
-                {%- if oi == size_index -%}
-                  <p class="uscode-pdp__err" id="SizeError-{{ section.id }}" role="alert" data-size-error hidden>
+                {%- if is_size -%}
+                  <p class="uscode-pdp__err" id="SizeError-{{ section.id }}-{{ oi }}" role="alert" data-size-error="{{ oi }}" hidden>
                     Choose a size to continue.
                   </p>
+                {%- endif -%}
+                {%- if oi == size_last -%}
                   <p class="uscode-pdp__fitnote">
                     {{ section.settings.fit_note }}
                     <span data-soldout-note></span>
@@ -660,6 +687,7 @@
     { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 48h · memory added after checkout" },
     { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3–4 weeks · memory added after checkout" },
     { "type": "number", "id": "upload_min_width", "label": "Eye photo minimum width (px)", "default": 2000 },
+    { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: Size — first tee\nTee 2 size: Size — second tee", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
     { "type": "checkbox", "id": "sticky_bar", "label": "Sticky add to cart on phones", "default": true },
     { "type": "checkbox", "id": "mobile_thumbs", "label": "Show thumbnails on phones", "default": true },
     { "type": "header", "content": "Features" },
