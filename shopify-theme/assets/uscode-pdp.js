@@ -125,6 +125,8 @@
     const sizeIndex = Number(root.dataset.sizeIndex);
     const tierIndex = Number(root.dataset.tierIndex);
     const uploadTier = root.dataset.uploadTier;
+    const uploadAll = root.dataset.uploadAll === 'true';
+    const photoRequired = (picked) => !!uploadTier && tierIndex >= 0 && picked[tierIndex] === uploadTier;
     const sizeIdxs = (root.dataset.sizeIndexes || '').split(',').filter((x) => x !== '').map(Number);
     if (!sizeIdxs.length && sizeIndex >= 0) sizeIdxs.push(sizeIndex);
     const groupOf = (i) => root.querySelector(`[data-option-group="${i}"]`);
@@ -172,7 +174,7 @@
         if (lineType() === 'custom' && !lineInput.value.trim()) return 'line';
         if (!lineConfirm.checked) return 'confirm';
       }
-      if (upload && !upload.hidden && !photoOk) return 'photo';
+      if (upload && !upload.hidden && !photoOk && photoRequired(selected())) return 'photo';
       return '';
     }
 
@@ -303,7 +305,7 @@
       if (lineStep) {
         if (missing) atc.disabled = true;
         if (atcHint) {
-          const onUpload = upload && tierIndex >= 0 && picked[tierIndex] === uploadTier;
+          const onUpload = upload && photoRequired(picked);
           atcHint.textContent = soldOut ? '' : HINTS[missing] || (onUpload ? atcHint.dataset.shipUpload : atcHint.dataset.ship) || '';
           atcHint.classList.toggle('is-todo', !!missing);
           if (atcHint.textContent) atc.setAttribute('aria-describedby', atcHint.id); else atc.removeAttribute('aria-describedby');
@@ -314,8 +316,11 @@
         root.querySelectorAll('[data-tier-desc]').forEach((p) => { p.hidden = p.dataset.tierDesc !== picked[tierIndex]; });
       }
       if (upload) {
-        const on = tierIndex >= 0 && picked[tierIndex] === uploadTier;
+        const on = uploadAll || photoRequired(picked);
         upload.hidden = !on;
+        const req = upload.querySelector('[data-upload-req]');
+        if (req && uploadAll) req.textContent = photoRequired(picked) ? req.dataset.reqText : req.dataset.optText;
+        if (uploadError && !photoRequired(picked) && uploadError.textContent === 'Add your photo to continue.') uploadError.hidden = true;
         photoInputs.forEach((el) => { el.disabled = !on; });
         if (!on && uploadError) uploadError.hidden = true;
       }
@@ -396,7 +401,7 @@
         if (first) first.focus({ preventScroll: true });
         return;
       }
-      if (upload && !upload.hidden && !photoOk) {
+      if (upload && !upload.hidden && !photoOk && photoRequired(picked)) {
         uploadError.hidden = false;
         uploadInput.focus();
         return;

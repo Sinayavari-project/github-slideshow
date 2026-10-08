@@ -120,6 +120,7 @@
   data-size-indexes="{{ size_indexes }}"
   data-tier-index="{{ tier_index }}"
   data-upload-tier="{{ section.settings.upload_tier | escape }}"
+  data-upload-all="{{ section.settings.upload_all_tiers }}"
   data-cart-add-url="{{ routes.cart_add_url }}"
   data-product-title="{{ product.title | escape }}"
   data-left="{% if show_stock %}{{ left_total }}{% endif %}"
@@ -404,10 +405,10 @@
           </fieldset>
         {%- endif -%}
 
-        {%- if tier_index >= 0 and section.settings.upload_tier != blank -%}
+        {%- if section.settings.upload_all_tiers or tier_index >= 0 and section.settings.upload_tier != blank -%}
           {%- assign step = step | plus: 1 -%}
           <div class="uscode-pdp__fieldset uscode-pdp__photostep" id="PhotoStep-{{ section.id }}" data-upload hidden>
-            <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span><b>{{ section.settings.upload_tier }} only</b></p>
+            <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span><b data-upload-req{% if section.settings.upload_tier != blank %} data-req-text="Required for {{ section.settings.upload_tier | escape }}"{% endif %} data-opt-text="Optional · up to 2">{% if section.settings.upload_all_tiers %}Optional · up to 2{% else %}{{ section.settings.upload_tier }} only{% endif %}</b></p>
             {%- for n in (1..2) -%}
               {%- liquid
                 if n == 1
@@ -688,7 +689,8 @@
     { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
     { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut — take your usual size." },
-    { "type": "text", "id": "upload_tier", "label": "Tier that asks for a photo", "default": "Signature", "info": "Leave blank to never ask." },
+    { "type": "checkbox", "id": "upload_all_tiers", "label": "Show eye photo uploads on every tier", "default": true, "info": "Up to two photos. Optional except on the tier below." },
+    { "type": "text", "id": "upload_tier", "label": "Tier that requires a photo", "default": "Signature", "info": "Leave blank to never require one." },
     { "type": "text", "id": "upload_title", "label": "Photo step title", "default": "Your eye photo" },
     { "type": "text", "id": "upload_title_1", "label": "First photo label", "default": "Upload a close-up of your eyes" },
     { "type": "text", "id": "upload_title_2", "label": "Second photo label", "default": "Add a second pair of eyes (optional)" },
