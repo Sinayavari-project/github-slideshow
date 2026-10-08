@@ -143,7 +143,8 @@
     const lineInput = root.querySelector('[data-line-input]');
     const lineConfirm = root.querySelector('[data-line-confirm]');
     const atcHint = root.querySelector('[data-atc-hint]');
-    const photoStep = root.querySelector('[data-upload-filled]');
+    const photoInputs = [...root.querySelectorAll('[data-photo-input]')];
+    const slotOf = (input) => input.closest('[data-photo-slot]');
     let photoOk = false;
     const left = root.dataset.left;
     const gal = gallery(root);
@@ -200,42 +201,42 @@
     }
 
     // eye photo: JPG/PNG, checked for width before it can be added
-    function clearPhoto(msg) {
-      photoOk = false;
-      if (uploadInput) uploadInput.value = '';
-      const drop = root.querySelector('[data-upload-drop]');
-      if (drop) drop.hidden = false;
-      if (photoStep) photoStep.hidden = true;
-      const th = root.querySelector('[data-upload-thumb]');
-      if (th) th.textContent = '';
+    function clearPhoto(input, msg) {
+      const slot = slotOf(input);
+      if (input === uploadInput) photoOk = false;
+      input.value = '';
+      slot.querySelector('[data-upload-drop]').hidden = false;
+      slot.querySelector('[data-upload-filled]').hidden = true;
+      slot.querySelector('[data-upload-thumb]').textContent = '';
       if (uploadError) { uploadError.textContent = msg || 'Add your photo to continue.'; uploadError.hidden = !msg; }
     }
-    function checkPhoto() {
-      const file = uploadInput.files[0];
-      if (!file) { clearPhoto(); update(false); return; }
-      if (!/^image\/(jpeg|png)$/.test(file.type)) { clearPhoto('Use a JPG or PNG photo.'); update(false); return; }
-      const min = Number(uploadInput.dataset.minWidth) || 0;
+    function checkPhoto(input) {
+      const file = input.files[0];
+      if (!file) { clearPhoto(input); update(false); return; }
+      if (!/^image\/(jpeg|png)$/.test(file.type)) { clearPhoto(input, 'Use a JPG or PNG photo.'); update(false); return; }
+      const min = Number(input.dataset.minWidth) || 0;
+      const slot = slotOf(input);
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
         if (img.naturalWidth < min) {
           URL.revokeObjectURL(url);
-          clearPhoto(`That photo is ${img.naturalWidth}px wide. Use one at least ${min}px wide.`);
+          clearPhoto(input, `That photo is ${img.naturalWidth}px wide. Use one at least ${min}px wide.`);
         } else {
-          photoOk = true;
+          if (input === uploadInput) photoOk = true;
           img.alt = '';
-          const th = root.querySelector('[data-upload-thumb]');
+          const th = slot.querySelector('[data-upload-thumb]');
           th.textContent = '';
           th.appendChild(img);
-          root.querySelector('[data-upload-name]').textContent = file.name;
-          root.querySelector('[data-upload-meta]').textContent = `${img.naturalWidth} × ${img.naturalHeight}px · ${(file.size / 1048576).toFixed(1)} MB`;
-          root.querySelector('[data-upload-drop]').hidden = true;
-          photoStep.hidden = false;
+          slot.querySelector('[data-upload-name]').textContent = file.name;
+          slot.querySelector('[data-upload-meta]').textContent = `${img.naturalWidth} × ${img.naturalHeight}px · ${(file.size / 1048576).toFixed(1)} MB`;
+          slot.querySelector('[data-upload-drop]').hidden = true;
+          slot.querySelector('[data-upload-filled]').hidden = false;
           uploadError.hidden = true;
         }
         update(false);
       };
-      img.onerror = () => { URL.revokeObjectURL(url); clearPhoto('We couldn’t read that photo. Try another JPG or PNG.'); update(false); };
+      img.onerror = () => { URL.revokeObjectURL(url); clearPhoto(input, 'We couldn’t read that photo. Try another JPG or PNG.'); update(false); };
       img.src = url;
     }
 
@@ -315,7 +316,7 @@
       if (upload) {
         const on = tierIndex >= 0 && picked[tierIndex] === uploadTier;
         upload.hidden = !on;
-        uploadInput.disabled = !on;
+        photoInputs.forEach((el) => { el.disabled = !on; });
         if (!on && uploadError) uploadError.hidden = true;
       }
       if (lineStep && upload && atcHint && !soldOut) {
@@ -405,6 +406,7 @@
       try {
         const body = new FormData(form);
         [...body.keys()].forEach((k) => { if (k.startsWith('uscode-option-') || k === 'uscode-line') body.delete(k); });
+        [...body.entries()].forEach(([k, v]) => { if (v instanceof File && !v.name) body.delete(k); });
         const res = await fetch(`${root.dataset.cartAddUrl}.js`, { method: 'POST', headers: { Accept: 'application/json' }, body });
         const data = await res.json();
         if (!res.ok) throw new Error(data.description || data.message || 'Could not add that piece.');
@@ -425,7 +427,7 @@
         if (e.target.matches('[data-option]')) update(true);
         if (e.target.name === 'uscode-line') { syncLine(true); update(false); if (lineType() === 'custom') lineInput.focus(); }
         if (e.target === lineConfirm) update(false);
-        if (e.target === uploadInput) checkPhoto();
+        if (e.target.matches('[data-photo-input]')) checkPhoto(e.target);
       });
       if (lineInput) lineInput.addEventListener('input', () => { syncLine(true); update(false); });
       form.addEventListener('submit', (e) => { e.preventDefault(); add(); });
@@ -438,8 +440,10 @@
       if (m === 'photo') { scrollToEl(upload, uploadInput); return; }
       scrollToEl(lineStep, m === 'line' ? lineInput : m === 'confirm' ? lineConfirm : lineStep.querySelector('input[name="uscode-line"]:checked'));
     });
-    const removeBtn = root.querySelector('[data-upload-remove]');
-    if (removeBtn) removeBtn.addEventListener('click', () => { clearPhoto(); update(false); uploadInput.focus(); });
+    root.querySelectorAll('[data-upload-remove]').forEach((btn) => btn.addEventListener('click', () => {
+      const input = btn.closest('[data-photo-slot]').querySelector('[data-photo-input]');
+      clearPhoto(input); update(false); input.focus();
+    }));
 
     root.querySelectorAll('[data-choose]').forEach((btn) => btn.addEventListener('click', () => {
       const target = inputsFor(tierIndex).find((el) => el.value === btn.dataset.choose);

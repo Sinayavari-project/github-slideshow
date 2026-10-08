@@ -136,6 +136,8 @@ html.uscode-pdp-lock { overflow: hidden; }
 .uscode-pdp__drop span { color: var(--muted); }
 .uscode-pdp__drop input { font: inherit; font-size: 13px; max-width: 100%; margin-top: 6px; }
 .uscode-pdp__filled { display: flex; align-items: center; gap: 12px; border: 2px solid var(--color-divider); padding: 10px; }
+.uscode-pdp__slot + .uscode-pdp__slot { margin-top: 8px; }
+.uscode-pdp__slot + .uscode-pdp__slot .uscode-pdp__drop { border-color: var(--color-neutral-400); }
 .uscode-pdp__filled > div { display: grid; flex: 1; min-width: 0; font-size: 13px; }
 .uscode-pdp__filled b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .uscode-pdp__filled span:not(.uscode-pdp__th) { color: var(--muted); font-size: 12px; }

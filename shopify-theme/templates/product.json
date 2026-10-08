@@ -172,7 +172,7 @@
         "size_option": "Size",
         "require_size": true,
         "fit_note": "Oversized, dropped shoulder. Take your usual size for the intended fit.",
-        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26\nXXL, 70, 78, 27",
+        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
         "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size.",
         "upload_tier": "Signature",
         "upload_title": "Your eye photo",

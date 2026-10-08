@@ -208,8 +208,8 @@
         "show_counter": true,
         "drop_collection": "drop-01",
         "edition_total": 300,
-        "foot_text": "Oversized fit · sizes S–XXL",
-        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26\nXXL, 70, 78, 27",
+        "foot_text": "Oversized fit · sizes S–XL",
+        "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
         "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size."
       }
     },

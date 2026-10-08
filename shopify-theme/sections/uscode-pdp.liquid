@@ -408,16 +408,29 @@
           {%- assign step = step | plus: 1 -%}
           <div class="uscode-pdp__fieldset uscode-pdp__photostep" id="PhotoStep-{{ section.id }}" data-upload hidden>
             <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span><b>{{ section.settings.upload_tier }} only</b></p>
-            <label class="uscode-pdp__drop" data-upload-drop>
-              <b>Upload a close-up of your eyes</b>
-              <span>{{ section.settings.upload_note }}</span>
-              <input type="file" name="properties[Eye photo]" accept="image/jpeg,image/png" disabled data-upload-input data-min-width="{{ section.settings.upload_min_width | default: 2000 }}">
-            </label>
-            <div class="uscode-pdp__filled" data-upload-filled hidden>
-              <span class="uscode-pdp__th" data-upload-thumb></span>
-              <div><b data-upload-name></b><span data-upload-meta></span></div>
-              <button type="button" class="uscode-pdp__linkbtn" data-upload-remove>Remove</button>
-            </div>
+            {%- for n in (1..2) -%}
+              {%- liquid
+                if n == 1
+                  assign prop = 'Eye photo'
+                  assign drop_title = section.settings.upload_title_1
+                else
+                  assign prop = 'Eye photo 2'
+                  assign drop_title = section.settings.upload_title_2
+                endif
+              -%}
+              <div class="uscode-pdp__slot" data-photo-slot="{{ n }}">
+                <label class="uscode-pdp__drop" data-upload-drop>
+                  <b>{{ drop_title }}</b>
+                  <span>{% if n == 1 %}{{ section.settings.upload_note }}{% else %}{{ section.settings.upload_note_2 }}{% endif %}</span>
+                  <input type="file" name="properties[{{ prop }}]" accept="image/jpeg,image/png" disabled data-photo-input{% if n == 1 %} data-upload-input{% endif %} data-min-width="{{ section.settings.upload_min_width | default: 2000 }}">
+                </label>
+                <div class="uscode-pdp__filled" data-upload-filled hidden>
+                  <span class="uscode-pdp__th" data-upload-thumb></span>
+                  <div><b data-upload-name></b><span data-upload-meta></span></div>
+                  <button type="button" class="uscode-pdp__linkbtn" data-upload-remove aria-label="Remove {{ prop | downcase }}">Remove</button>
+                </div>
+              </div>
+            {%- endfor -%}
             <p class="uscode-pdp__err" role="alert" data-upload-error hidden>Add your photo to continue.</p>
           </div>
         {%- endif -%}
@@ -673,10 +686,13 @@
     { "type": "text", "id": "size_option", "label": "Size option name", "default": "Size" },
     { "type": "checkbox", "id": "require_size", "label": "Shopper must pick a size", "default": true, "info": "No size is preselected, so nobody orders the wrong one by accident." },
     { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
-    { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26\nXXL, 70, 78, 27", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
+    { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
     { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut — take your usual size." },
     { "type": "text", "id": "upload_tier", "label": "Tier that asks for a photo", "default": "Signature", "info": "Leave blank to never ask." },
     { "type": "text", "id": "upload_title", "label": "Photo step title", "default": "Your eye photo" },
+    { "type": "text", "id": "upload_title_1", "label": "First photo label", "default": "Upload a close-up of your eyes" },
+    { "type": "text", "id": "upload_title_2", "label": "Second photo label", "default": "Add a second pair of eyes (optional)" },
+    { "type": "text", "id": "upload_note_2", "label": "Second photo hint", "default": "For couples: the other person's eyes. Same rules, JPG or PNG, at least 2000px wide." },
     { "type": "text", "id": "upload_note", "label": "Photo field hint", "default": "JPG or PNG, at least 2000px wide. Daylight, no filter. We'll email a proof before printing." },
     { "type": "header", "content": "Personalise (products with custom.print_lines)" },
     { "type": "paragraph", "content": "Lines come from the product metafield custom.print_lines. Switch them per product with custom.allow_custom_line and custom.allow_no_line. Products without lines show the normal buy box." },
