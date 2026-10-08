@@ -173,12 +173,17 @@
         </nav>
         <div class="uscode-col__phead-row">
           <h1 class="uscode-col__ptitle">{{ head_title }}</h1>
-          {%- if section.settings.subheading != blank -%}
-            <p class="uscode-col__psub">{{ section.settings.subheading }}</p>
-          {%- elsif collection.description != blank -%}
+          {%- if collection.handle != 'all' and collection.description != blank -%}
             <p class="uscode-col__psub">{{ collection.description | strip_html | truncatewords: 40 }}</p>
+          {%- elsif section.settings.subheading != blank -%}
+            <p class="uscode-col__psub">{{ section.settings.subheading }}</p>
           {%- endif -%}
         </div>
+        {%- if collection.handle != 'all' and collection.image != blank -%}
+          <figure class="uscode-col__banner">
+            {{ collection.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600, 900, 1200, 1600, 2000, 2400', sizes: '(min-width: 1200px) 1160px, 100vw', alt: collection.image.alt | default: collection.title }}
+          </figure>
+        {%- endif -%}
         {%- if section.settings.show_tabs -%}
           <nav class="uscode-col__tabs" aria-label="Collections">
             <a

@@ -32,6 +32,9 @@
 .uscode-col__phead-row { display: flex; justify-content: space-between; align-items: end; gap: var(--leading); flex-wrap: wrap; }
 .uscode-col__ptitle { font-family: var(--font-heading); font-weight: 700; font-size: clamp(40px, 6.4vw, 80px); line-height: 1; letter-spacing: -0.02em; margin: 0 0 0 -0.05em; }
 .uscode-col__psub { font-size: 15px; line-height: 23px; max-width: 40ch; margin: 0; color: var(--muted); }
+.uscode-col__banner { margin: var(--leading) 0 0; aspect-ratio: 16 / 9; background: var(--color-surface); overflow: hidden; }
+.uscode-col__banner img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 801px) { .uscode-col__banner { aspect-ratio: 21 / 8; } }
 .uscode-col__tabs { display: flex; gap: 28px; margin-top: calc(1.4 * var(--leading)); border-bottom: 2px solid var(--color-divider); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .uscode-col__tabs::-webkit-scrollbar { display: none; }
 .uscode-col__tab { padding: 12px 0; margin-bottom: -2px; border-bottom: 2px solid transparent; font-family: var(--font-heading); font-weight: 700; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted) !important; white-space: nowrap; display: flex; gap: 6px; text-decoration: none; }
