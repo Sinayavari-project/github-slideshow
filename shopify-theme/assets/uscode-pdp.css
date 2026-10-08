@@ -113,11 +113,6 @@ html.uscode-pdp-lock { overflow: hidden; }
 /* Personalise: step numbers, line, eye photo */
 .uscode-pdp__stepn { font-family: var(--font-heading); font-weight: 700; color: var(--color-accent-700); margin-right: 8px; font-feature-settings: "tnum" 1; }
 .uscode-pdp__linestep, .uscode-pdp__photostep { border-top: 2px solid var(--color-divider); padding-top: 16px; }
-.uscode-pdp__lpreview { position: relative; aspect-ratio: 4 / 5; background: var(--color-surface); overflow: hidden; margin-bottom: 12px; }
-.uscode-pdp__lpreview img { width: 100%; height: 100%; object-fit: cover; }
-.uscode-pdp__ptag { position: absolute; top: 10px; left: 10px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--color-bg); color: var(--color-text); padding: 3px 8px; }
-.uscode-pdp__pline { position: absolute; left: 6%; right: 6%; bottom: 6.5%; text-align: center; font-family: var(--font-heading); font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em; font-size: clamp(9px, 2.6cqi, 14px); line-height: 1.3; color: var(--color-text); overflow-wrap: anywhere; }
-.uscode-pdp__lpreview { container-type: inline-size; }
 .uscode-pdp__lines { display: grid; }
 .uscode-pdp__lopt { min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 10px 2px; border-bottom: 2px solid var(--color-divider); cursor: pointer; font-family: var(--font-heading); font-weight: 700; font-size: 14px; }
 .uscode-pdp__lopt--plain { font-family: var(--font-body); font-weight: 400; }

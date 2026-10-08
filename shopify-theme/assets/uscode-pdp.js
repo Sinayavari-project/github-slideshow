@@ -188,9 +188,6 @@
       } else if (type === 'set' && radio) {
         text = radio.value.toUpperCase();
       }
-      const preview = root.querySelector('[data-line-preview]');
-      preview.textContent = text;
-      preview.hidden = !text;
       root.querySelector('[data-line-value]').value = type === 'none' ? '—' : text;
       root.querySelector('[data-line-type-value]').value = type;
       root.querySelector('[data-line-confirm-text]').textContent = type === 'none'

@@ -95,7 +95,6 @@
   if allow_none == nil
     assign allow_none = true
   endif
-  assign line_image = product.metafields.custom.print_preview.value | default: section.settings.line_preview_image | default: product.featured_media.preview_image
   assign step = 0
 
   assign option_values = ''
@@ -346,13 +345,6 @@
           {%- assign first_line = print_lines | first -%}
           <fieldset class="uscode-pdp__fieldset uscode-pdp__linestep" id="LineStep-{{ section.id }}" data-line-step data-max="{{ section.settings.line_max | default: 36 }}">
             <legend class="uscode-pdp__olabel"><span><span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{{ section.settings.line_title }}</span><b>{{ section.settings.line_note }}</b></legend>
-            <div class="uscode-pdp__lpreview">
-              {%- if line_image != blank -%}
-                {{ line_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 900px) 420px, 100vw', alt: 'Back print preview' }}
-              {%- endif -%}
-              <span class="uscode-pdp__ptag">Preview</span>
-              <span class="uscode-pdp__pline" data-line-preview>{{ first_line | upcase }}</span>
-            </div>
             <div class="uscode-pdp__lines" role="radiogroup" aria-label="Line printed on the back">
               {%- for line in print_lines -%}
                 {%- assign lid = 'Line-' | append: section.id | append: '-' | append: forloop.index0 -%}
@@ -648,7 +640,6 @@
     { "type": "text", "id": "line_title", "label": "Line step title", "default": "Your line" },
     { "type": "text", "id": "line_note", "label": "Line step note", "default": "Printed under the eyes" },
     { "type": "range", "id": "line_max", "label": "Custom line length", "min": 12, "max": 48, "step": 1, "default": 36 },
-    { "type": "image_picker", "id": "line_preview_image", "label": "Preview image", "info": "Back print without a line. Override per product with custom.print_preview. Defaults to the product's first image." },
     { "type": "text", "id": "memory_note", "label": "Memory note", "default": "Your memory (photo, voice or video) is added after checkout. You'll get a link right away." },
     { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 48h · memory added after checkout" },
     { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3–4 weeks · memory added after checkout" },
