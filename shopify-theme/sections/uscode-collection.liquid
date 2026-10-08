@@ -91,7 +91,7 @@
           endif
         endif
 
-        assign hero_image = section.settings.image | default: collection.image | default: collection.featured_image
+        assign hero_image = collection.image | default: section.settings.image | default: collection.featured_image
         assign hero_title = section.settings.heading | default: collection.title
         assign hero_kicker = section.settings.kicker
         if hero_kicker == blank
@@ -759,7 +759,7 @@
       "type": "image_picker",
       "id": "image",
       "label": "Image",
-      "info": "Defaults to the collection image."
+      "info": "Used only when the collection has no image of its own (Products > Collections > Collection image)."
     },
     {
       "type": "text",
