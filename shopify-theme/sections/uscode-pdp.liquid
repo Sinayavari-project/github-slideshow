@@ -497,7 +497,23 @@
               {%- endif -%}
               <div class="uscode-pdp__tier-head">
                 <p class="uscode-pdp__tier-name">{{ block.settings.name }}</p>
-                <p class="uscode-pdp__tier-price">{{ block.settings.price }}</p>
+                {%- liquid
+                  assign tier_price = block.settings.price
+                  if tier_index >= 0
+                    assign tmin = nil
+                    for v in product.variants
+                      if v.options[tier_index] == block.settings.name
+                        if tmin == nil or v.price < tmin
+                          assign tmin = v.price
+                        endif
+                      endif
+                    endfor
+                    if tmin != nil
+                      assign tier_price = tmin | money_without_trailing_zeros
+                    endif
+                  endif
+                -%}
+                {%- if tier_price != blank -%}<p class="uscode-pdp__tier-price">{{ tier_price }}</p>{%- endif -%}
               </div>
               <p class="uscode-pdp__tier-desc">{{ block.settings.description }}</p>
               <ul>

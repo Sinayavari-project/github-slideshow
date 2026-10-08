@@ -13,8 +13,8 @@
         "trust_2": {
           "type": "trust",
           "settings": {
-            "value": "Free",
-            "label": "Shipping over $60"
+            "value": "Shipping",
+            "label": "Calculated at checkout"
           }
         },
         "trust_3": {
@@ -35,7 +35,7 @@
           "type": "accordion",
           "settings": {
             "title": "Shipping & returns",
-            "content": "<p>Ships within 48 hours of print. Free shipping over $60.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
+            "content": "<p>Ships within 48 hours of print. Shipping is charged by location and shown at checkout.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
           }
         },
         "acc_3": {
@@ -98,7 +98,7 @@
           "type": "tier",
           "settings": {
             "name": "Essential",
-            "price": "$48",
+            "price": "",
             "description": "The tee, the print, the chip — set to a photo of your choosing.",
             "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo",
             "featured": false,
@@ -109,7 +109,7 @@
           "type": "tier",
           "settings": {
             "name": "Memory",
-            "price": "$68",
+            "price": "",
             "description": "Everything in Essential, with the chip linked to a full memory — voice, video, or a place.",
             "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print",
             "featured": true,
@@ -121,7 +121,7 @@
           "type": "tier",
           "settings": {
             "name": "Signature",
-            "price": "$98",
+            "price": "",
             "description": "Your own eyes on the back — a private commission, printed once, for you alone.",
             "features": "Everything in Memory|Custom back print from your photo|Boxed with a printed certificate",
             "featured": false,
