@@ -95,7 +95,7 @@
         assign hero_title = section.settings.heading | default: collection.title
         assign hero_kicker = section.settings.kicker
         if hero_kicker == blank
-          assign hero_kicker = collection.title | prepend: 'Collection — '
+          assign hero_kicker = collection.title | prepend: 'Collection · '
         endif
         assign closing_label = section.settings.closing_label
         if closing_label == blank
@@ -427,7 +427,7 @@
                   {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
                     <a class="uscode-col__chip" href="{{ filter.url_to_remove }}" data-filter-link aria-label="Remove price filter">
                       {{- filter.label }}:
-                      {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} –
+                      {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} to
                       {% if filter.max_value.value != nil %}{{ filter.max_value.value | money_without_trailing_zeros }}{% else %}∞{% endif -%}
                       <b aria-hidden="true">×</b>
                     </a>
@@ -488,7 +488,7 @@
                     if product.gift_card?
                       capture price_label
                         echo product.price_min | money_without_trailing_zeros
-                        echo ' – '
+                        echo ' to '
                         echo product.price_max | money_without_trailing_zeros
                       endcapture
                     else
@@ -597,7 +597,7 @@
                             {%- endfor -%}
                           {%- endcapture -%}
                           <p>
-                            Quick add —
+                            Quick add ·
                             {%- if fixed_label != '' %} {{ fixed_label }}{% endif %}
                             {%- if qa_price %} {{ qa_price | money_without_trailing_zeros }}{% endif -%}
                           </p>
@@ -613,7 +613,7 @@
                               data-variant-label=""
                               aria-label="Add {{ product.title | escape }} to cart"
                             >
-                              Add to cart — {{ product.price | money_without_trailing_zeros }}
+                              Add to cart · {{ product.price | money_without_trailing_zeros }}
                             </button>
                           </div>
                         </div>
@@ -658,7 +658,7 @@
             <div class="uscode-col__empty">
               {%- if active_count > 0 -%}
                 <h2>Nothing matches those filters.</h2>
-                <p>Loosen a filter or two — or start over.</p>
+                <p>Loosen a filter or two, or start over.</p>
                 <a class="btn btn-primary" href="{{ clear_url }}" data-filter-link>Clear all filters</a>
               {%- else -%}
                 <h2>Nothing here yet.</h2>
@@ -747,7 +747,7 @@
       "type": "text",
       "id": "kicker",
       "label": "Kicker",
-      "info": "Defaults to \"Collection — [title]\"."
+      "info": "Defaults to \"Collection · [title]\"."
     },
     {
       "type": "text",

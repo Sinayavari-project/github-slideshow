@@ -77,12 +77,12 @@
 
   if size_open
     capture atc_label
-      echo 'Select a size — '
+      echo 'Select a size · '
       echo current.price | money_without_trailing_zeros
     endcapture
   elsif current.available
     capture atc_label
-      echo 'Add to cart — '
+      echo 'Add to cart · '
       echo current.price | money_without_trailing_zeros
     endcapture
   else
@@ -381,11 +381,11 @@
               {%- endfor -%}
               {%- if allow_custom -%}
                 <input class="uscode-pdp__radio" type="radio" id="Line-{{ section.id }}-own" name="uscode-line" value="" data-line-type="custom">
-                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-own"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>Write your own — up to {{ section.settings.line_max | default: 36 }} characters</span></label>
+                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-own"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>Write your own, up to {{ section.settings.line_max | default: 36 }} characters</span></label>
               {%- endif -%}
               {%- if allow_none -%}
-                <input class="uscode-pdp__radio" type="radio" id="Line-{{ section.id }}-none" name="uscode-line" value="—" data-line-type="none">
-                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-none"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>No line — eyes only</span></label>
+                <input class="uscode-pdp__radio" type="radio" id="Line-{{ section.id }}-none" name="uscode-line" value="No line" data-line-type="none">
+                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-none"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>No line, eyes only</span></label>
               {%- endif -%}
             </div>
             {%- if allow_custom -%}
@@ -610,7 +610,7 @@
         {{ product.media[0].preview_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
       {%- endif -%}
       <div class="uscode-pdp__stickytext">
-        <p class="uscode-pdp__st">{{ product.title }} — <span data-price>{{ current.price | money_without_trailing_zeros }}</span></p>
+        <p class="uscode-pdp__st">{{ product.title }} · <span data-price>{{ current.price | money_without_trailing_zeros }}</span></p>
         <p class="uscode-pdp__sm" data-sticky-meta></p>
       </div>
       <button type="button" class="btn btn-primary" data-sticky-atc>
@@ -688,7 +688,7 @@
     { "type": "checkbox", "id": "require_size", "label": "Shopper must pick a size", "default": true, "info": "No size is preselected, so nobody orders the wrong one by accident." },
     { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
-    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut — take your usual size." },
+    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." },
     { "type": "checkbox", "id": "upload_all_tiers", "label": "Show eye photo uploads on every tier", "default": true, "info": "Up to two photos. Optional except on the tier below." },
     { "type": "text", "id": "upload_tier", "label": "Tier that requires a photo", "default": "Signature", "info": "Leave blank to never require one." },
     { "type": "text", "id": "upload_title", "label": "Photo step title", "default": "Your eye photo" },
@@ -703,9 +703,9 @@
     { "type": "range", "id": "line_max", "label": "Custom line length", "min": 12, "max": 48, "step": 1, "default": 36 },
     { "type": "text", "id": "memory_note", "label": "Memory note", "default": "Your memory (photo, voice or video) is added after checkout. You'll get a link right away." },
     { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 48h · memory added after checkout" },
-    { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3–4 weeks · memory added after checkout" },
+    { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3 to 4 weeks · memory added after checkout" },
     { "type": "number", "id": "upload_min_width", "label": "Eye photo minimum width (px)", "default": 2000 },
-    { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: Size — first tee\nTee 2 size: Size — second tee", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
+    { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: First tee size\nTee 2 size: Second tee size", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
     { "type": "checkbox", "id": "sticky_bar", "label": "Sticky add to cart on phones", "default": true },
     { "type": "checkbox", "id": "mobile_thumbs", "label": "Show thumbnails on phones", "default": true },
     { "type": "header", "content": "Features" },
@@ -714,13 +714,13 @@
     { "type": "image_picker", "id": "detail_image", "label": "Detail photo", "info": "Defaults to the product's third image." },
     { "type": "text", "id": "split_kicker", "label": "Kicker", "default": "Made to last the memory" },
     { "type": "text", "id": "split_title", "label": "Title", "default": "Screen-printed once. Verified forever." },
-    { "type": "textarea", "id": "split_note", "label": "Text", "default": "Every shirt is numbered against its NFC chip at print — scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes." },
+    { "type": "textarea", "id": "split_note", "label": "Text", "default": "Every shirt is numbered against its NFC chip at print. Scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes." },
     { "type": "header", "content": "Pricing" },
     { "type": "text", "id": "pricing_kicker", "label": "Kicker", "default": "Compare tiers" },
     { "type": "text", "id": "pricing_title", "label": "Title", "default": "Three ways to keep it." },
     { "type": "header", "content": "Quote" },
     { "type": "text", "id": "quote", "label": "Quote", "default": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted." },
-    { "type": "text", "id": "quote_by", "label": "Attribution", "default": "— From the first drop, Essential" },
+    { "type": "text", "id": "quote_by", "label": "Attribution", "default": "From the first drop, Essential" },
     { "type": "header", "content": "Closing banner" },
     { "type": "text", "id": "close_line1", "label": "Line 1", "default": "300 made." },
     { "type": "text", "id": "close_line2", "label": "Line 2", "default": "None remade." },

@@ -238,7 +238,7 @@
                 {{ item.variant.title }}
               {% endunless %}
               {% if item.selling_plan_allocation %}
-                — {{ item.selling_plan_allocation.selling_plan.name }}
+                · {{ item.selling_plan_allocation.selling_plan.name }}
               {% endif %}
             </p>
             {%- for property in item.properties -%}
@@ -252,7 +252,7 @@
             {%- endfor -%}
             <div class="uscode-cart__actions">
               <div class="uscode-cart__stepper">
-                <button type="button" aria-label="Decrease quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | minus: 1 }})">–</button>
+                <button type="button" aria-label="Decrease quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | minus: 1 }})">−</button>
                 <span>{{ item.quantity }}</span>
                 <button type="button" aria-label="Increase quantity" onclick="updateCartQty('{{ item.key }}', {{ item.quantity | plus: 1 }})">+</button>
               </div>
@@ -290,7 +290,7 @@
       </section>
 
       <div class="uscode-cart__checkout">
-        <button type="submit" name="checkout" class="uscode-cart__checkout-btn">Checkout — {{ cart.total_price | money }}</button>
+        <button type="submit" name="checkout" class="uscode-cart__checkout-btn">Checkout · {{ cart.total_price | money }}</button>
         <a href="{{ routes.all_products_collection_url }}" class="uscode-cart__continue">Continue shopping</a>
         <p class="uscode-cart__trust">{{ section.settings.trust_line }}</p>
       </div>
@@ -328,8 +328,8 @@ document.getElementById('uscode-promo')?.addEventListener('keydown', function (e
   "tag": "section",
   "settings": [
     { "type": "text", "id": "trust_line", "label": "Trust line", "default": "NFC-verified · ships in 48 hours · no restock" },
-    { "type": "text", "id": "empty_message", "label": "Empty message", "default": "Your cart is empty — the drop is still live." },
-    { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold ($, 0 to hide)", "info": "Display only — must match a free shipping rate in Settings → Shipping.", "default": 60 },
+    { "type": "text", "id": "empty_message", "label": "Empty message", "default": "Your cart is empty. The drop is still live." },
+    { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold ($, 0 to hide)", "info": "Display only. Must match a free shipping rate in Settings → Shipping.", "default": 60 },
     { "type": "color", "id": "bg_color", "label": "Background", "default": "#F2F2F2" },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
     { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },

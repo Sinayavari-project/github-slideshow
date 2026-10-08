@@ -175,7 +175,7 @@
         <select name="id" class="no-js" style="display:none;">
           {%- for variant in product.variants -%}
             <option value="{{ variant.id }}"{% if variant == product.selected_or_first_available_variant %} selected{% endif %}>
-              {{ variant.title }} — {{ variant.price | money }}
+              {{ variant.title }} · {{ variant.price | money }}
             </option>
           {%- endfor -%}
         </select>
@@ -186,7 +186,7 @@
       <div class="uscode-pdp__actions">
         <button type="submit" class="uscode-pdp__add-btn"{% unless product.available %} disabled{% endunless %}>
           {%- if product.available -%}
-            {{ section.settings.cta_label }} — {{ product.selected_or_first_available_variant.price | money }}
+            {{ section.settings.cta_label }} · {{ product.selected_or_first_available_variant.price | money }}
           {%- else -%}
             Sold out
           {%- endif -%}

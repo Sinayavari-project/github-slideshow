@@ -134,7 +134,7 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.description || data.message || 'Could not add that piece.');
       const label = btn.dataset.variantLabel;
-      toast(root, `Added — ${btn.dataset.productTitle}${label ? `, ${label}` : ''}`);
+      toast(root, `Added: ${btn.dataset.productTitle}${label ? `, ${label}` : ''}`);
       syncCartCount();
     } catch (err) {
       toast(root, err.message || 'Could not add that piece.', true);

@@ -194,10 +194,10 @@
       } else if (type === 'set' && radio) {
         text = radio.value.toUpperCase();
       }
-      root.querySelector('[data-line-value]').value = type === 'none' ? '—' : text;
+      root.querySelector('[data-line-value]').value = type === 'none' ? 'No line' : text;
       root.querySelector('[data-line-type-value]').value = type;
       root.querySelector('[data-line-confirm-text]').textContent = type === 'none'
-        ? 'Print no line — eyes only. I understand this can’t be changed after printing.'
+        ? 'Print no line, eyes only. I understand this can’t be changed after printing.'
         : `Print “${text || '…'}” exactly as shown. I understand the line can’t be changed after printing.`;
       if (untick) lineConfirm.checked = false;
     }
@@ -294,10 +294,10 @@
         atcLabel.textContent = 'Sold out';
       } else if (needSize) {
         atc.disabled = false;
-        atcLabel.textContent = `${sizeIdxs.length > 1 ? 'Select sizes' : 'Select a size'} — ${price}`;
+        atcLabel.textContent = `${sizeIdxs.length > 1 ? 'Select sizes' : 'Select a size'} · ${price}`;
       } else {
         atc.disabled = false;
-        atcLabel.textContent = `Add to cart — ${price}`;
+        atcLabel.textContent = `Add to cart · ${price}`;
       }
       if (variant) idInput.value = variant.id;
       const soldOut = atc.disabled;
@@ -418,7 +418,7 @@
         const parts = [root.dataset.productTitle];
         sizeIdxs.forEach((i) => parts.push(picked[i]));
         picked.forEach((v, i) => { if (!sizeIdxs.includes(i) && v && inputsFor(i).some((el) => el.type === 'radio')) parts.push(v); });
-        toast(`Added — ${parts.join(', ')}`);
+        toast(`Added: ${parts.join(', ')}`);
         syncCart();
       } catch (err) {
         toast(err.message || 'Could not add that piece.', true);

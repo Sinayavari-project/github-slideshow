@@ -119,9 +119,9 @@
     { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
     { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
     { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" },
-    { "type": "text", "id": "foot_text", "label": "Footnote", "default": "Oversized fit · sizes S–XL" },
+    { "type": "text", "id": "foot_text", "label": "Footnote", "default": "Oversized fit · sizes S to XL" },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. Leave blank to hide." },
-    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut — take your usual size." }
+    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." }
   ],
   "blocks": [
     {
@@ -133,7 +133,7 @@
         { "type": "image_picker", "id": "image", "label": "Image" },
         { "type": "checkbox", "id": "contain", "label": "Show whole image", "default": false },
         { "type": "product", "id": "product", "label": "Product", "info": "Price comes from this product, in the shopper's currency." },
-        { "type": "text", "id": "option_value", "label": "Variant option value", "info": "e.g. Essential — uses the lowest price among variants with this value." },
+        { "type": "text", "id": "option_value", "label": "Variant option value", "info": "e.g. Essential. Uses the lowest price among variants with this value." },
         { "type": "text", "id": "price", "label": "Price text", "default": "$48", "info": "Used when no product is picked." },
         { "type": "textarea", "id": "description", "label": "Description" },
         { "type": "textarea", "id": "features", "label": "Features", "info": "One per line. Start a line with - to show it as not included." },

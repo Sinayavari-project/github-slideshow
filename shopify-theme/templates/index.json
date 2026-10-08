@@ -40,9 +40,9 @@
         "trust_3"
       ],
       "settings": {
-        "eyebrow": "Drop 01 — For your eyes only",
+        "eyebrow": "Drop 01 · For your eyes only",
         "heading": "A tee that remembers you.",
-        "subheading": "Real eyes printed on the back. A private memory in the chest — tap it with any phone and it plays.",
+        "subheading": "Real eyes printed on the back. A private memory in the chest. Tap it with any phone and it plays.",
         "cta_label": "Shop the drop",
         "cta_link": "shopify://collections/drop-01",
         "price_product": "",
@@ -107,7 +107,7 @@
         "point_1": {
           "type": "point",
           "settings": {
-            "text": "Photo, voice note, video or song — up to 2 minutes on Memory"
+            "text": "Photo, voice note, video or song, up to 2 minutes on Memory"
           }
         },
         "point_2": {
@@ -119,7 +119,7 @@
         "point_3": {
           "type": "point",
           "settings": {
-            "text": "Private by default — nothing is listed or searchable"
+            "text": "Private by default. Nothing is listed or searchable"
           }
         }
       },
@@ -172,7 +172,7 @@
             "option_value": "Memory",
             "price": "",
             "description": "Everything in Essential, with a voice note or video they can play back.",
-            "features": "Everything in Essential\nNFC linked to voice or video, 1–2 min\nNumbered, verified print — e.g. 042/300\nChange the memory anytime",
+            "features": "Everything in Essential\nNFC linked to voice or video, 1 to 2 min\nNumbered, verified print (e.g. 042/300)\nChange the memory anytime",
             "note": "",
             "link": "shopify://collections/drop-01",
             "featured": true,
@@ -190,7 +190,7 @@
             "price": "",
             "description": "A back print made from your own eye photo. Printed once, for you alone.",
             "features": "Custom back print from your photo\nBoxed with a printed certificate\nLonger video allowance, up to 5 min\nEverything in Memory",
-            "note": "Made to order — ships in 3–4 weeks.",
+            "note": "Made to order. Ships in 3 to 4 weeks.",
             "link": "shopify://collections/drop-01",
             "featured": false,
             "badge": ""
@@ -208,9 +208,9 @@
         "show_counter": true,
         "drop_collection": "drop-01",
         "edition_total": 300,
-        "foot_text": "Oversized fit · sizes S–XL",
+        "foot_text": "Oversized fit · sizes S to XL",
         "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
-        "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size."
+        "size_guide_note": "Garment measured flat, in cm. Oversized cut. Take your usual size."
       }
     },
     "gifting": {
@@ -227,7 +227,7 @@
           "type": "occasion",
           "settings": {
             "label": "Valentine's",
-            "idea": "Hide a 60-second video only they can open — then watch them find it."
+            "idea": "Hide a 60-second video only they can open, then watch them find it."
           }
         },
         "occ_3": {
@@ -259,7 +259,7 @@
         "text": "<p>One of you wears it. The other left something inside it. For anniversaries, distance, and everything in between.</p>",
         "cta_label": "Shop as a gift",
         "cta_link": "shopify://collections/drop-01",
-        "note": "Free gift wrap and a handwritten card. Choose a delivery date at checkout — the memory can be added after they open it."
+        "note": "Free gift wrap and a handwritten card. Choose a delivery date at checkout. The memory can be added after they open it."
       }
     },
     "craft": {
@@ -288,7 +288,7 @@
       "settings": {
         "number": "02",
         "heading": "Verified, not mass-produced.",
-        "text": "<p>Each piece is numbered at print and paired 1:1 with its chip. When all 300 are gone, the number closes — no restock, no reprint.</p>",
+        "text": "<p>Each piece is numbered at print and paired 1:1 with its chip. When all 300 are gone, the number closes: no restock, no reprint.</p>",
         "image": "shopify://shop_images/uscode-card-set.webp",
         "contain": false,
         "caption": "",
@@ -308,7 +308,7 @@
       "type": "uscode-first-300",
       "settings": {
         "eyebrow": "Drop 01 is live",
-        "heading": "Be one of the first [total] — your number is waiting.",
+        "heading": "Be one of the first [total]. Your number is waiting.",
         "text": "<p>When the first pieces land, this space fills with photos from the people wearing them. Until then, every square is a number still open.</p>",
         "cta_label": "Claim your number",
         "cta_link": "shopify://collections/drop-01",
@@ -330,14 +330,14 @@
           "type": "question",
           "settings": {
             "question": "Which phones work?",
-            "answer": "<p>Any iPhone from XS onward and almost every Android phone with NFC switched on. There’s no app — the memory opens in the browser. Each tag also carries a QR code as a backup.</p>"
+            "answer": "<p>Any iPhone from XS onward and almost every Android phone with NFC switched on. There’s no app. The memory opens in the browser. Each tag also carries a QR code as a backup.</p>"
           }
         },
         "q_2": {
           "type": "question",
           "settings": {
             "question": "Does the chip survive washing?",
-            "answer": "<p>Yes. The chip is sealed and sits in a small diamond pocket behind the chest logo. Wash cold and inside out, and skip the tumble dryer — the same care the print needs.</p>"
+            "answer": "<p>Yes. The chip is sealed and sits in a small diamond pocket behind the chest logo. Wash cold and inside out, and skip the tumble dryer: the same care the print needs.</p>"
           }
         },
         "q_3": {
@@ -365,14 +365,14 @@
           "type": "question",
           "settings": {
             "question": "Shipping times by region?",
-            "answer": "<p>Ships within 48 hours of print. US & Canada 3–6 business days · UK & EU 3–7 · GCC 4–8 · Australia 5–9. Duties and taxes are shown at checkout.</p>"
+            "answer": "<p>Ships within 48 hours of print. US & Canada 3 to 6 business days · UK & EU 3 to 7 · GCC 4 to 8 · Australia 5 to 9. Duties and taxes are shown at checkout.</p>"
           }
         },
         "q_7": {
           "type": "question",
           "settings": {
             "question": "Returns on personalized items?",
-            "answer": "<p>Essential and Memory can be returned unworn within 14 days — the memory links after delivery, so the tee itself isn’t personalized. Signature pieces are printed from your photo and are final sale.</p>"
+            "answer": "<p>Essential and Memory can be returned unworn within 14 days. The memory links after delivery, so the tee itself isn’t personalized. Signature pieces are printed from your photo and are final sale.</p>"
           }
         },
         "q_8": {
@@ -406,7 +406,7 @@
       "settings": {
         "eyebrow": "Drop 02",
         "heading": "Get first access to Drop 02.",
-        "text": "One email when it opens — 24 hours before everyone else. Nothing in between.",
+        "text": "One email when it opens, 24 hours before everyone else. Nothing in between.",
         "placeholder": "Your email",
         "button": "Get first access",
         "success": "You’re on the list. We’ll write once, when Drop 02 opens.",

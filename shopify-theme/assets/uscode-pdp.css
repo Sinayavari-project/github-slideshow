@@ -219,7 +219,7 @@ html.uscode-pdp-lock { overflow: hidden; }
 .uscode-pdp__tier-desc { font-size: 14px; line-height: 20px; margin: 8px 0 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
 .uscode-pdp__tier ul { list-style: none; margin: 13px 0 0; padding: 0; display: grid; gap: 8px; }
 .uscode-pdp__tier li { font-size: 13.5px; line-height: 19px; padding-left: 16px; position: relative; }
-.uscode-pdp__tier li::before { content: "—"; position: absolute; left: 0; color: var(--color-accent-700); }
+.uscode-pdp__tier li::before { content: ""; position: absolute; left: 1px; top: 6.5px; width: 6px; height: 6px; background: var(--color-accent-700); }
 .uscode-pdp__tier .btn { margin-top: 26px; width: 100%; justify-content: flex-start; }
 .uscode-pdp__quote { padding: 52px 0 62px; }
 .uscode-pdp__quote figure { margin: 0; }

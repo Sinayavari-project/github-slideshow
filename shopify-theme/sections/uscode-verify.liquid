@@ -10,12 +10,12 @@
 
   assign record = metaobject
   assign verified = false
-  assign print_code = '—'
-  assign tier = '—'
+  assign print_code = 'Pending'
+  assign tier = 'Pending'
   assign drop = 'Drop 01'
   if record
-    assign print_code = record.print_code.value | default: '—'
-    assign tier = record.tier.value | default: '—'
+    assign print_code = record.print_code.value | default: 'Pending'
+    assign tier = record.tier.value | default: 'Pending'
     assign drop = record.drop.value | default: 'Drop 01'
     if record.status.value == 'Authentic'
       assign verified = true
@@ -119,12 +119,12 @@
     { "type": "text", "id": "bad_title", "label": "Not verified title", "default": "Not verified" },
     { "type": "textarea", "id": "bad_text", "label": "Not verified text", "default": "We couldn't match this chip to a print on record. If you bought this secondhand, ask the seller for the print number." },
     { "type": "header", "content": "Memory card" },
-    { "type": "text", "id": "kind_essential", "label": "Essential — kind", "default": "Linked memory — photo" },
-    { "type": "text", "id": "label_essential", "label": "Essential — label", "default": "One photo, set at checkout" },
-    { "type": "text", "id": "kind_memory", "label": "Memory — kind", "default": "Linked memory — video" },
-    { "type": "text", "id": "label_memory", "label": "Memory — label", "default": "Playback ready" },
-    { "type": "text", "id": "kind_signature", "label": "Signature — kind", "default": "Linked memory — custom print" },
-    { "type": "text", "id": "label_signature", "label": "Signature — label", "default": "Your own photo, boxed with certificate" },
+    { "type": "text", "id": "kind_essential", "label": "Essential: kind", "default": "Linked memory: photo" },
+    { "type": "text", "id": "label_essential", "label": "Essential: label", "default": "One photo, set at checkout" },
+    { "type": "text", "id": "kind_memory", "label": "Memory: kind", "default": "Linked memory: video" },
+    { "type": "text", "id": "label_memory", "label": "Memory: label", "default": "Playback ready" },
+    { "type": "text", "id": "kind_signature", "label": "Signature: kind", "default": "Linked memory: custom print" },
+    { "type": "text", "id": "label_signature", "label": "Signature: label", "default": "Your own photo, boxed with certificate" },
     { "type": "header", "content": "Buttons" },
     { "type": "text", "id": "shop_label", "label": "Shop button", "default": "Shop the next drop" },
     { "type": "url", "id": "shop_link", "label": "Shop link" },

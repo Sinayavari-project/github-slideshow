@@ -42,7 +42,7 @@
           "type": "accordion",
           "settings": {
             "title": "How the NFC works",
-            "content": "<p>After checkout you upload your memory — photo, voice, or video. It links to the chip in the hem.</p><p>Tap any phone to the hem to play it. No app needed. You can change the memory anytime.</p>"
+            "content": "<p>After checkout you upload your memory: photo, voice, or video. It links to the chip in the hem.</p><p>Tap any phone to the hem to play it. No app needed. You can change the memory anytime.</p>"
           }
         },
         "stat_1": {
@@ -77,14 +77,14 @@
           "type": "feature",
           "settings": {
             "title": "A real pair of eyes",
-            "text": "The back print is a photograph, not an illustration — torn, layered, and screen-printed at true grain so the eyes stay recognizably someone's."
+            "text": "The back print is a photograph, not an illustration: torn, layered, and screen-printed at true grain so the eyes stay recognizably someone's."
           }
         },
         "feature_2": {
           "type": "feature",
           "settings": {
             "title": "Tap to remember",
-            "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it — a voice memo, a photo, a date. Tap a phone to the hem and it plays."
+            "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it: a voice memo, a photo, a date. Tap a phone to the hem and it plays."
           }
         },
         "feature_3": {
@@ -99,10 +99,10 @@
           "settings": {
             "name": "Essential",
             "price": "",
-            "description": "The tee, the print, the chip — set to a photo of your choosing.",
+            "description": "The tee, the print, the chip, set to a photo of your choosing.",
             "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo",
             "featured": false,
-            "short_description": "The tee, the print, the chip — linked to one photo of your choosing."
+            "short_description": "The tee, the print, the chip, linked to one photo of your choosing."
           }
         },
         "tier_2": {
@@ -110,11 +110,11 @@
           "settings": {
             "name": "Memory",
             "price": "",
-            "description": "Everything in Essential, with the chip linked to a full memory — voice, video, or a place.",
+            "description": "Everything in Essential, with the chip linked to a full memory: voice, video, or a place.",
             "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print",
             "featured": true,
             "badge": "Most chosen",
-            "short_description": "Chip linked to a full memory — voice, video, or a place. Numbered, verified print."
+            "short_description": "Chip linked to a full memory: voice, video, or a place. Numbered, verified print."
           }
         },
         "tier_3": {
@@ -122,10 +122,10 @@
           "settings": {
             "name": "Signature",
             "price": "",
-            "description": "Your own eyes on the back — a private commission, printed once, for you alone.",
+            "description": "Your own eyes on the back, a private commission, printed once, for you alone.",
             "features": "Everything in Memory|Custom back print from your photo|Boxed with a printed certificate",
             "featured": false,
-            "short_description": "Your own eyes on the back — a private commission, printed once. Boxed with a certificate."
+            "short_description": "Your own eyes on the back, a private commission, printed once. Boxed with a certificate."
           }
         }
       },
@@ -152,11 +152,11 @@
         "detail_image": "shopify://shop_images/uscode-tee-back-split.png",
         "split_kicker": "Made to last the memory",
         "split_title": "Screen-printed once. Verified forever.",
-        "split_note": "Every shirt is numbered against its NFC chip at print — scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes.",
+        "split_note": "Every shirt is numbered against its NFC chip at print. Scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes.",
         "pricing_kicker": "Compare tiers",
         "pricing_title": "Three ways to keep it.",
         "quote": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted.",
-        "quote_by": "— From the first drop, Essential",
+        "quote_by": "From the first drop, Essential",
         "close_line1": "300 made.",
         "close_line2": "None remade.",
         "close_cta": "Shop before it's gone",
@@ -173,7 +173,7 @@
         "require_size": true,
         "fit_note": "Oversized, dropped shoulder. Take your usual size for the intended fit.",
         "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
-        "size_guide_note": "Garment measured flat, in cm. Oversized cut — take your usual size.",
+        "size_guide_note": "Garment measured flat, in cm. Oversized cut. Take your usual size.",
         "upload_tier": "Signature",
         "upload_title": "Your eye photo",
         "upload_note": "JPG or PNG, at least 2000px wide. Daylight, no filter. We’ll email a proof before printing.",
