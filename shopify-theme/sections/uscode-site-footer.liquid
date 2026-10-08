@@ -1,0 +1,115 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+<style>
+  .uscode-footer {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 52px clamp(20px, 5vw, 64px) 32px;
+    color: {{ section.settings.text_color }};
+  }
+  .uscode-footer__cols {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 26px;
+  }
+  .uscode-footer__wordmark {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+  }
+  .uscode-footer__wordmark svg { margin-right: 0.6em; flex: none; }
+  .uscode-footer__tagline {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 20px;
+    max-width: 32ch;
+    margin: 14px 0 0;
+    opacity: 0.7;
+  }
+  .uscode-footer__cols h4 {
+    font-family: var(--font-body);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+    opacity: 0.65;
+  }
+  .uscode-footer__cols ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .uscode-footer__cols a {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: {{ section.settings.text_color }};
+    text-decoration: none;
+  }
+  .uscode-footer__cols a:hover { color: {{ section.settings.accent_color }}; }
+  @media (max-width: 720px) {
+    .uscode-footer__cols { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<footer class="uscode-footer">
+  <div class="uscode-footer__cols">
+    <div>
+      <span class="uscode-footer__wordmark">
+        <svg width="18" height="13" viewBox="0 -1 28 22" fill="none"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 13c3.5-5 7.5-7.5 12-7.5s8.5 2.5 12 7.5c-3.5 5-7.5 7.5-12 7.5S5.5 18 2 13z"/><circle cx="14" cy="13" r="3" fill="currentColor" stroke="none"/><path d="M14 5.5V1M9 6.3L7.3 2.2M19 6.3l1.7-4.1M4.8 8.6L2.2 5.4M23.2 8.6l2.6-3.2"/></g></svg>
+        US CODE
+      </span>
+      <p class="uscode-footer__tagline">{{ section.settings.tagline }}</p>
+    </div>
+    {% for block in section.blocks %}
+      <div {{ block.shopify_attributes }}>
+        <h4>{{ block.settings.title }}</h4>
+        <ul>
+          {% assign links = block.settings.links | split: '|' %}
+          {% assign urls = block.settings.urls | split: '|' %}
+          {% for link in links %}
+            <li><a href="{% if urls[forloop.index0] != blank %}{{ urls[forloop.index0] }}{% else %}#{% endif %}">{{ link }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "US CODE Footer",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Printed once. Verified forever. uscode.co" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
+    { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },
+    { "type": "color", "id": "divider_color", "label": "Divider color", "default": "#D8D6D1" }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Link column",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Column title", "default": "Shop" },
+        { "type": "text", "id": "links", "label": "Links (pipe-separated)", "default": "Essential|Memory|Signature" },
+        { "type": "text", "id": "urls", "label": "URLs (pipe-separated)", "default": "||" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Footer",
+      "blocks": [
+        { "type": "column", "settings": { "title": "Shop", "links": "Essential|Memory|Signature" } },
+        { "type": "column", "settings": { "title": "About", "links": "The story|How NFC works|Verify a piece" } },
+        { "type": "column", "settings": { "title": "Help", "links": "Shipping|Care guide|FAQ|Contact" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

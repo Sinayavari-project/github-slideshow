@@ -1,0 +1,6 @@
+{%- doc -%}
+  US CODE eye mark. Inherits currentColor.
+  @param {number} [size] - Width in px (default 52)
+  @param {string} [class] - Extra class on the svg
+{%- enddoc -%}
+<svg viewBox="0 -1 28 22" fill="none" width="{{ size | default: 52 }}" height="{{ size | default: 52 | times: 22 | divided_by: 28.0 | round }}" class="{{ class }}" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 13c3.5-5 7.5-7.5 12-7.5s8.5 2.5 12 7.5c-3.5 5-7.5 7.5-12 7.5S5.5 18 2 13z"/><circle cx="14" cy="13" r="3" fill="currentColor" stroke="none"/><path d="M14 5.5V1M9 6.3L7.3 2.2M19 6.3l1.7-4.1M4.8 8.6L2.2 5.4M23.2 8.6l2.6-3.2"/></g></svg>

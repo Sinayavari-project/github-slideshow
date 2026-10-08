@@ -1,0 +1,181 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-home.js' | asset_url }}" defer></script>
+<script src="{{ 'film-modal.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign cta_label = section.settings.cta_label
+  if section.settings.price_product != blank
+    assign from_price = section.settings.price_product.price_min | money_without_trailing_zeros
+    assign cta_label = cta_label | append: ' · from ' | append: from_price
+  endif
+  assign total = section.settings.edition_total | default: 300
+  capture left
+    render 'uscode-drop-left', collection: section.settings.drop_collection, fallback: section.settings.left_fallback, total: total
+  endcapture
+  assign left = left | strip | plus: 0
+
+  assign film = section.settings.inset_video
+  assign film_url = section.settings.inset_video_url
+  assign has_film = false
+  if film != blank or film_url != blank
+    assign has_film = true
+  endif
+  assign film_price = from_price
+  if film_price == blank and section.settings.drop_collection != blank
+    assign low = nil
+    for p in section.settings.drop_collection.products limit: 50
+      if low == nil or p.price_min < low
+        assign low = p.price_min
+      endif
+    endfor
+    if low != nil
+      assign film_price = low | money_without_trailing_zeros
+    endif
+  endif
+  assign film_cta = section.settings.film_cta_label
+  if film_cta != blank and film_price != blank
+    assign film_cta = film_cta | append: ' · from ' | append: film_price
+  endif
+  assign preview_start = section.settings.preview_start | default: 10
+  assign preview_end = section.settings.preview_end | default: 17.5
+-%}
+
+<div class="uh" data-section="{{ section.id }}">
+  <div class="uh-wrap">
+    <section class="uh-hero" aria-label="{{ section.settings.heading | escape }}">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+        <h1 class="uh-h1">{{ section.settings.heading }}</h1>
+        {%- if section.settings.subheading != blank -%}<p class="uh-hero__sub">{{ section.settings.subheading }}</p>{%- endif -%}
+        <div class="uh-ctas" data-uh-sticky-anchor>
+          {%- if section.settings.cta_label != blank -%}
+            <a class="btn btn-primary" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ cta_label }}</a>
+          {%- endif -%}
+          {%- if has_film and section.settings.film_button_label != blank -%}
+            <button type="button" class="btn btn-ghost uh-filmbtn" data-film-open>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7 4v16l13-8z"/></svg>
+              <span>{{ section.settings.film_button_label }}</span>
+              {%- if section.settings.film_duration_label != blank -%}<span class="uh-dur">{{ section.settings.film_duration_label }}</span>{%- endif -%}
+            </button>
+          {%- elsif section.settings.cta2_label != blank -%}
+            <a class="btn btn-ghost" href="{{ section.settings.cta2_link | default: '#how' }}">{{ section.settings.cta2_label }}</a>
+          {%- endif -%}
+        </div>
+        {%- if section.blocks.size > 0 -%}
+          <ul class="uh-trustrow" role="list">
+            {%- for block in section.blocks -%}
+              <li {{ block.shopify_attributes }}>{% render 'uscode-icon', name: block.settings.icon %}{{ block.settings.text }}</li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+      <div class="uh-herofig{% if section.settings.numeral == blank %} uh-herofig--nonum{% endif %}">
+        {%- if section.settings.numeral != blank -%}
+          <span class="uh-numeral" aria-hidden="true">{{ section.settings.numeral }}</span>
+        {%- endif -%}
+        <figure class="uh-shot">
+          <div class="uh-frame">
+            {%- if section.settings.image != blank -%}
+              {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480, 720, 960, 1200, 1400', sizes: '(min-width: 861px) 45vw, 100vw' }}
+            {%- else -%}
+              {{ 'product-apparel-1' | placeholder_svg_tag }}
+            {%- endif -%}
+          </div>
+          {%- if section.settings.caption != blank -%}<figcaption>{{ section.settings.caption }}</figcaption>{%- endif -%}
+        </figure>
+        {%- if has_film -%}
+          <div class="uh-inset uh-inset--film">
+            <button type="button" data-film-open aria-label="{{ section.settings.film_button_label | default: 'Watch the film' | escape }} with sound">
+              <span class="uh-inset__media" aria-hidden="true">
+                {% render 'uscode-video', video: film, url: film_url, poster: section.settings.inset_image, attrs: 'muted playsinline disablepictureinpicture data-film-preview', preload: 'metadata', size: 'small' %}
+              </span>
+              <span class="uh-pl" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M7 4v16l13-8z"/></svg></span>
+              <p aria-hidden="true"><i></i>{{ section.settings.inset_cta }}{% if section.settings.film_duration_label != blank %} · {{ section.settings.film_duration_label }}{% endif %}</p>
+            </button>
+          </div>
+        {%- elsif section.settings.inset_image != blank -%}
+          <div class="uh-inset">
+            {{ section.settings.inset_image | image_url: width: 400 | image_tag: loading: 'lazy' }}
+            {%- if section.settings.inset_label != blank -%}<p><i></i>{{ section.settings.inset_label }}</p>{%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </section>
+  </div>
+
+  {%- if has_film -%}
+    {%- assign film_link = section.settings.cta_link | default: routes.all_products_collection_url -%}
+    {% render 'film-modal', video: film, url: film_url, title: section.settings.film_title, tagline: section.settings.film_tagline, cta_label: film_cta, cta_link: film_link, captions: section.settings.captions_url %}
+    <div hidden data-film-config data-start="{{ preview_start }}" data-end="{{ preview_end }}"></div>
+  {%- endif -%}
+
+  {%- if section.settings.sticky_bar -%}
+    <div class="uh-sticky" data-uh-sticky inert>
+      <p><b>{{ section.settings.sticky_title }}{% if from_price %} · from {{ from_price }}{% endif %}</b><span>{{ left }} of {{ total }} left</span></p>
+      <a class="btn btn-primary" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.sticky_button }}</a>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "US CODE hero (v3)",
+  "tag": "div",
+  "class": "section-uh-hero",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Drop 01 · For your eyes only" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "default": "A tee that remembers you." },
+    { "type": "textarea", "id": "subheading", "label": "Text", "default": "Real eyes printed on the back. A private memory in the chest. Tap it with any phone and it plays." },
+    { "type": "text", "id": "cta_label", "label": "Button", "default": "Shop the drop" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "product", "id": "price_product", "label": "Show \"from\" price of", "info": "Adds the product's lowest price to the button, in the shopper's currency." },
+    { "type": "text", "id": "cta2_label", "label": "Second button", "default": "See how it works" },
+    { "type": "url", "id": "cta2_link", "label": "Second button link", "info": "Defaults to #how (the How it works section)." },
+    { "type": "header", "content": "Media" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "caption", "label": "Caption" },
+    { "type": "text", "id": "numeral", "label": "Background numeral", "default": "01" },
+    { "type": "video", "id": "inset_video", "label": "Inset video", "info": "Pick a video from Shopify Files." },
+    { "type": "text", "id": "inset_video_url", "label": "Or inset video link", "info": "A full video link, or a theme asset filename. Used when no video is picked above." },
+    { "type": "image_picker", "id": "inset_image", "label": "Inset poster image" },
+    { "type": "text", "id": "inset_label", "label": "Inset label (image only)", "default": "Tap → memory plays" },
+    { "type": "header", "content": "Film" },
+    { "type": "paragraph", "content": "When a video is picked above, the inset loops a silent preview and opens the full film with sound." },
+    { "type": "text", "id": "film_button_label", "label": "Film button", "default": "Watch the film", "info": "Replaces the second button while a video is set." },
+    { "type": "text", "id": "film_duration_label", "label": "Film length", "default": "0:30" },
+    { "type": "text", "id": "inset_cta", "label": "Inset caption", "default": "Watch with sound" },
+    { "type": "number", "id": "preview_start", "label": "Preview starts at (seconds)", "default": 10 },
+    { "type": "number", "id": "preview_end", "label": "Preview ends at (seconds)", "default": 17.5 },
+    { "type": "text", "id": "film_title", "label": "Player title", "default": "US CODE: The film" },
+    { "type": "text", "id": "film_tagline", "label": "Player footer line", "default": "A gift only you could give." },
+    { "type": "text", "id": "film_cta_label", "label": "Player button", "default": "Shop the drop", "info": "Adds \"· from\" and the lowest price in the drop collection. Links to the main button link." },
+    { "type": "text", "id": "captions_url", "label": "Captions file (.vtt) link", "info": "Optional. Upload a .vtt to Files and paste its link." },
+    { "type": "header", "content": "Sticky bar on phones" },
+    { "type": "checkbox", "id": "sticky_bar", "label": "Show", "default": true },
+    { "type": "text", "id": "sticky_title", "label": "Title", "default": "Drop 01" },
+    { "type": "text", "id": "sticky_button", "label": "Button", "default": "Shop the drop" },
+    { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
+    { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
+    { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust point",
+      "limit": 4,
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "nfc", "label": "Phone tap" }, { "value": "drop", "label": "Water drop" }, { "value": "globe", "label": "Globe" },
+          { "value": "lock", "label": "Lock" }, { "value": "eye", "label": "Eye" }, { "value": "check", "label": "Check" }
+        ], "default": "nfc" },
+        { "type": "text", "id": "text", "label": "Text", "default": "No app needed" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "US CODE hero (v3)", "blocks": [
+    { "type": "trust", "settings": { "icon": "nfc", "text": "No app needed" } },
+    { "type": "trust", "settings": { "icon": "drop", "text": "Washable chip" } },
+    { "type": "trust", "settings": { "icon": "globe", "text": "Ships worldwide" } }
+  ] }]
+}
+{% endschema %}

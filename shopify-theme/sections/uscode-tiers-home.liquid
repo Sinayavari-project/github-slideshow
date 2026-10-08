@@ -1,0 +1,149 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-home.js' | asset_url }}" defer></script>
+{%- liquid
+  assign total = section.settings.edition_total | default: 300
+  capture left
+    render 'uscode-drop-left', collection: section.settings.drop_collection, fallback: section.settings.left_fallback, total: total
+  endcapture
+  assign left = left | strip | plus: 0
+  assign left_pct = left | times: 100.0 | divided_by: total | round: 1
+-%}
+<div class="uh">
+  <section class="uh-sec uh-rule" id="tiers">
+    <div class="uh-wrap">
+      <div class="uh-sechead">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+          <h2 class="uh-h2">{{ section.settings.heading }}</h2>
+        </div>
+        {%- if section.settings.show_counter -%}
+          <div class="uh-counter">
+            <div class="uh-counter__row"><span class="uh-live"><i></i>Live</span><span><b>{{ left }}</b> of {{ total }} left</span></div>
+            <div class="uh-bar" role="progressbar" aria-label="Pieces left" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ left }}"><i style="width: {{ left_pct }}%;"></i></div>
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="uh-tiers" data-uh-tiers>
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign price = block.settings.price
+            assign link = block.settings.link
+            assign p = block.settings.product
+            if p != blank
+              assign link = link | default: p.url
+              assign vmin = nil
+              for v in p.variants
+                if block.settings.option_value == blank or v.options contains block.settings.option_value
+                  if vmin == nil or v.price < vmin
+                    assign vmin = v.price
+                  endif
+                endif
+              endfor
+              if vmin != nil
+                assign price = vmin | money_without_trailing_zeros
+              endif
+            endif
+            assign lines = block.settings.features | newline_to_br | split: '<br />'
+          -%}
+          <article class="uh-tier{% if block.settings.featured %} is-feat{% endif %}" {{ block.shopify_attributes }}>
+            {%- if block.settings.badge != blank -%}<span class="uh-tier__badge">{{ block.settings.badge }}</span>{%- endif -%}
+            <div class="uh-frame{% if block.settings.contain %} uh-frame--contain{% endif %}">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 861px) 30vw, 84vw' }}
+              {%- else -%}
+                {{ 'product-apparel-2' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+            <div class="uh-tier__body">
+              <div class="uh-tier__head"><h3>{{ block.settings.name }}</h3>{%- if price != blank -%}<p class="uh-tier__price">{{ price }}</p>{%- endif -%}</div>
+              {%- if block.settings.description != blank -%}<p class="uh-tier__desc">{{ block.settings.description }}</p>{%- endif -%}
+              <ul role="list">
+                {%- for line in lines -%}
+                  {%- assign item = line | strip -%}
+                  {%- if item == blank -%}{%- continue -%}{%- endif -%}
+                  {%- assign first_char = item | slice: 0 -%}
+                  {%- if first_char == '-' -%}
+                    <li class="is-off">{% render 'uscode-icon', name: 'minus' %}<span><span class="visually-hidden">Not included: </span>{{ item | remove_first: '-' | strip }}</span></li>
+                  {%- else -%}
+                    <li>{% render 'uscode-icon', name: 'check' %}<span>{{ item }}</span></li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+              {%- if block.settings.note != blank -%}<p class="uh-tier__note">{{ block.settings.note }}</p>{%- endif -%}
+              <a class="btn {% if block.settings.featured %}btn-primary{% else %}btn-secondary{% endif %}" href="{{ link | default: routes.all_products_collection_url }}">Choose {{ block.settings.name }}</a>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+      {%- if section.blocks.size > 1 -%}
+        <div class="uh-dots" aria-label="Tiers">
+          {%- for block in section.blocks -%}<button type="button" aria-label="Show {{ block.settings.name | escape }}" aria-current="false" data-uh-dot></button>{%- endfor -%}
+        </div>
+      {%- endif -%}
+      <div class="uh-tierfoot">
+        <span>{{ section.settings.foot_text }} · prices in {{ cart.currency.iso_code }}</span>
+        {%- if section.settings.size_guide != blank -%}<button type="button" class="uh-linkline" data-uh-guide-open aria-haspopup="dialog">Size guide</button>{%- endif -%}
+      </div>
+    </div>
+  </section>
+  {%- if section.settings.size_guide != blank -%}
+    {%- assign rows = section.settings.size_guide | newline_to_br | split: '<br />' -%}
+    <dialog class="uh-sg" aria-labelledby="SG-{{ section.id }}" data-uh-guide>
+      <h2 id="SG-{{ section.id }}">Size guide</h2>
+      {%- if section.settings.size_guide_note != blank -%}<p>{{ section.settings.size_guide_note }}</p>{%- endif -%}
+      <table>
+        {%- for row in rows -%}
+          {%- assign cells = row | strip | split: ',' -%}
+          {%- if cells.size == 0 -%}{%- continue -%}{%- endif -%}
+          {%- if forloop.first -%}
+            <thead><tr>{%- for c in cells -%}<th scope="col">{{ c | strip }}</th>{%- endfor -%}</tr></thead><tbody>
+          {%- else -%}
+            <tr>{%- for c in cells -%}{%- if forloop.first -%}<th scope="row">{{ c | strip }}</th>{%- else -%}<td>{{ c | strip }}</td>{%- endif -%}{%- endfor -%}</tr>
+          {%- endif -%}
+        {%- endfor -%}
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-secondary" data-uh-guide-close>Close</button>
+    </dialog>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "US CODE tiers (v3)",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Choose your tier" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Three ways to keep it." },
+    { "type": "checkbox", "id": "show_counter", "label": "Show pieces-left counter", "default": true },
+    { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
+    { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
+    { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" },
+    { "type": "text", "id": "foot_text", "label": "Footnote", "default": "Oversized fit · sizes S to XL" },
+    { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. Leave blank to hide." },
+    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "Tier",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Essential" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "checkbox", "id": "contain", "label": "Show whole image", "default": false },
+        { "type": "product", "id": "product", "label": "Product", "info": "Price comes from this product, in the shopper's currency." },
+        { "type": "text", "id": "option_value", "label": "Variant option value", "info": "e.g. Essential. Uses the lowest price among variants with this value." },
+        { "type": "text", "id": "price", "label": "Price text", "default": "$48", "info": "Used when no product is picked." },
+        { "type": "textarea", "id": "description", "label": "Description" },
+        { "type": "textarea", "id": "features", "label": "Features", "info": "One per line. Start a line with - to show it as not included." },
+        { "type": "text", "id": "note", "label": "Note" },
+        { "type": "url", "id": "link", "label": "Button link", "info": "Defaults to the product." },
+        { "type": "checkbox", "id": "featured", "label": "Highlight", "default": false },
+        { "type": "text", "id": "badge", "label": "Badge" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "US CODE tiers (v3)", "blocks": [{ "type": "tier" }, { "type": "tier" }, { "type": "tier" }] }]
+}
+{% endschema %}

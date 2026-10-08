@@ -1,0 +1,102 @@
+{%- style -%}
+  .uscode-stats {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background: {{ section.settings.bg_color }};
+  }
+  .uscode-stats__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .uscode-stat {
+    text-align: left;
+  }
+  .uscode-stat__number {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: {{ section.settings.number_color }};
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .uscode-stat__label {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    line-height: 1.4;
+  }
+  @media (max-width: 749px) {
+    .uscode-stats__inner {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 24px 20px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="uscode-stats">
+  <div class="uscode-stats__inner">
+    {%- for block in section.blocks -%}
+      <div class="uscode-stat" {{ block.shopify_attributes }}>
+        <div class="uscode-stat__number">{{ block.settings.number }}</div>
+        <div class="uscode-stat__label">{{ block.settings.label }}</div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "US CODE Stats",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#F5F5F0"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#1A1A1A"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "300"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Pieces made. No restock."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE Stats",
+      "blocks": [
+        { "type": "stat", "settings": { "number": "300", "label": "Pieces made. No restock." } },
+        { "type": "stat", "settings": { "number": "1:1", "label": "NFC-verified to one print" } },
+        { "type": "stat", "settings": { "number": "48h", "label": "Ships from print" } },
+        { "type": "stat", "settings": { "number": "0", "label": "Reprints, ever" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

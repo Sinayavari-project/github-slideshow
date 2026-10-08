@@ -1,0 +1,59 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.show_verify -%}<script src="{{ 'uscode-home.js' | asset_url }}" defer></script>{%- endif -%}
+<div class="uh">
+  <section class="uh-sec{% if section.settings.flush_top %} uh-sec--flush{% endif %}{% if section.settings.rule_above %} uh-rule{% endif %}">
+    <div class="uh-wrap uh-split{% if section.settings.reverse %} uh-split--rev{% endif %}">
+      <div>
+        {%- if section.settings.number != blank -%}<p class="uh-num">{{ section.settings.number }}</p>{%- endif -%}
+        <h2 class="uh-h2">{{ section.settings.heading }}</h2>
+        {%- if section.settings.text != blank -%}<div class="uh-lede">{{ section.settings.text }}</div>{%- endif -%}
+        {%- if section.settings.show_verify -%}
+          <form class="uh-verify" action="{{ section.settings.verify_template | remove: '[number]' }}" data-uh-verify data-template="{{ section.settings.verify_template | escape }}" novalidate>
+            <label><span>{{ section.settings.verify_label }}</span><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="042" autocomplete="off" name="number"></label>
+            <button type="submit" class="btn btn-primary">{{ section.settings.verify_button }}</button>
+          </form>
+          {%- if section.settings.verify_hint != blank -%}<p class="uh-vhint">{{ section.settings.verify_hint }}</p>{%- endif -%}
+        {%- elsif section.settings.cta_label != blank -%}
+          <div class="uh-ctas"><a class="btn btn-secondary" href="{{ section.settings.cta_link }}">{{ section.settings.cta_label }}</a></div>
+        {%- endif -%}
+      </div>
+      <figure class="uh-shot">
+        <div class="uh-frame{% if section.settings.contain %} uh-frame--contain{% endif %}">
+          {%- if section.settings.image != blank -%}
+            {{ section.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1400', sizes: '(min-width: 861px) 48vw, 100vw' }}
+          {%- else -%}
+            {{ 'lifestyle-2' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+        {%- if section.settings.caption != blank -%}<figcaption>{{ section.settings.caption }}</figcaption>{%- endif -%}
+      </figure>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE image + text",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "number", "label": "Number", "default": "01" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A memory, not a graphic." },
+    { "type": "richtext", "id": "text", "label": "Text" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "checkbox", "id": "contain", "label": "Show whole image", "default": false },
+    { "type": "text", "id": "caption", "label": "Caption" },
+    { "type": "checkbox", "id": "reverse", "label": "Image on the left", "default": false },
+    { "type": "checkbox", "id": "rule_above", "label": "Line above", "default": true },
+    { "type": "checkbox", "id": "flush_top", "label": "Remove top spacing", "default": false },
+    { "type": "text", "id": "cta_label", "label": "Button" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
+    { "type": "header", "content": "Verify a piece" },
+    { "type": "checkbox", "id": "show_verify", "label": "Show number lookup", "default": false },
+    { "type": "text", "id": "verify_template", "label": "Print page link", "default": "/pages/verify/[number]", "info": "[number] becomes the 3-digit number, e.g. /pages/verify/042. Match your print records' handles." },
+    { "type": "text", "id": "verify_label", "label": "Field label", "default": "Number on your tag" },
+    { "type": "text", "id": "verify_button", "label": "Button", "default": "Verify a piece" },
+    { "type": "text", "id": "verify_hint", "label": "Hint", "default": "Find it printed on the hang tag and inside the chest pocket." }
+  ],
+  "presets": [{ "name": "US CODE image + text" }]
+}
+{% endschema %}

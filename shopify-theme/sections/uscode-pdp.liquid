@@ -1,0 +1,781 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+{{ 'uscode-pdp.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-pdp.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign tier_name = section.settings.tier_option | default: 'Tier' | downcase
+  assign size_name = section.settings.size_option | default: 'Size' | downcase
+  assign tier_index = -1
+  assign size_index = -1
+  assign size_last = -1
+  assign size_keys = ','
+  for option in product.options_with_values
+    assign oname = option.name | downcase
+    if oname == tier_name
+      assign tier_index = forloop.index0
+    elsif oname == size_name or oname contains 'size'
+      if size_index < 0
+        assign size_index = forloop.index0
+      endif
+      assign size_last = forloop.index0
+      assign size_keys = size_keys | append: forloop.index0 | append: ','
+    endif
+  endfor
+  assign size_indexes = size_keys | remove_first: ',' | split: ',' | join: ','
+
+  assign current = product.selected_or_first_available_variant
+  if product.selected_variant == blank and tier_index >= 0 and section.settings.default_tier != blank
+    for v in product.variants
+      if v.options[tier_index] == section.settings.default_tier and v.available
+        assign current = v
+        break
+      endif
+    endfor
+  endif
+
+  assign size_open = false
+  if size_index >= 0 and product.selected_variant == blank and section.settings.require_size
+    assign size_open = true
+  endif
+
+  assign kicker = product.metafields.custom.kicker.value | default: section.settings.kicker
+  assign tagline = product.metafields.custom.tagline.value | default: section.settings.tagline
+  if tagline == blank
+    assign tagline = product.description | strip_html | truncatewords: 32
+  endif
+
+  assign left_total = 0
+  assign tracked = false
+  for v in product.variants
+    if v.inventory_management == 'shopify'
+      assign tracked = true
+      if v.inventory_quantity > 0
+        assign left_total = left_total | plus: v.inventory_quantity
+      endif
+    endif
+  endfor
+  assign edition = product.metafields.custom.edition_size.value | default: section.settings.edition_size | default: 300
+  assign left_pct = left_total | times: 100.0 | divided_by: edition | round: 1
+  if left_pct > 100
+    assign left_pct = 100
+  endif
+  assign show_stock = false
+  if section.settings.show_stock and tracked and product.gift_card? == false
+    assign show_stock = true
+  endif
+
+  assign media_count = product.media.size
+  assign current_media_index = 0
+  # Start on the first image (admin order); only a shared ?variant= link opens on its image
+  if product.selected_variant and current.featured_media
+    for m in product.media
+      if m.id == current.featured_media.id
+        assign current_media_index = forloop.index0
+      endif
+    endfor
+  endif
+
+  if size_open
+    capture atc_label
+      echo 'Select a size · '
+      echo current.price | money_without_trailing_zeros
+    endcapture
+  elsif current.available
+    capture atc_label
+      echo 'Add to cart · '
+      echo current.price | money_without_trailing_zeros
+    endcapture
+  else
+    assign atc_label = 'Sold out'
+  endif
+
+  assign print_lines = product.metafields.custom.print_lines.value
+  assign personalise = false
+  if print_lines.size > 0
+    assign personalise = true
+  endif
+  assign allow_custom = product.metafields.custom.allow_custom_line.value
+  if allow_custom == nil
+    assign allow_custom = true
+  endif
+  assign allow_none = product.metafields.custom.allow_no_line.value
+  if allow_none == nil
+    assign allow_none = true
+  endif
+  assign step = 0
+
+  assign option_values = ''
+  for option in product.options_with_values
+    for value in option.values
+      assign option_values = option_values | append: '|' | append: value | append: '|'
+    endfor
+  endfor
+-%}
+
+<div
+  class="uscode-pdp"
+  data-uscode-pdp
+  data-section-id="{{ section.id }}"
+  data-size-index="{{ size_index }}"
+  data-size-indexes="{{ size_indexes }}"
+  data-tier-index="{{ tier_index }}"
+  data-upload-tier="{{ section.settings.upload_tier | escape }}"
+  data-upload-all="{{ section.settings.upload_all_tiers }}"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+  data-product-title="{{ product.title | escape }}"
+  data-left="{% if show_stock %}{{ left_total }}{% endif %}"
+>
+  <section class="uscode-pdp__top" id="uscode-buy" aria-label="{{ product.title | escape }}">
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div
+      class="uscode-pdp__gal"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Product images"
+      data-gallery
+      data-index="{{ current_media_index }}"
+    >
+      <div class="uscode-pdp__stage">
+        <button type="button" class="uscode-pdp__closefs" data-full-close>Close ×</button>
+        {%- if media_count > 0 -%}
+          <button type="button" class="uscode-pdp__zoom" aria-label="View full screen" data-full-open>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </button>
+          <span class="uscode-pdp__counter" aria-live="polite" data-counter>{{ current_media_index | plus: 1 }} / {{ media_count }}</span>
+        {%- endif -%}
+        <div class="uscode-pdp__track" tabindex="0" aria-label="Images, use arrow keys to browse" data-track>
+          {%- for media in product.media -%}
+            {%- liquid
+              assign label = media.alt
+              if label.size > 40
+                assign label = ''
+              endif
+              if forloop.first
+                assign loading = 'eager'
+              else
+                assign loading = 'lazy'
+              endif
+            -%}
+            <div
+              class="uscode-pdp__slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="{{ forloop.index }} of {{ media_count }}{% if label != blank %}: {{ label | escape }}{% endif %}"
+              data-slide
+              data-media-id="{{ media.id }}"
+            >
+              {{ media.preview_image | image_url: width: 1600 | image_tag: loading: loading, widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 1160px) 620px, (min-width: 900px) 55vw, 100vw', alt: media.alt | default: product.title }}
+              {%- if label != blank -%}
+                <span class="uscode-pdp__slabel" aria-hidden="true">{{ label }}</span>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <div class="uscode-pdp__slide" data-slide>
+              {{ 'product-apparel-1' | placeholder_svg_tag: 'uscode-pdp__ph' }}
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- if media_count > 1 -%}
+          <button type="button" class="uscode-pdp__arrow uscode-pdp__arrow--prev" aria-label="Previous image" data-prev>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <button type="button" class="uscode-pdp__arrow uscode-pdp__arrow--next" aria-label="Next image" data-next>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div class="uscode-pdp__progress" aria-hidden="true">
+            {%- for media in product.media -%}
+              <span{% if forloop.index0 == current_media_index %} class="is-on"{% endif %}></span>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+      {%- if media_count > 1 -%}
+        <div class="uscode-pdp__thumbs{% unless section.settings.mobile_thumbs %} uscode-pdp__thumbs--hide-m{% endunless %}" aria-label="Choose image">
+          {%- for media in product.media -%}
+            {%- liquid
+              assign label = media.alt
+              if label.size > 40
+                assign label = ''
+              endif
+            -%}
+            <button
+              type="button"
+              class="uscode-pdp__thumb"
+              aria-label="Show image {{ forloop.index }} of {{ media_count }}{% if label != blank %}: {{ label | escape }}{% endif %}"
+              aria-current="{% if forloop.index0 == current_media_index %}true{% else %}false{% endif %}"
+              data-thumb="{{ forloop.index0 }}"
+            >
+              {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Buy box {%- endcomment -%}
+    <div class="uscode-pdp__buy">
+      <div>
+        {%- if kicker != blank -%}
+          <span class="uscode-pdp__kicker">{{ kicker }}</span>
+        {%- endif -%}
+        <h1 class="uscode-pdp__ptitle">{{ product.title }}</h1>
+        {%- if tagline != blank -%}
+          <p class="uscode-pdp__tagline">{{ tagline }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="uscode-pdp__pricerow">
+        <p class="uscode-pdp__bigprice">
+          <span data-price>{{ current.price | money_without_trailing_zeros }}</span>
+          <s class="uscode-pdp__compare" data-compare{% unless current.compare_at_price > current.price %} hidden{% endunless %}>
+            {{- current.compare_at_price | money_without_trailing_zeros -}}
+          </s>
+        </p>
+        {%- if show_stock -%}
+          <div class="uscode-pdp__stock">
+            <p>{{ left_total }} of {{ edition }} left</p>
+            <div class="uscode-pdp__bar" aria-hidden="true"><i style="width: {{ left_pct }}%;"></i></div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- form 'product', product, class: 'uscode-pdp__form', data-product-form: '', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
+
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            {%- liquid
+              assign oi = forloop.index0
+              assign selected = current.options[oi]
+              assign okey = ',' | append: oi | append: ','
+              assign is_size = false
+              if size_keys contains okey
+                assign is_size = true
+              endif
+              if is_size and size_open
+                assign selected = ''
+              endif
+              assign olabel = option.name
+              assign label_rows = section.settings.option_labels | newline_to_br | split: '<br />'
+              for row in label_rows
+                assign pair = row | strip | split: ':'
+                if pair.size > 1
+                  assign pname = pair[0] | strip | downcase
+                  assign lname = option.name | downcase
+                  if pname == lname
+                    assign olabel = row | strip | remove_first: pair[0] | remove_first: ':' | strip
+                  endif
+                endif
+              endfor
+            -%}
+            {%- if option.values.size == 1 -%}
+              <input type="hidden" value="{{ option.values.first | escape }}" data-option="{{ oi }}">
+            {%- elsif oi == tier_index -%}
+              {%- assign step = step | plus: 1 -%}
+              <fieldset class="uscode-pdp__fieldset" data-option-group="{{ oi }}">
+                <legend class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ olabel }}</span><b data-option-value="{{ oi }}">{{ selected }}</b></legend>
+                <div class="uscode-pdp__tiersel">
+                  {%- for value in option.values -%}
+                    {%- liquid
+                      assign vmin = nil
+                      for v in product.variants
+                        if v.options[oi] == value
+                          if vmin == nil or v.price < vmin
+                            assign vmin = v.price
+                          endif
+                        endif
+                      endfor
+                      assign input_id = 'Opt-' | append: section.id | append: '-' | append: oi | append: '-' | append: forloop.index0
+                    -%}
+                    <input
+                      class="uscode-pdp__radio"
+                      type="radio"
+                      id="{{ input_id }}"
+                      name="uscode-option-{{ oi }}"
+                      value="{{ value | escape }}"
+                      data-option="{{ oi }}"
+                      {% if value == selected %}
+                        checked
+                      {% endif %}
+                    >
+                    <label class="uscode-pdp__topt" for="{{ input_id }}">
+                      {%- if value == section.settings.popular_tier -%}
+                        <span class="uscode-pdp__pop">{{ section.settings.popular_label }}</span>
+                      {%- endif -%}
+                      <span class="uscode-pdp__tn">{{ value }}</span>
+                      {%- if vmin != nil -%}
+                        <span class="uscode-pdp__tp">{{ vmin | money_without_trailing_zeros }}</span>
+                      {%- endif -%}
+                    </label>
+                  {%- endfor -%}
+                </div>
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'tier' -%}
+                    {%- assign short = block.settings.short_description | default: block.settings.description -%}
+                    <p
+                      class="uscode-pdp__tdesc"
+                      data-tier-desc="{{ block.settings.name | escape }}"
+                      {% unless block.settings.name == selected %}
+                        hidden
+                      {% endunless %}
+                    >
+                      {{ short }}
+                    </p>
+                  {%- endif -%}
+                {%- endfor -%}
+              </fieldset>
+            {%- else -%}
+              {%- assign step = step | plus: 1 -%}
+              <fieldset class="uscode-pdp__fieldset{% if is_size %} uscode-pdp__fieldset--size{% endif %}" data-option-group="{{ oi }}">
+                <legend class="uscode-pdp__olabel">
+                  <span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ olabel }}</span>
+                  {%- if oi == size_index and section.settings.size_guide != blank -%}
+                    <button type="button" class="uscode-pdp__guidebtn" data-guide-open aria-haspopup="dialog">Size guide</button>
+                  {%- else -%}
+                    <b data-option-value="{{ oi }}">{{ selected }}</b>
+                  {%- endif -%}
+                </legend>
+                <div class="uscode-pdp__sizesel" style="--cols: {{ option.values.size | at_most: 5 }};">
+                  {%- for value in option.values -%}
+                    {%- assign input_id = 'Opt-' | append: section.id | append: '-' | append: oi | append: '-' | append: forloop.index0 -%}
+                    <input
+                      class="uscode-pdp__radio"
+                      type="radio"
+                      id="{{ input_id }}"
+                      name="uscode-option-{{ oi }}"
+                      value="{{ value | escape }}"
+                      data-option="{{ oi }}"
+                      {% if value == selected %}
+                        checked
+                      {% endif %}
+                    >
+                    <label class="uscode-pdp__sopt" for="{{ input_id }}">{{ value }}</label>
+                  {%- endfor -%}
+                </div>
+                {%- if is_size -%}
+                  <p class="uscode-pdp__err" id="SizeError-{{ section.id }}-{{ oi }}" role="alert" data-size-error="{{ oi }}" hidden>
+                    Choose a size to continue.
+                  </p>
+                {%- endif -%}
+                {%- if oi == size_last -%}
+                  <p class="uscode-pdp__fitnote">
+                    {{ section.settings.fit_note }}
+                    <span data-soldout-note></span>
+                  </p>
+                {%- endif -%}
+              </fieldset>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endunless -%}
+
+        {%- if personalise -%}
+          {%- assign step = step | plus: 1 -%}
+          {%- assign first_line = print_lines | first -%}
+          <fieldset class="uscode-pdp__fieldset uscode-pdp__linestep" id="LineStep-{{ section.id }}" data-line-step data-max="{{ section.settings.line_max | default: 36 }}">
+            <legend class="uscode-pdp__olabel"><span><span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{{ section.settings.line_title }}</span><b>{{ section.settings.line_note }}</b></legend>
+            <div class="uscode-pdp__lines" role="radiogroup" aria-label="Line printed on the back">
+              {%- for line in print_lines -%}
+                {%- assign lid = 'Line-' | append: section.id | append: '-' | append: forloop.index0 -%}
+                <input class="uscode-pdp__radio" type="radio" id="{{ lid }}" name="uscode-line" value="{{ line | escape }}" data-line-type="set"{% if forloop.first %} checked{% endif %}>
+                <label class="uscode-pdp__lopt" for="{{ lid }}"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>{{ line }}</span></label>
+              {%- endfor -%}
+              {%- if allow_custom -%}
+                <input class="uscode-pdp__radio" type="radio" id="Line-{{ section.id }}-own" name="uscode-line" value="" data-line-type="custom">
+                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-own"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>Write your own, up to {{ section.settings.line_max | default: 36 }} characters</span></label>
+              {%- endif -%}
+              {%- if allow_none -%}
+                <input class="uscode-pdp__radio" type="radio" id="Line-{{ section.id }}-none" name="uscode-line" value="No line" data-line-type="none">
+                <label class="uscode-pdp__lopt uscode-pdp__lopt--plain" for="Line-{{ section.id }}-none"><span class="uscode-pdp__dot" aria-hidden="true"></span><span>No line, eyes only</span></label>
+              {%- endif -%}
+            </div>
+            {%- if allow_custom -%}
+              <div class="uscode-pdp__own" data-line-own hidden>
+                <label for="LineOwn-{{ section.id }}"><span>Your line</span><span data-line-count>0/{{ section.settings.line_max | default: 36 }}</span></label>
+                <input class="input" id="LineOwn-{{ section.id }}" type="text" maxlength="{{ section.settings.line_max | default: 36 }}" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. Since the night at the wall." aria-describedby="LineOwnHint-{{ section.id }}" data-line-input>
+                <small id="LineOwnHint-{{ section.id }}">Letters, numbers and basic punctuation. Printed in capitals, exactly as typed.</small>
+              </div>
+            {%- endif -%}
+            <input type="hidden" name="properties[Line]" value="{{ first_line | upcase | escape }}" data-line-value>
+            <input type="hidden" name="properties[_line_type]" value="set" data-line-type-value>
+            <label class="uscode-pdp__confirm" data-line-confirm-wrap>
+              <input type="checkbox" name="properties[_line_confirmed]" value="yes" data-line-confirm>
+              <span data-line-confirm-text>Print “{{ first_line | upcase }}” exactly as shown. I understand the line can’t be changed after printing.</span>
+            </label>
+            {%- if section.settings.memory_note != blank -%}<p class="uscode-pdp__memnote">{{ section.settings.memory_note }}</p>{%- endif -%}
+          </fieldset>
+        {%- endif -%}
+
+        {%- if section.settings.upload_all_tiers or tier_index >= 0 and section.settings.upload_tier != blank -%}
+          {%- assign step = step | plus: 1 -%}
+          <div class="uscode-pdp__fieldset uscode-pdp__photostep" id="PhotoStep-{{ section.id }}" data-upload hidden>
+            <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span><b data-upload-req{% if section.settings.upload_tier != blank %} data-req-text="Required for {{ section.settings.upload_tier | escape }}"{% endif %} data-opt-text="Optional · up to 2">{% if section.settings.upload_all_tiers %}Optional · up to 2{% else %}{{ section.settings.upload_tier }} only{% endif %}</b></p>
+            {%- for n in (1..2) -%}
+              {%- liquid
+                if n == 1
+                  assign prop = 'Eye photo'
+                  assign drop_title = section.settings.upload_title_1
+                else
+                  assign prop = 'Eye photo 2'
+                  assign drop_title = section.settings.upload_title_2
+                endif
+              -%}
+              <div class="uscode-pdp__slot" data-photo-slot="{{ n }}">
+                <label class="uscode-pdp__drop" data-upload-drop>
+                  <b>{{ drop_title }}</b>
+                  <span>{% if n == 1 %}{{ section.settings.upload_note }}{% else %}{{ section.settings.upload_note_2 }}{% endif %}</span>
+                  <input type="file" name="properties[{{ prop }}]" accept="image/jpeg,image/png" disabled data-photo-input{% if n == 1 %} data-upload-input{% endif %} data-min-width="{{ section.settings.upload_min_width | default: 2000 }}">
+                </label>
+                <div class="uscode-pdp__filled" data-upload-filled hidden>
+                  <span class="uscode-pdp__th" data-upload-thumb></span>
+                  <div><b data-upload-name></b><span data-upload-meta></span></div>
+                  <button type="button" class="uscode-pdp__linkbtn" data-upload-remove aria-label="Remove {{ prop | downcase }}">Remove</button>
+                </div>
+              </div>
+            {%- endfor -%}
+            <p class="uscode-pdp__err" role="alert" data-upload-error hidden>Add your photo to continue.</p>
+          </div>
+        {%- endif -%}
+
+        <button
+          type="submit"
+          name="add"
+          class="btn btn-primary uscode-pdp__atc"
+          data-atc
+          {% unless current.available %}
+            disabled
+          {% endunless %}
+        >
+          <span data-atc-label>{{ atc_label | strip }}</span>
+        </button>
+        {%- if personalise -%}
+          <p class="uscode-pdp__atchint" id="AtcHint-{{ section.id }}" aria-live="polite" data-atc-hint data-ship="{{ section.settings.ship_hint | escape }}" data-ship-upload="{{ section.settings.ship_hint_upload | escape }}"></p>
+        {%- endif -%}
+      {%- endform -%}
+
+      {%- assign trust = section.blocks | where: 'type', 'trust' -%}
+      {%- if trust.size > 0 -%}
+        <ul class="uscode-pdp__trust" role="list">
+          {%- for block in trust -%}
+            <li {{ block.shopify_attributes }}><b>{{ block.settings.value }}</b>{{ block.settings.label }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- assign accs = section.blocks | where: 'type', 'accordion' -%}
+      {%- if accs.size > 0 -%}
+        <div class="uscode-pdp__accs">
+          {%- for block in accs -%}
+            <details class="uscode-pdp__acc" name="uscode-pdp-{{ section.id }}" {% if forloop.first %}open{% endif %} {{ block.shopify_attributes }}>
+              <summary><span>{{ block.settings.title }}</span><span class="uscode-pdp__pm" aria-hidden="true"></span></summary>
+              <div class="uscode-pdp__accbody">{{ block.settings.content }}</div>
+            </details>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <div class="uscode-pdp__wrap">
+    {%- assign stats = section.blocks | where: 'type', 'stat' -%}
+    {%- if stats.size > 0 -%}
+      <hr class="uscode-pdp__rule">
+      <section class="uscode-pdp__strip" aria-label="This drop, in numbers">
+        <div class="uscode-pdp__strip-grid">
+          {%- for block in stats -%}
+            <div {{ block.shopify_attributes }}>
+              <p class="uscode-pdp__strip-num">{{ block.settings.number }}</p>
+              <p class="uscode-pdp__strip-label">{{ block.settings.label }}</p>
+            </div>
+          {%- endfor -%}
+        </div>
+      </section>
+      <hr class="uscode-pdp__rule">
+    {%- endif -%}
+
+    {%- assign features = section.blocks | where: 'type', 'feature' -%}
+    {%- if features.size > 0 -%}
+      <section class="uscode-pdp__features" id="how">
+        <span class="uscode-pdp__kicker">{{ section.settings.features_kicker }}</span>
+        {%- for block in features -%}
+          <div class="uscode-pdp__feature" {{ block.shopify_attributes }}>
+            <p class="uscode-pdp__fnum">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</p>
+            <div>
+              <h2 class="uscode-pdp__ftitle">{{ block.settings.title }}</h2>
+              <p class="uscode-pdp__fcopy">{{ block.settings.text }}</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      </section>
+    {%- endif -%}
+
+    <section class="uscode-pdp__split">
+      <figure>
+        {%- if section.settings.detail_image != blank -%}
+          {{ section.settings.detail_image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200', sizes: '(min-width: 700px) 560px, 100vw' }}
+        {%- elsif product.media.size > 2 -%}
+          {{ product.media[2].preview_image | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'uscode-pdp__ph' }}
+        {%- endif -%}
+      </figure>
+      <span class="uscode-pdp__kicker">{{ section.settings.split_kicker }}</span>
+      <h2 class="uscode-pdp__title">{{ section.settings.split_title }}</h2>
+      <p class="uscode-pdp__note">{{ section.settings.split_note }}</p>
+    </section>
+
+    {%- assign tiers = section.blocks | where: 'type', 'tier' -%}
+    {%- if tiers.size > 0 -%}
+      <hr class="uscode-pdp__rule">
+      <section class="uscode-pdp__pricing" id="pricing">
+        <span class="uscode-pdp__kicker">{{ section.settings.pricing_kicker }}</span>
+        <h2 class="uscode-pdp__title">{{ section.settings.pricing_title }}</h2>
+        <div class="uscode-pdp__tiers">
+          {%- for block in tiers -%}
+            {%- assign needle = '|' | append: block.settings.name | append: '|' -%}
+            <div class="uscode-pdp__tier{% if block.settings.featured %} is-feat{% endif %}" {{ block.shopify_attributes }}>
+              {%- if block.settings.badge != blank -%}
+                <span class="uscode-pdp__tag">{{ block.settings.badge }}</span>
+              {%- endif -%}
+              <div class="uscode-pdp__tier-head">
+                <p class="uscode-pdp__tier-name">{{ block.settings.name }}</p>
+                {%- liquid
+                  assign tier_price = block.settings.price
+                  if tier_index >= 0
+                    assign tmin = nil
+                    for v in product.variants
+                      if v.options[tier_index] == block.settings.name
+                        if tmin == nil or v.price < tmin
+                          assign tmin = v.price
+                        endif
+                      endif
+                    endfor
+                    if tmin != nil
+                      assign tier_price = tmin | money_without_trailing_zeros
+                    endif
+                  endif
+                -%}
+                {%- if tier_price != blank -%}<p class="uscode-pdp__tier-price">{{ tier_price }}</p>{%- endif -%}
+              </div>
+              <p class="uscode-pdp__tier-desc">{{ block.settings.description }}</p>
+              <ul>
+                {%- assign items = block.settings.features | split: '|' -%}
+                {%- for item in items -%}
+                  <li>{{ item | strip }}</li>
+                {%- endfor -%}
+              </ul>
+              {%- if option_values contains needle -%}
+                <button type="button" class="btn {% if block.settings.featured %}btn-primary{% else %}btn-secondary{% endif %}" data-choose="{{ block.settings.name | escape }}">
+                  Choose {{ block.settings.name }}
+                </button>
+              {%- else -%}
+                <a href="#uscode-buy" class="btn {% if block.settings.featured %}btn-primary{% else %}btn-secondary{% endif %}">
+                  Choose {{ block.settings.name }}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- if section.settings.quote != blank -%}
+      <section class="uscode-pdp__quote">
+        <figure>
+          <blockquote>&ldquo;{{ section.settings.quote }}&rdquo;</blockquote>
+          {%- if section.settings.quote_by != blank -%}
+            <figcaption>{{ section.settings.quote_by }}</figcaption>
+          {%- endif -%}
+        </figure>
+      </section>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.close_line1 != blank -%}
+    <section class="uscode-pdp__close">
+      <div class="uscode-pdp__wrap">
+        <h2 class="uscode-pdp__closeh">
+          <span>{{ section.settings.close_line1 }}</span> <span>{{ section.settings.close_line2 }}</span>
+        </h2>
+        <a href="#uscode-buy" class="btn btn-ghost" data-to-top>{{ section.settings.close_cta }}</a>
+        {%- if section.settings.close_hint != blank -%}
+          <p>{{ section.settings.close_hint }}</p>
+        {%- endif -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if section.settings.sticky_bar -%}
+    <div class="uscode-pdp__sticky" data-sticky inert>
+      {%- if product.media.size > 0 -%}
+        {{ product.media[0].preview_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+      {%- endif -%}
+      <div class="uscode-pdp__stickytext">
+        <p class="uscode-pdp__st">{{ product.title }} · <span data-price>{{ current.price | money_without_trailing_zeros }}</span></p>
+        <p class="uscode-pdp__sm" data-sticky-meta></p>
+      </div>
+      <button type="button" class="btn btn-primary" data-sticky-atc>
+        {%- if size_open %}Select size{% else %}Add to cart{% endif -%}
+      </button>
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.size_guide != blank -%}
+    {%- assign rows = section.settings.size_guide | newline_to_br | split: '<br />' -%}
+    <dialog class="uscode-pdp__sg" aria-labelledby="SizeGuide-{{ section.id }}" data-guide>
+      <h2 id="SizeGuide-{{ section.id }}">Size guide</h2>
+      {%- if section.settings.size_guide_note != blank -%}
+        <p>{{ section.settings.size_guide_note }}</p>
+      {%- endif -%}
+      <table>
+        {%- for row in rows -%}
+          {%- assign cells = row | strip | split: ',' -%}
+          {%- if cells.size == 0 -%}{%- continue -%}{%- endif -%}
+          {%- if forloop.first -%}
+            <thead>
+              <tr>
+                {%- for cell in cells -%}<th scope="col">{{ cell | strip }}</th>{%- endfor -%}
+              </tr>
+            </thead>
+            <tbody>
+          {%- else -%}
+            <tr>
+              {%- for cell in cells -%}
+                {%- if forloop.first -%}<th scope="row">{{ cell | strip }}</th>{%- else -%}<td>{{ cell | strip }}</td>{%- endif -%}
+              {%- endfor -%}
+            </tr>
+          {%- endif -%}
+        {%- endfor -%}
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-secondary" data-guide-close>Close</button>
+    </dialog>
+  {%- endif -%}
+
+  <div class="uscode-pdp__toast" role="status" aria-live="polite" data-toast hidden>
+    <span data-toast-text></span>
+    <a href="{{ routes.cart_url }}">View cart</a>
+  </div>
+
+  <script type="application/json" data-variants>
+    {%- capture variants_json -%}
+      [
+      {%- for v in product.variants -%}
+        {"id":{{ v.id }},"options":{{ v.options | json }},"available":{{ v.available | json }},"price":{{ v.price }},"compare_at_price":{{ v.compare_at_price | default: 0 }},"media_id":{% if v.featured_media %}{{ v.featured_media.id }}{% else %}null{% endif %}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+      ]
+    {%- endcapture -%}
+    {{- variants_json | strip -}}
+  </script>
+  <script type="application/json" data-money-format>{{ shop.money_format | json }}</script>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE Product Page",
+  "tag": "section",
+  "class": "section-uscode-pdp",
+  "settings": [
+    { "type": "header", "content": "Buy box" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "Drop 01", "info": "Override per product with the custom.kicker metafield." },
+    { "type": "textarea", "id": "tagline", "label": "Tagline", "info": "Override per product with the custom.tagline metafield. Leave blank to use the start of the description." },
+    { "type": "checkbox", "id": "show_stock", "label": "Show pieces left", "default": true, "info": "Needs tracked inventory." },
+    { "type": "number", "id": "edition_size", "label": "Edition size", "default": 300, "info": "Override per product with the custom.edition_size metafield." },
+    { "type": "text", "id": "tier_option", "label": "Tier option name", "default": "Tier", "info": "This option shows as cards with a price each." },
+    { "type": "text", "id": "default_tier", "label": "Tier selected by default", "default": "Memory" },
+    { "type": "text", "id": "popular_tier", "label": "Tier with a badge", "default": "Memory" },
+    { "type": "text", "id": "popular_label", "label": "Badge", "default": "Most chosen" },
+    { "type": "text", "id": "size_option", "label": "Size option name", "default": "Size" },
+    { "type": "checkbox", "id": "require_size", "label": "Shopper must pick a size", "default": true, "info": "No size is preselected, so nobody orders the wrong one by accident." },
+    { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
+    { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
+    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." },
+    { "type": "checkbox", "id": "upload_all_tiers", "label": "Show eye photo uploads on every tier", "default": true, "info": "Up to two photos. Optional except on the tier below." },
+    { "type": "text", "id": "upload_tier", "label": "Tier that requires a photo", "default": "Signature", "info": "Leave blank to never require one." },
+    { "type": "text", "id": "upload_title", "label": "Photo step title", "default": "Your eye photo" },
+    { "type": "text", "id": "upload_title_1", "label": "First photo label", "default": "Upload a close-up of your eyes" },
+    { "type": "text", "id": "upload_title_2", "label": "Second photo label", "default": "Add a second pair of eyes (optional)" },
+    { "type": "text", "id": "upload_note_2", "label": "Second photo hint", "default": "For couples: the other person's eyes. Same rules, JPG or PNG, at least 2000px wide." },
+    { "type": "text", "id": "upload_note", "label": "Photo field hint", "default": "JPG or PNG, at least 2000px wide. Daylight, no filter. We'll email a proof before printing." },
+    { "type": "header", "content": "Personalise (products with custom.print_lines)" },
+    { "type": "paragraph", "content": "Lines come from the product metafield custom.print_lines. Switch them per product with custom.allow_custom_line and custom.allow_no_line. Products without lines show the normal buy box." },
+    { "type": "text", "id": "line_title", "label": "Line step title", "default": "Your line" },
+    { "type": "text", "id": "line_note", "label": "Line step note", "default": "Printed under the eyes" },
+    { "type": "range", "id": "line_max", "label": "Custom line length", "min": 12, "max": 48, "step": 1, "default": 36 },
+    { "type": "text", "id": "memory_note", "label": "Memory note", "default": "Your memory (photo, voice or video) is added after checkout. You'll get a link right away." },
+    { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 48h · memory added after checkout" },
+    { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3 to 4 weeks · memory added after checkout" },
+    { "type": "number", "id": "upload_min_width", "label": "Eye photo minimum width (px)", "default": 2000 },
+    { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: First tee size\nTee 2 size: Second tee size", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
+    { "type": "checkbox", "id": "sticky_bar", "label": "Sticky add to cart on phones", "default": true },
+    { "type": "checkbox", "id": "mobile_thumbs", "label": "Show thumbnails on phones", "default": true },
+    { "type": "header", "content": "Features" },
+    { "type": "text", "id": "features_kicker", "label": "Kicker", "default": "What you're wearing" },
+    { "type": "header", "content": "Detail" },
+    { "type": "image_picker", "id": "detail_image", "label": "Detail photo", "info": "Defaults to the product's third image." },
+    { "type": "text", "id": "split_kicker", "label": "Kicker", "default": "Made to last the memory" },
+    { "type": "text", "id": "split_title", "label": "Title", "default": "Screen-printed once. Verified forever." },
+    { "type": "textarea", "id": "split_note", "label": "Text", "default": "Every shirt is numbered against its NFC chip at print. Scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes." },
+    { "type": "header", "content": "Pricing" },
+    { "type": "text", "id": "pricing_kicker", "label": "Kicker", "default": "Compare tiers" },
+    { "type": "text", "id": "pricing_title", "label": "Title", "default": "Three ways to keep it." },
+    { "type": "header", "content": "Quote" },
+    { "type": "text", "id": "quote", "label": "Quote", "default": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted." },
+    { "type": "text", "id": "quote_by", "label": "Attribution", "default": "From the first drop, Essential" },
+    { "type": "header", "content": "Closing banner" },
+    { "type": "text", "id": "close_line1", "label": "Line 1", "default": "300 made." },
+    { "type": "text", "id": "close_line2", "label": "Line 2", "default": "None remade." },
+    { "type": "text", "id": "close_cta", "label": "Button", "default": "Shop before it's gone" },
+    { "type": "text", "id": "close_hint", "label": "Hint", "default": "Drop closes when the count hits zero." }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust point",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "value", "label": "Value", "default": "48h" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Ships from print" }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Details & fit" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Heavyweight 260gsm cotton, garment-dyed and vintage-washed.</p>" }
+      ]
+    },
+    {
+      "type": "stat",
+      "name": "Stat",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "default": "300" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Pieces made, no restock" }
+      ]
+    },
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "A real pair of eyes" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "tier",
+      "name": "Tier",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name", "default": "Essential", "info": "If the product has an option value with this exact name, the button selects it." },
+        { "type": "text", "id": "price", "label": "Price", "default": "$48" },
+        { "type": "textarea", "id": "short_description", "label": "Line under the tier picker", "info": "Leave blank to use the description." },
+        { "type": "textarea", "id": "description", "label": "Description" },
+        { "type": "text", "id": "features", "label": "Features (separate with |)" },
+        { "type": "checkbox", "id": "featured", "label": "Highlight", "default": false },
+        { "type": "text", "id": "badge", "label": "Badge" }
+      ]
+    }
+  ]
+}
+{% endschema %}
