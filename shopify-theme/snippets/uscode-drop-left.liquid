@@ -1,9 +1,7 @@
 {%- doc -%}
-  Pieces left in a drop: tracked stock across a collection's products.
-  Falls back to the given number, then to the edition total (nothing claimed yet).
+  Pieces in stock across a collection's products: the sum of tracked variant inventory.
+  Outputs -1 when no variant tracks stock, so callers can hide the counter instead of inventing a number.
   @param {object} [collection] - Drop collection
-  @param {number} [fallback] - Used when stock isn't tracked
-  @param {number} total - Edition size
 {%- enddoc -%}
 {%- liquid
   assign left = 0
@@ -21,10 +19,7 @@
     endfor
   endif
   unless tracked
-    assign left = fallback | default: total
+    assign left = -1
   endunless
-  if left > total
-    assign left = total
-  endif
   echo left
 -%}

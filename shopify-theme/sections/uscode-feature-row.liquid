@@ -8,7 +8,7 @@
         <h2 class="uh-h2">{{ section.settings.heading }}</h2>
         {%- if section.settings.text != blank -%}<div class="uh-lede">{{ section.settings.text }}</div>{%- endif -%}
         {%- if section.settings.show_verify -%}
-          <form class="uh-verify" action="{{ section.settings.verify_template | remove: '[number]' }}" data-uh-verify data-template="{{ section.settings.verify_template | escape }}" novalidate>
+          <form class="uh-verify" action="{{ section.settings.verify_template | remove: '/[number]' | remove: '[number]' | default: '/pages/verify' }}" method="get" data-uh-verify>
             <label><span>{{ section.settings.verify_label }}</span><input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="042" autocomplete="off" name="number"></label>
             <button type="submit" class="btn btn-primary">{{ section.settings.verify_button }}</button>
           </form>
@@ -49,7 +49,7 @@
     { "type": "url", "id": "cta_link", "label": "Button link" },
     { "type": "header", "content": "Verify a piece" },
     { "type": "checkbox", "id": "show_verify", "label": "Show number lookup", "default": false },
-    { "type": "text", "id": "verify_template", "label": "Print page link", "default": "/pages/verify/[number]", "info": "[number] becomes the 3-digit number, e.g. /pages/verify/042. Match your print records' handles." },
+    { "type": "text", "id": "verify_template", "label": "Verify page link", "default": "/pages/verify", "info": "The page that looks a number up. It uses the US CODE verify lookup section (page template: verify)." },
     { "type": "text", "id": "verify_label", "label": "Field label", "default": "Number on your tag" },
     { "type": "text", "id": "verify_button", "label": "Button", "default": "Verify a piece" },
     { "type": "text", "id": "verify_hint", "label": "Hint", "default": "Find it printed on the hang tag and inside the chest pocket." }

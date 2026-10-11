@@ -98,6 +98,10 @@
     font-family: var(--font-body);
   }
   .uscode-cart__remove:hover { color: {{ section.settings.accent_color }}; opacity: 1; }
+  @media (max-width: 989px) {
+    .uscode-cart__stepper button { width: 44px; height: 44px; }
+    .uscode-cart__remove { min-height: 44px; padding: 0 4px; }
+  }
   .uscode-cart__line-price {
     font-weight: 700;
     font-size: 17px;
@@ -280,8 +284,9 @@
         </div>
         <div class="uscode-cart__srow">
           <span class="muted">Shipping</span>
-          {% assign free_threshold = section.settings.free_shipping_threshold | times: 100 %}
-          <span>{% if free_threshold > 0 and cart.total_price >= free_threshold %}Free{% else %}Calculated at checkout{% endif %}</span>
+          {%- comment -%} Threshold is in AED (Theme settings > US CODE); only compare when the cart is in AED. {%- endcomment -%}
+          {% assign free_threshold = settings.uscode_free_shipping_aed | default: 0 | times: 100 %}
+          <span>{% if free_threshold > 0 and cart.currency.iso_code == shop.currency and cart.total_price >= free_threshold %}Free{% else %}Calculated at checkout{% endif %}</span>
         </div>
         <div class="uscode-cart__srow uscode-cart__srow--total">
           <span>Total</span>
@@ -327,9 +332,8 @@ document.getElementById('uscode-promo')?.addEventListener('keydown', function (e
   "name": "US CODE Cart",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "trust_line", "label": "Trust line", "default": "NFC-verified · ships in 48 hours · no restock" },
+    { "type": "text", "id": "trust_line", "label": "Trust line", "default": "NFC-verified · made to order · ships in 5 to 7 business days" },
     { "type": "text", "id": "empty_message", "label": "Empty message", "default": "Your cart is empty. The drop is still live." },
-    { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold ($, 0 to hide)", "info": "Display only. Must match a free shipping rate in Settings → Shipping.", "default": 60 },
     { "type": "color", "id": "bg_color", "label": "Background", "default": "#F2F2F2" },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
     { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },

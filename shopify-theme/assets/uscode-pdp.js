@@ -126,7 +126,9 @@
     const tierIndex = Number(root.dataset.tierIndex);
     const uploadTier = root.dataset.uploadTier;
     const uploadAll = root.dataset.uploadAll === 'true';
-    const photoRequired = (picked) => !!uploadTier && tierIndex >= 0 && picked[tierIndex] === uploadTier;
+    const photoTier = (picked) => !!uploadTier && tierIndex >= 0 && picked[tierIndex] === uploadTier;
+    const photoRequiredAll = root.dataset.photoRequired === 'true';
+    const photoRequired = (picked) => photoRequiredAll || photoTier(picked);
     const sizeIdxs = (root.dataset.sizeIndexes || '').split(',').filter((x) => x !== '').map(Number);
     if (!sizeIdxs.length && sizeIndex >= 0) sizeIdxs.push(sizeIndex);
     const groupOf = (i) => root.querySelector(`[data-option-group="${i}"]`);
@@ -210,7 +212,7 @@
       slot.querySelector('[data-upload-drop]').hidden = false;
       slot.querySelector('[data-upload-filled]').hidden = true;
       slot.querySelector('[data-upload-thumb]').textContent = '';
-      if (uploadError) { uploadError.textContent = msg || 'Add your photo to continue.'; uploadError.hidden = !msg; }
+      if (uploadError) { uploadError.textContent = msg || 'Add your eye photo to continue.'; uploadError.hidden = !msg; }
     }
     function checkPhoto(input) {
       const file = input.files[0];
@@ -305,7 +307,7 @@
       if (lineStep) {
         if (missing) atc.disabled = true;
         if (atcHint) {
-          const onUpload = upload && photoRequired(picked);
+          const onUpload = upload && photoTier(picked);
           atcHint.textContent = soldOut ? '' : HINTS[missing] || (onUpload ? atcHint.dataset.shipUpload : atcHint.dataset.ship) || '';
           atcHint.classList.toggle('is-todo', !!missing);
           if (atcHint.textContent) atc.setAttribute('aria-describedby', atcHint.id); else atc.removeAttribute('aria-describedby');
@@ -320,7 +322,7 @@
         upload.hidden = !on;
         const req = upload.querySelector('[data-upload-req]');
         if (req && uploadAll) req.textContent = photoRequired(picked) ? req.dataset.reqText : req.dataset.optText;
-        if (uploadError && !photoRequired(picked) && uploadError.textContent === 'Add your photo to continue.') uploadError.hidden = true;
+        if (uploadError && !photoRequired(picked) && uploadError.textContent === 'Add your eye photo to continue.') uploadError.hidden = true;
         photoInputs.forEach((el) => { el.disabled = !on; });
         if (!on && uploadError) uploadError.hidden = true;
       }
@@ -374,7 +376,11 @@
       toastEl.classList.toggle('is-error', !!isError);
       toastEl.hidden = false;
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => { toastEl.hidden = true; }, 3200);
+      toastTimer = setTimeout(hideToast, 6000);
+    }
+    function hideToast() {
+      if (toastEl.matches(':hover, :focus-within')) { toastTimer = setTimeout(hideToast, 1500); return; }
+      toastEl.hidden = true;
     }
 
     async function syncCart() {
@@ -402,8 +408,10 @@
         return;
       }
       if (upload && !upload.hidden && !photoOk && photoRequired(picked)) {
+        uploadError.textContent = 'Add your eye photo to continue.';
         uploadError.hidden = false;
-        uploadInput.focus();
+        atc.setAttribute('aria-describedby', uploadError.id);
+        scrollToEl(upload, uploadInput);
         return;
       }
       if (lineStep && needed(false)) return;

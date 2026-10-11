@@ -28,7 +28,7 @@
         "a2": {
           "type": "_announcement",
           "settings": {
-            "text": "Ships in 48 hours",
+            "text": "Made to order · ships in 5 to 7 days",
             "font": "var(--font-subheading--family)",
             "font_size": "0.75rem",
             "letter_spacing": "0.1em",

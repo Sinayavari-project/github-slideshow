@@ -54,13 +54,8 @@
       endif
     endif
   endfor
-  assign edition = product.metafields.custom.edition_size.value | default: section.settings.edition_size | default: 300
-  assign left_pct = left_total | times: 100.0 | divided_by: edition | round: 1
-  if left_pct > 100
-    assign left_pct = 100
-  endif
   assign show_stock = false
-  if section.settings.show_stock and tracked and product.gift_card? == false
+  if section.settings.show_stock and tracked and left_total > 0 and product.gift_card? == false
     assign show_stock = true
   endif
 
@@ -104,6 +99,14 @@
   endif
   assign step = 0
 
+  # The first eye photo is required on every tier for personalised products
+  assign photo_required_all = false
+  if section.settings.upload_required_personalised
+    if personalise or product.tags contains 'personalized'
+      assign photo_required_all = true
+    endif
+  endif
+
   assign option_values = ''
   for option in product.options_with_values
     for value in option.values
@@ -121,6 +124,7 @@
   data-tier-index="{{ tier_index }}"
   data-upload-tier="{{ section.settings.upload_tier | escape }}"
   data-upload-all="{{ section.settings.upload_all_tiers }}"
+  data-photo-required="{{ photo_required_all }}"
   data-cart-add-url="{{ routes.cart_add_url }}"
   data-product-title="{{ product.title | escape }}"
   data-left="{% if show_stock %}{{ left_total }}{% endif %}"
@@ -233,8 +237,7 @@
         </p>
         {%- if show_stock -%}
           <div class="uscode-pdp__stock">
-            <p>{{ left_total }} of {{ edition }} left</p>
-            <div class="uscode-pdp__bar" aria-hidden="true"><i style="width: {{ left_pct }}%;"></i></div>
+            <p>{{ left_total }} left</p>
           </div>
         {%- endif -%}
       </div>
@@ -405,10 +408,10 @@
           </fieldset>
         {%- endif -%}
 
-        {%- if section.settings.upload_all_tiers or tier_index >= 0 and section.settings.upload_tier != blank -%}
+        {%- if section.settings.upload_all_tiers or photo_required_all or tier_index >= 0 and section.settings.upload_tier != blank -%}
           {%- assign step = step | plus: 1 -%}
           <div class="uscode-pdp__fieldset uscode-pdp__photostep" id="PhotoStep-{{ section.id }}" data-upload hidden>
-            <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span><b data-upload-req{% if section.settings.upload_tier != blank %} data-req-text="Required for {{ section.settings.upload_tier | escape }}"{% endif %} data-opt-text="Optional · up to 2">{% if section.settings.upload_all_tiers %}Optional · up to 2{% else %}{{ section.settings.upload_tier }} only{% endif %}</b></p>
+            <p class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ section.settings.upload_title }}</span>{%- if photo_required_all -%}<b>Required · up to 2</b>{%- else -%}<b data-upload-req{% if section.settings.upload_tier != blank %} data-req-text="Required for {{ section.settings.upload_tier | escape }}"{% endif %} data-opt-text="Optional · up to 2">{% if section.settings.upload_all_tiers %}Optional · up to 2{% else %}{{ section.settings.upload_tier }} only{% endif %}</b>{%- endif -%}</p>
             {%- for n in (1..2) -%}
               {%- liquid
                 if n == 1
@@ -432,7 +435,7 @@
                 </div>
               </div>
             {%- endfor -%}
-            <p class="uscode-pdp__err" role="alert" data-upload-error hidden>Add your photo to continue.</p>
+            <p class="uscode-pdp__err" id="UploadError-{{ section.id }}" role="alert" data-upload-error hidden>Add your eye photo to continue.</p>
           </div>
         {%- endif -%}
 
@@ -456,7 +459,27 @@
       {%- if trust.size > 0 -%}
         <ul class="uscode-pdp__trust" role="list">
           {%- for block in trust -%}
-            <li {{ block.shopify_attributes }}><b>{{ block.settings.value }}</b>{{ block.settings.label }}</li>
+            {%- liquid
+              assign t_value = block.settings.value
+              assign t_label = block.settings.label
+              assign t_text = t_value | append: t_label
+              if t_text contains '[free_shipping]'
+                assign free_aed = settings.uscode_free_shipping_aed
+                if free_aed == blank or free_aed <= 0
+                  assign t_value = 'Shipping'
+                  assign t_label = 'Calculated at checkout'
+                else
+                  if cart.currency.iso_code == shop.currency
+                    assign free_label = free_aed | times: 100 | money_without_trailing_zeros
+                  else
+                    assign free_label = 'AED ' | append: free_aed
+                  endif
+                  assign t_value = t_value | replace: '[free_shipping]', free_label
+                  assign t_label = t_label | replace: '[free_shipping]', free_label
+                endif
+              endif
+            -%}
+            <li {{ block.shopify_attributes }}><b>{{ t_value }}</b>{{ t_label }}</li>
           {%- endfor -%}
         </ul>
       {%- endif -%}
@@ -678,8 +701,7 @@
     { "type": "header", "content": "Buy box" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "Drop 01", "info": "Override per product with the custom.kicker metafield." },
     { "type": "textarea", "id": "tagline", "label": "Tagline", "info": "Override per product with the custom.tagline metafield. Leave blank to use the start of the description." },
-    { "type": "checkbox", "id": "show_stock", "label": "Show pieces left", "default": true, "info": "Needs tracked inventory." },
-    { "type": "number", "id": "edition_size", "label": "Edition size", "default": 300, "info": "Override per product with the custom.edition_size metafield." },
+    { "type": "checkbox", "id": "show_stock", "label": "Show pieces left", "default": true, "info": "The sum of tracked variant stock. Hidden when stock isn't tracked or is zero." },
     { "type": "text", "id": "tier_option", "label": "Tier option name", "default": "Tier", "info": "This option shows as cards with a price each." },
     { "type": "text", "id": "default_tier", "label": "Tier selected by default", "default": "Memory" },
     { "type": "text", "id": "popular_tier", "label": "Tier with a badge", "default": "Memory" },
@@ -689,6 +711,7 @@
     { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
     { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." },
+    { "type": "checkbox", "id": "upload_required_personalised", "label": "Require the first eye photo on personalised products", "default": true, "info": "Products with custom.print_lines or the personalized tag. Add to cart stays blocked until a photo is added. The second photo is always optional." },
     { "type": "checkbox", "id": "upload_all_tiers", "label": "Show eye photo uploads on every tier", "default": true, "info": "Up to two photos. Optional except on the tier below." },
     { "type": "text", "id": "upload_tier", "label": "Tier that requires a photo", "default": "Signature", "info": "Leave blank to never require one." },
     { "type": "text", "id": "upload_title", "label": "Photo step title", "default": "Your eye photo" },
@@ -702,7 +725,7 @@
     { "type": "text", "id": "line_note", "label": "Line step note", "default": "Printed under the eyes" },
     { "type": "range", "id": "line_max", "label": "Custom line length", "min": 12, "max": 48, "step": 1, "default": 36 },
     { "type": "text", "id": "memory_note", "label": "Memory note", "default": "Your memory (photo, voice or video) is added after checkout. You'll get a link right away." },
-    { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 48h · memory added after checkout" },
+    { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Made to order, ships in 5 to 7 business days · memory added after checkout" },
     { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3 to 4 weeks · memory added after checkout" },
     { "type": "number", "id": "upload_min_width", "label": "Eye photo minimum width (px)", "default": 2000 },
     { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: First tee size\nTee 2 size: Second tee size", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
@@ -733,7 +756,7 @@
       "name": "Trust point",
       "limit": 3,
       "settings": [
-        { "type": "text", "id": "value", "label": "Value", "default": "48h" },
+        { "type": "text", "id": "value", "label": "Value", "default": "5 to 7 days", "info": "Use [free_shipping] for the AED amount from Theme settings > US CODE. A block using it shows \"Shipping, calculated at checkout\" when no amount is set." },
         { "type": "text", "id": "label", "label": "Label", "default": "Ships from print" }
       ]
     },

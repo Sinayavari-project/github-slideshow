@@ -57,8 +57,7 @@
         "sticky_bar": true,
         "sticky_title": "Drop 01",
         "sticky_button": "Shop the drop",
-        "drop_collection": "drop-01",
-        "edition_total": 300
+        "drop_collection": "drop-01"
       }
     },
     "how": {
@@ -151,7 +150,7 @@
             "name": "Essential",
             "image": "shopify://shop_images/uscode-tee-back-split.png",
             "contain": false,
-            "product": "us-code-eyes-only-memory-tee-white-personalized",
+            "product": "us-code-eyes-only-memory-tee-black-personalized",
             "option_value": "Essential",
             "price": "",
             "description": "The tee, the print, and a chip linked to one photo.",
@@ -168,7 +167,7 @@
             "name": "Memory",
             "image": "shopify://shop_images/uscode-tee-white-fragment-veil.webp",
             "contain": false,
-            "product": "us-code-eyes-only-memory-tee-white-personalized",
+            "product": "us-code-eyes-only-memory-tee-black-personalized",
             "option_value": "Memory",
             "price": "",
             "description": "Everything in Essential, with a voice note or video they can play back.",
@@ -185,7 +184,7 @@
             "name": "Signature",
             "image": "shopify://shop_images/uscode-print-circle-art.png",
             "contain": true,
-            "product": "us-code-eyes-only-memory-tee-white-personalized",
+            "product": "us-code-eyes-only-memory-tee-black-personalized",
             "option_value": "Signature",
             "price": "",
             "description": "A back print made from your own eye photo. Printed once, for you alone.",
@@ -207,7 +206,6 @@
         "heading": "Three ways to keep it.",
         "show_counter": true,
         "drop_collection": "drop-01",
-        "edition_total": 300,
         "foot_text": "Oversized fit · sizes S to XL",
         "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
         "size_guide_note": "Garment measured flat, in cm. Oversized cut. Take your usual size."
@@ -277,7 +275,7 @@
         "cta_label": "",
         "cta_link": "",
         "show_verify": false,
-        "verify_template": "/pages/verify/[number]",
+        "verify_template": "/pages/verify",
         "verify_label": "Number on your tag",
         "verify_button": "Verify a piece",
         "verify_hint": "Find it printed on the hang tag and inside the chest pocket."
@@ -298,7 +296,7 @@
         "cta_label": "",
         "cta_link": "",
         "show_verify": true,
-        "verify_template": "/pages/verify/[number]",
+        "verify_template": "/pages/verify",
         "verify_label": "Number on your tag",
         "verify_button": "Verify a piece",
         "verify_hint": "Find it printed on the hang tag and inside the chest pocket."
@@ -312,7 +310,6 @@
         "text": "<p>When the first pieces land, this space fills with photos from the people wearing them. Until then, every square is a number still open.</p>",
         "cta_label": "Claim your number",
         "cta_link": "shopify://collections/drop-01",
-        "drop_collection": "drop-01",
         "edition_total": 300
       }
     },
@@ -365,7 +362,7 @@
           "type": "question",
           "settings": {
             "question": "Shipping times by region?",
-            "answer": "<p>Ships within 48 hours of print. US & Canada 3 to 6 business days · UK & EU 3 to 7 · GCC 4 to 8 · Australia 5 to 9. Duties and taxes are shown at checkout.</p>"
+            "answer": "<p>Made to order, ships in 5 to 7 business days. Delivery after that: US & Canada 3 to 6 business days · UK & EU 3 to 7 · GCC 4 to 8 · Australia 5 to 9. Duties and taxes are shown at checkout.</p>"
           }
         },
         "q_7": {

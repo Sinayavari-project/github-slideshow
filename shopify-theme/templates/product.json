@@ -6,15 +6,15 @@
         "trust_1": {
           "type": "trust",
           "settings": {
-            "value": "48h",
-            "label": "Ships from print"
+            "value": "5 to 7 days",
+            "label": "Made to order"
           }
         },
         "trust_2": {
           "type": "trust",
           "settings": {
-            "value": "Shipping",
-            "label": "Calculated at checkout"
+            "value": "Free",
+            "label": "Shipping over [free_shipping]"
           }
         },
         "trust_3": {
@@ -35,7 +35,7 @@
           "type": "accordion",
           "settings": {
             "title": "Shipping & returns",
-            "content": "<p>Ships within 48 hours of print. Shipping is charged by location and shown at checkout.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
+            "content": "<p>Made to order, ships in 5 to 7 business days. Shipping is charged by location and shown at checkout.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
           }
         },
         "acc_3": {
@@ -62,8 +62,8 @@
         "stat_3": {
           "type": "stat",
           "settings": {
-            "number": "48h",
-            "label": "Ships from print"
+            "number": "5 to 7",
+            "label": "Business days to ship"
           }
         },
         "stat_4": {
@@ -164,7 +164,6 @@
         "kicker": "Drop 01",
         "tagline": "“I’d find you in every lifetime.” A real pair of eyes on the back, a memory in the hem. Tap it and the moment plays back.",
         "show_stock": true,
-        "edition_size": 300,
         "tier_option": "Tier",
         "default_tier": "Memory",
         "popular_tier": "Memory",

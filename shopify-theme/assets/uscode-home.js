@@ -6,11 +6,16 @@
     if (!root || root.dataset.uhReady) return;
     root.dataset.uhReady = '1';
 
-    // hero inset video: muted loop, paused for reduced motion
+    // hero inset video: muted loop. Nothing downloads until it is on screen; no autoplay
+    // for reduced motion or data saver (the poster stays).
+    const saveData = !!(navigator.connection && navigator.connection.saveData);
     root.querySelectorAll('[data-uh-autoplay]').forEach((v) => {
       v.muted = true;
-      if (reduce()) v.pause();
-      else v.play().catch(() => {});
+      if (reduce() || saveData) { v.pause(); return; }
+      if (!('IntersectionObserver' in window)) { v.play().catch(() => {}); return; }
+      new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); });
+      }, { rootMargin: '100px' }).observe(v);
     });
 
     // sticky bar once the hero buttons scroll away
@@ -81,16 +86,36 @@
       if (v) { v.focus(); v.play().catch(() => {}); }
     }));
 
-    // verify a piece: number -> print page
+    // verify a piece: the form posts the number to the Verify page (a plain GET, works without JS);
+    // on that page the lookup form finds the print's own page and opens it
     root.querySelectorAll('[data-uh-verify]').forEach((form) => {
       const input = form.querySelector('input');
       input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 3); });
+      if (!form.hasAttribute('data-uh-lookup')) return;
+      const status = form.parentElement.querySelector('[data-uh-lookup-status]');
+      const base = form.dataset.base || '/pages/verify/';
+      const suffix = form.dataset.suffix || '';
+      const lookup = async (raw) => {
+        const n = raw.replace(/\D/g, '').slice(0, 3).padStart(3, '0');
+        status.textContent = `Checking ${n}…`;
+        for (const handle of [n, n + suffix]) {
+          try {
+            const res = await fetch(base + handle, { method: 'HEAD', credentials: 'same-origin' });
+            if (res.ok) { window.location.href = base + handle; return; }
+          } catch (_) {}
+        }
+        status.textContent = `No piece numbered ${n} is on record. Check the number on your tag, or tap the chip in the hem.`;
+      };
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const n = input.value.replace(/\D/g, '');
-        if (!n) { input.focus(); return; }
-        window.location.href = form.dataset.template.replace('[number]', n.padStart(3, '0'));
+        if (!input.value) { input.focus(); return; }
+        const url = new URL(window.location.href);
+        url.searchParams.set('number', input.value);
+        window.history.replaceState(window.history.state, '', url.toString());
+        lookup(input.value);
       });
+      const asked = new URLSearchParams(window.location.search).get('number');
+      if (asked) { input.value = asked.replace(/\D/g, '').slice(0, 3); if (input.value) lookup(input.value); }
     });
   }
 

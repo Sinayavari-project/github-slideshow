@@ -1,12 +1,10 @@
 {{ 'uscode-home.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'uscode-home.js' | asset_url }}" defer></script>
 {%- liquid
-  assign total = section.settings.edition_total | default: 300
   capture left
-    render 'uscode-drop-left', collection: section.settings.drop_collection, fallback: section.settings.left_fallback, total: total
+    render 'uscode-drop-left', collection: section.settings.drop_collection
   endcapture
   assign left = left | strip | plus: 0
-  assign left_pct = left | times: 100.0 | divided_by: total | round: 1
 -%}
 <div class="uh">
   <section class="uh-sec uh-rule" id="tiers">
@@ -16,10 +14,9 @@
           {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
           <h2 class="uh-h2">{{ section.settings.heading }}</h2>
         </div>
-        {%- if section.settings.show_counter -%}
+        {%- if section.settings.show_counter and left > 0 -%}
           <div class="uh-counter">
-            <div class="uh-counter__row"><span class="uh-live"><i></i>Live</span><span><b>{{ left }}</b> of {{ total }} left</span></div>
-            <div class="uh-bar" role="progressbar" aria-label="Pieces left" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ left }}"><i style="width: {{ left_pct }}%;"></i></div>
+            <div class="uh-counter__row"><span class="uh-live"><i></i>Live</span><span><b>{{ left }}</b> left</span></div>
           </div>
         {%- endif -%}
       </div>
@@ -117,8 +114,6 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "Three ways to keep it." },
     { "type": "checkbox", "id": "show_counter", "label": "Show pieces-left counter", "default": true },
     { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
-    { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
-    { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" },
     { "type": "text", "id": "foot_text", "label": "Footnote", "default": "Oversized fit · sizes S to XL" },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. Leave blank to hide." },
     { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." }

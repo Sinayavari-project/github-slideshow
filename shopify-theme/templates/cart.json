@@ -12,9 +12,8 @@
     "cart_main": {
       "type": "uscode-cart",
       "settings": {
-        "trust_line": "NFC-verified · ships in 48 hours · no restock",
-        "empty_message": "Your cart is empty. The drop is still live.",
-        "free_shipping_threshold": 60
+        "trust_line": "NFC-verified · made to order · ships in 5 to 7 business days",
+        "empty_message": "Your cart is empty. The drop is still live."
       }
     }
   },

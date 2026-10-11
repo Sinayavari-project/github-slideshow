@@ -238,3 +238,9 @@ html.uscode-pdp-lock { overflow: hidden; }
   .uscode-pdp__sticky { transition: none; }
   .uscode-pdp__track { scroll-behavior: auto; }
 }
+
+/* Touch targets: at least 44 x 44px on phones and tablets */
+@media (max-width: 989px) {
+  .uscode-pdp__zoom { width: 44px; height: 44px; }
+  .uscode-pdp__guidebtn { min-height: 44px; display: inline-flex; align-items: center; }
+}

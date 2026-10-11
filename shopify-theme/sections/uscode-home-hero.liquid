@@ -7,9 +7,8 @@
     assign from_price = section.settings.price_product.price_min | money_without_trailing_zeros
     assign cta_label = cta_label | append: ' · from ' | append: from_price
   endif
-  assign total = section.settings.edition_total | default: 300
   capture left
-    render 'uscode-drop-left', collection: section.settings.drop_collection, fallback: section.settings.left_fallback, total: total
+    render 'uscode-drop-left', collection: section.settings.drop_collection
   endcapture
   assign left = left | strip | plus: 0
 -%}
@@ -54,7 +53,7 @@
         {%- if section.settings.inset_video != blank or section.settings.inset_video_url != blank or section.settings.inset_image != blank -%}
           <div class="uh-inset">
             {%- if section.settings.inset_video != blank or section.settings.inset_video_url != blank -%}
-              {% render 'uscode-video', video: section.settings.inset_video, url: section.settings.inset_video_url, poster: section.settings.inset_image, attrs: 'muted loop playsinline data-uh-autoplay', label: section.settings.inset_label %}
+              {% render 'uscode-video', video: section.settings.inset_video, url: section.settings.inset_video_url, poster: section.settings.inset_image, attrs: 'muted loop playsinline data-uh-autoplay', size: 'small', poster_width: 400, preload: 'none', label: section.settings.inset_label %}
             {%- else -%}
               {{ section.settings.inset_image | image_url: width: 400 | image_tag: loading: 'lazy' }}
             {%- endif -%}
@@ -67,7 +66,7 @@
 
   {%- if section.settings.sticky_bar -%}
     <div class="uh-sticky" data-uh-sticky inert>
-      <p><b>{{ section.settings.sticky_title }}{% if from_price %} · from {{ from_price }}{% endif %}</b><span>{{ left }} of {{ total }} left</span></p>
+      <p><b>{{ section.settings.sticky_title }}{% if from_price %} · from {{ from_price }}{% endif %}</b>{% if left > 0 %}<span>{{ left }} left</span>{% endif %}</p>
       <a class="btn btn-primary" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.sticky_button }}</a>
     </div>
   {%- endif -%}
@@ -99,9 +98,7 @@
     { "type": "checkbox", "id": "sticky_bar", "label": "Show", "default": true },
     { "type": "text", "id": "sticky_title", "label": "Title", "default": "Drop 01" },
     { "type": "text", "id": "sticky_button", "label": "Button", "default": "Shop the drop" },
-    { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "Uses tracked inventory." },
-    { "type": "number", "id": "edition_total", "label": "Pieces in the drop", "default": 300 },
-    { "type": "number", "id": "left_fallback", "label": "Pieces left when stock isn't tracked" }
+    { "type": "collection", "id": "drop_collection", "label": "Count pieces left in", "info": "The sum of tracked variant stock. Hidden when stock isn't tracked or is zero." }
   ],
   "blocks": [
     {

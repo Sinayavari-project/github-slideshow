@@ -217,3 +217,13 @@
   .uh-inset p i, .uh-live i { animation: none; }
 }
 .uh .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Touch targets: at least 44 x 44px on phones and tablets */
+@media (max-width: 989px) {
+  .uh-dots { gap: 0; }
+  .uh-dots button { width: 44px; height: 44px; padding: 0 8px; }
+  .uh-linkline { min-height: 44px; display: inline-flex; align-items: center; }
+  .uh-chip { min-height: 44px; }
+  .uh-verify input { min-height: 32px; }
+  .uh-sticky .btn, .uh .btn { min-height: 44px; }
+}
