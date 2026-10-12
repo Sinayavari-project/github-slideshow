@@ -150,7 +150,13 @@
     const photoInputs = [...root.querySelectorAll('[data-photo-input]')];
     const slotOf = (input) => input.closest('[data-photo-slot]');
     let photoOk = false;
-    const left = root.dataset.left;
+    const sold = root.dataset.sold;
+    const pairSave = root.querySelector('[data-pair-save]');
+    const pairBase = {};
+    if (pairSave) pairSave.dataset.pairBase.split(',').forEach((pair) => {
+      const at = pair.lastIndexOf('=');
+      if (at > 0) pairBase[pair.slice(0, at)] = Number(pair.slice(at + 1));
+    });
     const gal = gallery(root);
     const optionCount = variants.length ? variants[0].options.length : 0;
 
@@ -290,6 +296,13 @@
         cmp.textContent = money(shown.compare_at_price, format);
       }
 
+      if (pairSave && shown && tierIndex >= 0) {
+        const base = pairBase[shown.options[tierIndex]];
+        const save = base ? base * 2 - shown.price : 0;
+        pairSave.hidden = !(save > 0);
+        if (save > 0) pairSave.querySelector('[data-pair-amount]').textContent = money(save, format);
+      }
+
       const price = shown ? money(shown.price, format) : '';
       if (!anyAvailable || (variant && !variant.available)) {
         atc.disabled = true;
@@ -345,7 +358,7 @@
         if (tierIndex >= 0 && picked[tierIndex]) bits.push(picked[tierIndex]);
         if (sizeIdxs.length === 1) bits.push(picked[sizeIdxs[0]] ? `Size ${picked[sizeIdxs[0]]}` : 'Choose size');
         else if (sizeIdxs.length) bits.push(needSize ? 'Choose sizes' : `Sizes ${sizeIdxs.map((i) => picked[i]).join(' / ')}`);
-        if (left) bits.push(`${left} left`);
+        if (sold) bits.push(`${sold} sold`);
         stickyMeta.textContent = bits.join(' · ');
       }
       if (stickyBtn) {

@@ -28,7 +28,7 @@
         "a2": {
           "type": "_announcement",
           "settings": {
-            "text": "Made to order · ships in 5 to 7 days",
+            "text": "Ships in 5 to 7 business days, made to order",
             "font": "var(--font-subheading--family)",
             "font_size": "0.75rem",
             "letter_spacing": "0.1em",
@@ -46,11 +46,23 @@
             "case": "uppercase"
           },
           "blocks": {}
+        },
+        "a4": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Free UAE delivery over AED 299",
+            "font": "var(--font-subheading--family)",
+            "font_size": "0.75rem",
+            "letter_spacing": "0.1em",
+            "case": "uppercase"
+          },
+          "blocks": {}
         }
       },
       "block_order": [
         "a1",
         "a2",
+        "a4",
         "a3"
       ],
       "name": "t:names.announcement_bar",

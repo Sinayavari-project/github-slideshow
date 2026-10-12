@@ -104,7 +104,7 @@
             if (res.ok) { window.location.href = base + handle; return; }
           } catch (_) {}
         }
-        status.textContent = `No piece numbered ${n} is on record. Check the number on your tag, or tap the chip in the hem.`;
+        status.textContent = `No piece numbered ${n} is on record. Check the number on your tag, or tap the chest logo.`;
       };
       form.addEventListener('submit', (e) => {
         e.preventDefault();

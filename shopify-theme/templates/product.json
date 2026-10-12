@@ -14,7 +14,7 @@
           "type": "trust",
           "settings": {
             "value": "Free",
-            "label": "Shipping over [free_shipping]"
+            "label": "UAE delivery over [free_shipping]"
           }
         },
         "trust_3": {
@@ -35,14 +35,14 @@
           "type": "accordion",
           "settings": {
             "title": "Shipping & returns",
-            "content": "<p>Made to order, ships in 5 to 7 business days. Shipping is charged by location and shown at checkout.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
+            "content": "<p>Ships in 5 to 7 business days, made to order. Free UAE delivery over AED 299; other destinations are calculated at checkout.</p><p>Returns within 14 days on unworn Essential and Memory tiers. Signature commissions are final sale.</p>"
           }
         },
         "acc_3": {
           "type": "accordion",
           "settings": {
             "title": "How the NFC works",
-            "content": "<p>After checkout you upload your memory: photo, voice, or video. It links to the chip in the hem.</p><p>Tap any phone to the hem to play it. No app needed. You can change the memory anytime.</p>"
+            "content": "<p>After checkout you upload your memory: photo, voice, or video. It links to the chip behind the chest logo.</p><p>Tap any phone to the chest logo to play it. No app needed. You can change the memory anytime.</p>"
           }
         },
         "stat_1": {
@@ -66,13 +66,6 @@
             "label": "Business days to ship"
           }
         },
-        "stat_4": {
-          "type": "stat",
-          "settings": {
-            "number": "0",
-            "label": "Reprints, ever"
-          }
-        },
         "feature_1": {
           "type": "feature",
           "settings": {
@@ -84,14 +77,14 @@
           "type": "feature",
           "settings": {
             "title": "Tap to remember",
-            "text": "A hidden NFC chip in the hem links to whatever you choose to keep behind it: a voice memo, a photo, a date. Tap a phone to the hem and it plays."
+            "text": "A hidden NFC chip behind the chest logo links to whatever you choose to keep there: a voice memo, a photo, a date. Tap a phone to the chest logo and it plays."
           }
         },
         "feature_3": {
           "type": "feature",
           "settings": {
             "title": "Heavyweight, vintage-washed",
-            "text": "Oversized cut, garment-dyed and washed for a worn-in hand from the first day. Runs true to a size up."
+            "text": "260gsm heavyweight cotton, garment-dyed and washed for a worn-in hand from the first day. Oversized fit: take your usual size, or size down for a closer fit."
           }
         },
         "tier_1": {
@@ -100,7 +93,7 @@
             "name": "Essential",
             "price": "",
             "description": "The tee, the print, the chip, set to a photo of your choosing.",
-            "features": "Oversized heavyweight tee|Eye-print back graphic|NFC hem, linked to one photo",
+            "features": "Oversized heavyweight tee|Eye-print back graphic|NFC chip, linked to one photo",
             "featured": false,
             "short_description": "The tee, the print, the chip, linked to one photo of your choosing."
           }
@@ -113,7 +106,7 @@
             "description": "Everything in Essential, with the chip linked to a full memory: voice, video, or a place.",
             "features": "Everything in Essential|NFC linked to voice or video|Numbered, verified print",
             "featured": true,
-            "badge": "Most chosen",
+            "badge": "Our pick",
             "short_description": "Chip linked to a full memory: voice, video, or a place. Numbered, verified print."
           }
         },
@@ -127,6 +120,20 @@
             "featured": false,
             "short_description": "Your own eyes on the back, a private commission, printed once. Boxed with a certificate."
           }
+        },
+        "timeline": {
+          "type": "timeline",
+          "settings": {
+            "heading": "After you order",
+            "step_1": "Order",
+            "note_1": "",
+            "step_2": "Upload your photo/memory",
+            "note_2": "",
+            "step_3": "We print & pair your chip",
+            "note_3": "5 to 7 business days",
+            "step_4": "Tap to play",
+            "note_4": ""
+          }
         }
       },
       "block_order": [
@@ -139,10 +146,10 @@
         "stat_1",
         "stat_2",
         "stat_3",
-        "stat_4",
         "feature_1",
         "feature_2",
         "feature_3",
+        "timeline",
         "tier_1",
         "tier_2",
         "tier_3"
@@ -155,29 +162,31 @@
         "split_note": "Every shirt is numbered against its NFC chip at print. Scan it and you're looking at the same file we printed, not a knockoff. When the drop sells out, that number closes.",
         "pricing_kicker": "Compare tiers",
         "pricing_title": "Three ways to keep it.",
-        "quote": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted.",
+        "quote": "I tapped the chest logo before I even tried it on. It played the voicemail I almost deleted.",
         "quote_by": "From the first drop, Essential",
         "close_line1": "300 made.",
         "close_line2": "None remade.",
         "close_cta": "Shop before it's gone",
         "close_hint": "Drop closes when the count hits zero.",
         "kicker": "Drop 01",
-        "tagline": "“I’d find you in every lifetime.” A real pair of eyes on the back, a memory in the hem. Tap it and the moment plays back.",
+        "tagline": "“I’d find you in every lifetime.” A real pair of eyes on the back, a memory behind the chest logo. Tap it and the moment plays back.",
         "show_stock": true,
         "tier_option": "Tier",
         "default_tier": "Memory",
         "popular_tier": "Memory",
-        "popular_label": "Most chosen",
+        "popular_label": "Our pick",
         "size_option": "Size",
         "require_size": true,
-        "fit_note": "Oversized, dropped shoulder. Take your usual size for the intended fit.",
+        "fit_note": "Oversized fit: take your usual size, or size down for a closer fit.",
         "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
-        "size_guide_note": "Garment measured flat, in cm. Oversized cut. Take your usual size.",
+        "size_guide_note": "Garment measured flat, in cm. Oversized fit: take your usual size, or size down for a closer fit.",
         "upload_tier": "Signature",
         "upload_title": "Your eye photo",
         "upload_note": "JPG or PNG, at least 2000px wide. Daylight, no filter. We’ll email a proof before printing.",
         "sticky_bar": true,
-        "mobile_thumbs": true
+        "mobile_thumbs": true,
+        "pair_single": "us-code-eyes-only-memory-tee-white-personalized",
+        "pair_text": "Pair saves [amount]"
       }
     }
   },

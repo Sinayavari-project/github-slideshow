@@ -22,6 +22,7 @@
 .uh-shot figcaption { font-size: 11.5px; line-height: 16px; color: var(--muted); display: flex; gap: 8px; }
 .uh-shot figcaption b { font-weight: 500; color: var(--color-text); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; font-size: 11px; }
 .uh-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+.uh-from { margin: 12px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-feature-settings: "tnum" 1; }
 .uh-linkline { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; background: none; border: 0; padding: 0; cursor: pointer; color: var(--color-accent-700); font-family: var(--font-body); }
 @keyframes uh-blink { 50% { opacity: 0.2; } }
 
@@ -65,6 +66,8 @@
 .uh-checks li:last-child { border-bottom: 2px solid var(--color-divider); }
 .uh-checks .uh-ico { color: var(--color-accent); margin-top: 1px; }
 .uh-phonewrap { display: grid; place-items: center; background: var(--color-surface); padding: clamp(32px, 5vw, 64px) 20px; }
+.uh-vslot { background: var(--color-surface); aspect-ratio: 4 / 5; overflow: hidden; }
+.uh-vslot video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .uh-phone { width: min(300px, 100%); background: var(--color-text); padding: 10px; border-radius: 36px; box-shadow: var(--shadow-lg, 0 12px 32px rgb(0 0 0 / 0.22)); }
 .uh-screen { background: var(--color-bg); border-radius: 28px; overflow: hidden; padding: 18px 16px 20px; display: grid; gap: 12px; }
 .uh-mp-head { display: flex; justify-content: space-between; align-items: center; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 4px 0; }

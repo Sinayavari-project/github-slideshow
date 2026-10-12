@@ -45,7 +45,7 @@
         "subheading": "Real eyes printed on the back. A private memory in the chest. Tap it with any phone and it plays.",
         "cta_label": "Shop the drop",
         "cta_link": "shopify://collections/drop-01",
-        "price_product": "",
+        "price_product": "us-code-eyes-only-memory-tee-black-personalized",
         "cta2_label": "See how it works",
         "cta2_link": "#how",
         "image": "shopify://shop_images/uscode-tee-back-lifetime.png",
@@ -132,13 +132,15 @@
         "heading": "Tap. It plays.",
         "text": "<p>The chip sits in a small diamond pocket behind the chest logo. One tap opens a private page that holds exactly what you left there.</p>",
         "flush_top": true,
-        "number": "042 / 300",
+        "number": "",
         "image": "shopify://shop_images/founders-sina-vida.jpg",
         "video_url": "founders-memory.mp4",
         "kicker": "A memory for you",
         "message": "“The night at the wall. I’d find you in every lifetime.”",
         "audio_length": "0:48",
-        "lock_text": "Only people you share this with can open it."
+        "lock_text": "Only people you share this with can open it.",
+        "slot_video_url": "founders-memory.mp4",
+        "slot_poster": "shopify://shop_images/founders-sina-vida.jpg"
       }
     },
     "tiers": {
@@ -154,7 +156,7 @@
             "option_value": "Essential",
             "price": "",
             "description": "The tee, the print, and a chip linked to one photo.",
-            "features": "Drop 01 eye print on the back\nNFC linked to one photo\nOversized heavyweight tee\n-Voice or video memory",
+            "features": "Drop 01 eye print on the back\nNFC linked to one photo\nOversized 260gsm heavyweight tee\n-Voice or video memory",
             "note": "",
             "link": "shopify://collections/drop-01",
             "featured": false,
@@ -171,11 +173,11 @@
             "option_value": "Memory",
             "price": "",
             "description": "Everything in Essential, with a voice note or video they can play back.",
-            "features": "Everything in Essential\nNFC linked to voice or video, 1 to 2 min\nNumbered, verified print (e.g. 042/300)\nChange the memory anytime",
+            "features": "Everything in Essential\nNFC linked to voice or video, 1 to 2 min\nNumbered, verified print\nChange the memory anytime",
             "note": "",
             "link": "shopify://collections/drop-01",
             "featured": true,
-            "badge": "Most chosen"
+            "badge": "Our pick"
           }
         },
         "tier_3": {
@@ -189,7 +191,7 @@
             "price": "",
             "description": "A back print made from your own eye photo. Printed once, for you alone.",
             "features": "Custom back print from your photo\nBoxed with a printed certificate\nLonger video allowance, up to 5 min\nEverything in Memory",
-            "note": "Made to order. Ships in 3 to 4 weeks.",
+            "note": "Made to order. Ships in 5 to 7 business days.",
             "link": "shopify://collections/drop-01",
             "featured": false,
             "badge": ""
@@ -208,7 +210,7 @@
         "drop_collection": "drop-01",
         "foot_text": "Oversized fit · sizes S to XL",
         "size_guide": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26",
-        "size_guide_note": "Garment measured flat, in cm. Oversized cut. Take your usual size."
+        "size_guide_note": "Garment measured flat, in cm. Oversized fit: take your usual size, or size down for a closer fit."
       }
     },
     "gifting": {
@@ -286,7 +288,7 @@
       "settings": {
         "number": "02",
         "heading": "Verified, not mass-produced.",
-        "text": "<p>Each piece is numbered at print and paired 1:1 with its chip. When all 300 are gone, the number closes: no restock, no reprint.</p>",
+        "text": "<p>Each piece is numbered at print and paired 1:1 with its chip. When all 300 are gone, the number closes: no restock.</p>",
         "image": "shopify://shop_images/uscode-card-set.webp",
         "contain": false,
         "caption": "",
@@ -310,7 +312,8 @@
         "text": "<p>When the first pieces land, this space fills with photos from the people wearing them. Until then, every square is a number still open.</p>",
         "cta_label": "Claim your number",
         "cta_link": "shopify://collections/drop-01",
-        "edition_total": 300
+        "edition_total": 300,
+        "drop_collection": "drop-01"
       }
     },
     "quote": {
@@ -362,7 +365,7 @@
           "type": "question",
           "settings": {
             "question": "Shipping times by region?",
-            "answer": "<p>Made to order, ships in 5 to 7 business days. Delivery after that: US & Canada 3 to 6 business days · UK & EU 3 to 7 · GCC 4 to 8 · Australia 5 to 9. Duties and taxes are shown at checkout.</p>"
+            "answer": "<p>Ships in 5 to 7 business days, made to order. Free UAE delivery over AED 299. Delivery after that: US & Canada 3 to 6 business days · UK & EU 3 to 7 · GCC 4 to 8 · Australia 5 to 9. Duties and taxes are shown at checkout.</p>"
           }
         },
         "q_7": {
@@ -376,7 +379,7 @@
           "type": "question",
           "settings": {
             "question": "Sizing for oversized fit?",
-            "answer": "<p>Cut oversized with a dropped shoulder. Take your usual size for the intended fit, or size down for a closer one. Measurements are in the size guide.</p>"
+            "answer": "<p>Cut oversized with a dropped shoulder in 260gsm heavyweight cotton. Oversized fit: take your usual size, or size down for a closer fit. Measurements are in the size guide.</p>"
           }
         }
       },
@@ -393,7 +396,7 @@
       "settings": {
         "eyebrow": "FAQ",
         "heading": "Before you tap.",
-        "text": "<p>Anything else? <a href=\"/pages/faq\" title=\"FAQ\">Read the full FAQ</a> or write to hello@uscode.co.</p>",
+        "text": "<p>Anything else? <a href=\"/pages/faq\" title=\"FAQ\">Read the full FAQ</a> or write to <a href=\"mailto:support@theuscode.com\">support@theuscode.com</a>.</p>",
         "anchor": "faq",
         "open_first": true
       }

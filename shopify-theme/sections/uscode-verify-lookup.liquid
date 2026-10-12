@@ -29,7 +29,7 @@
         <button type="submit" class="btn btn-primary">{{ section.settings.button }}</button>
       </form>
       <p class="uh-vhint" role="status" aria-live="polite" data-uh-lookup-status></p>
-      <noscript><p class="uh-vhint">Number lookup needs JavaScript. Tapping the chip in the hem opens the same page.</p></noscript>
+      <noscript><p class="uh-vhint">Number lookup needs JavaScript. Tapping the chest logo opens the same page.</p></noscript>
       {%- if section.settings.hint != blank -%}<p class="uh-vhint">{{ section.settings.hint }}</p>{%- endif -%}
     </div>
   </section>
@@ -45,7 +45,7 @@
     { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Enter the 3-digit number printed on the hang tag and inside the chest pocket.</p>" },
     { "type": "text", "id": "label", "label": "Field label", "default": "Number on your tag" },
     { "type": "text", "id": "button", "label": "Button", "default": "Verify a piece" },
-    { "type": "text", "id": "hint", "label": "Hint", "default": "Tapping the chip in the hem opens the same page." },
+    { "type": "text", "id": "hint", "label": "Hint", "default": "Tapping the chest logo opens the same page." },
     { "type": "text", "id": "print_base", "label": "Print pages path", "default": "/pages/verify/", "info": "Where each print's page lives (the US CODE print metaobject web page)." },
     { "type": "text", "id": "handle_suffix", "label": "Handle suffix", "default": "-300", "info": "Print handles look like 001-300. The number is tried on its own first, then with this suffix." }
   ],

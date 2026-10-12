@@ -1,0 +1,30 @@
+{%- doc -%}
+  Units sold in a drop: the sum of the custom.drop_sold product metafield (a number you update).
+  Pass a collection to add up all its products, or a single product.
+  Outputs -1 when no product has a value, so callers hide the count instead of inventing one.
+  @param {object} [collection] - Drop collection
+  @param {object} [product] - One product
+{%- enddoc -%}
+{%- liquid
+  assign sold = 0
+  assign found = false
+  if product != blank
+    assign v = product.metafields.custom.drop_sold.value
+    if v != blank
+      assign found = true
+      assign sold = v | plus: 0
+    endif
+  elsif collection != blank
+    for p in collection.products limit: 50
+      assign v = p.metafields.custom.drop_sold.value
+      if v != blank
+        assign found = true
+        assign sold = sold | plus: v
+      endif
+    endfor
+  endif
+  unless found
+    assign sold = -1
+  endunless
+  echo sold
+-%}

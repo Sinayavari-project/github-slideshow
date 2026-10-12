@@ -13,7 +13,7 @@
         "video_label": "CODE-001, the original",
         "demo_kicker": "See it work",
         "demo_label": "Tap to remember",
-        "demo_hint": "This is the actual memory behind Drop 01. Click the eye like you'd tap the hem, and it plays back the same way it does on the shirt.",
+        "demo_hint": "This is the actual memory behind Drop 01. Click the eye like you'd tap the chest logo, and it plays back the same way it does on the shirt.",
         "bg_color": "#F2F2F2",
         "text_color": "#1F1E1C",
         "accent_color": "#582123",
@@ -39,7 +39,7 @@
       "settings": {
         "number": "02",
         "heading": "Verified, not mass-produced.",
-        "text": "Each piece is numbered against its own NFC chip at print. When a drop's 300 are gone, that number closes: no restock, no reprint, ever.",
+        "text": "Each piece is numbered against its own NFC chip at print. When a drop's 300 are gone, that number closes: no restock.",
         "reverse": true,
         "text_color": "#1F1E1C",
         "accent_color": "#582123",
@@ -51,7 +51,7 @@
       "settings": {
         "number": "03",
         "heading": "Tap to remember.",
-        "text": "A hidden NFC chip sewn into the hem links to whatever you choose to keep behind it: a photo, a voice note, a video. Tap any modern phone to the hem and it plays back. No app needed.",
+        "text": "A hidden NFC chip behind the chest logo links to whatever you choose to keep there: a photo, a voice note, a video. Tap any modern phone to the chest logo and it plays back. No app needed.",
         "reverse": false,
         "text_color": "#1F1E1C",
         "accent_color": "#582123",

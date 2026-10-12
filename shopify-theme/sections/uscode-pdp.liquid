@@ -44,18 +44,13 @@
     assign tagline = product.description | strip_html | truncatewords: 32
   endif
 
-  assign left_total = 0
-  assign tracked = false
-  for v in product.variants
-    if v.inventory_management == 'shopify'
-      assign tracked = true
-      if v.inventory_quantity > 0
-        assign left_total = left_total | plus: v.inventory_quantity
-      endif
-    endif
-  endfor
+  # Sold count comes only from the custom.drop_sold metafield you update; hidden when blank
+  capture sold_total
+    render 'uscode-drop-sold', product: product
+  endcapture
+  assign sold_total = sold_total | strip | plus: 0
   assign show_stock = false
-  if section.settings.show_stock and tracked and left_total > 0 and product.gift_card? == false
+  if section.settings.show_stock and sold_total >= 0 and product.gift_card? == false
     assign show_stock = true
   endif
 
@@ -107,6 +102,38 @@
     endif
   endif
 
+  assign pair_base = ''
+  assign pair_save = 0
+  assign pair_single = section.settings.pair_single
+  if size_last != size_index and tier_index >= 0 and pair_single != blank and pair_single.id != product.id
+    assign single_tier = -1
+    for option in pair_single.options_with_values
+      assign oname = option.name | downcase
+      if oname == tier_name
+        assign single_tier = forloop.index0
+      endif
+    endfor
+    if single_tier >= 0
+      for value in pair_single.options_with_values[single_tier].values
+        assign low = -1
+        for v in pair_single.variants
+          if v.options[single_tier] == value
+            if low < 0 or v.price < low
+              assign low = v.price
+            endif
+          endif
+        endfor
+        if low >= 0
+          assign pair_base = pair_base | append: ',' | append: value | append: '=' | append: low
+          if value == current.options[tier_index]
+            assign pair_save = low | times: 2 | minus: current.price
+          endif
+        endif
+      endfor
+      assign pair_base = pair_base | remove_first: ','
+    endif
+  endif
+
   assign option_values = ''
   for option in product.options_with_values
     for value in option.values
@@ -127,7 +154,7 @@
   data-photo-required="{{ photo_required_all }}"
   data-cart-add-url="{{ routes.cart_add_url }}"
   data-product-title="{{ product.title | escape }}"
-  data-left="{% if show_stock %}{{ left_total }}{% endif %}"
+  data-sold="{% if show_stock %}{{ sold_total }}{% endif %}"
 >
   <section class="uscode-pdp__top" id="uscode-buy" aria-label="{{ product.title | escape }}">
     {%- comment -%} Gallery {%- endcomment -%}
@@ -237,10 +264,16 @@
         </p>
         {%- if show_stock -%}
           <div class="uscode-pdp__stock">
-            <p>{{ left_total }} left</p>
+            <p>{{ sold_total }} sold</p>
           </div>
         {%- endif -%}
       </div>
+      {%- if pair_base != blank -%}
+        {%- capture pair_amt -%}<b data-pair-amount>{{ pair_save | money_without_trailing_zeros }}</b>{%- endcapture -%}
+        <p class="uscode-pdp__save" data-pair-save data-pair-base="{{ pair_base | escape }}"{% if pair_save <= 0 %} hidden{% endif %}>
+          {{- section.settings.pair_text | default: 'Pair saves [amount]' | escape | replace: '[amount]', pair_amt -}}
+        </p>
+      {%- endif -%}
 
       {%- form 'product', product, class: 'uscode-pdp__form', data-product-form: '', novalidate: 'novalidate' -%}
         <input type="hidden" name="id" value="{{ current.id }}" data-variant-id>
@@ -275,7 +308,7 @@
               <input type="hidden" value="{{ option.values.first | escape }}" data-option="{{ oi }}">
             {%- elsif oi == tier_index -%}
               {%- assign step = step | plus: 1 -%}
-              <fieldset class="uscode-pdp__fieldset" data-option-group="{{ oi }}">
+              <fieldset class="uscode-pdp__fieldset uscode-pdp__fieldset--tier" data-option-group="{{ oi }}">
                 <legend class="uscode-pdp__olabel"><span>{% if personalise %}<span class="uscode-pdp__stepn">{{ step | prepend: '0' | slice: -2, 2 }}</span>{% endif %}{{ olabel }}</span><b data-option-value="{{ oi }}">{{ selected }}</b></legend>
                 <div class="uscode-pdp__tiersel">
                   {%- for value in option.values -%}
@@ -469,11 +502,7 @@
                   assign t_value = 'Shipping'
                   assign t_label = 'Calculated at checkout'
                 else
-                  if cart.currency.iso_code == shop.currency
-                    assign free_label = free_aed | times: 100 | money_without_trailing_zeros
-                  else
-                    assign free_label = 'AED ' | append: free_aed
-                  endif
+                  assign free_label = 'AED ' | append: free_aed
                   assign t_value = t_value | replace: '[free_shipping]', free_label
                   assign t_label = t_label | replace: '[free_shipping]', free_label
                 endif
@@ -530,6 +559,27 @@
         {%- endfor -%}
       </section>
     {%- endif -%}
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'timeline' -%}
+        <section class="uscode-pdp__tl" aria-labelledby="Timeline-{{ block.id }}" {{ block.shopify_attributes }}>
+          <h2 class="uscode-pdp__kicker" id="Timeline-{{ block.id }}">{{ block.settings.heading }}</h2>
+          <ol class="uscode-pdp__tlsteps" role="list">
+            {%- for n in (1..4) -%}
+              {%- assign t_key = 'step_' | append: n -%}
+              {%- assign n_key = 'note_' | append: n -%}
+              {%- if block.settings[t_key] != blank -%}
+                <li>
+                  <span class="uscode-pdp__fnum" aria-hidden="true">{{ n | prepend: '0' }}</span>
+                  <p class="uscode-pdp__tlt">{{ block.settings[t_key] | escape }}</p>
+                  {%- if block.settings[n_key] != blank -%}<p class="uscode-pdp__tln">{{ block.settings[n_key] | escape }}</p>{%- endif -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ol>
+        </section>
+      {%- endif -%}
+    {%- endfor -%}
 
     <section class="uscode-pdp__split">
       <figure>
@@ -701,16 +751,16 @@
     { "type": "header", "content": "Buy box" },
     { "type": "text", "id": "kicker", "label": "Kicker", "default": "Drop 01", "info": "Override per product with the custom.kicker metafield." },
     { "type": "textarea", "id": "tagline", "label": "Tagline", "info": "Override per product with the custom.tagline metafield. Leave blank to use the start of the description." },
-    { "type": "checkbox", "id": "show_stock", "label": "Show pieces left", "default": true, "info": "The sum of tracked variant stock. Hidden when stock isn't tracked or is zero." },
+    { "type": "checkbox", "id": "show_stock", "label": "Show pieces sold", "default": true, "info": "From the product's custom.drop_sold number. Hidden when it's blank." },
     { "type": "text", "id": "tier_option", "label": "Tier option name", "default": "Tier", "info": "This option shows as cards with a price each." },
     { "type": "text", "id": "default_tier", "label": "Tier selected by default", "default": "Memory" },
     { "type": "text", "id": "popular_tier", "label": "Tier with a badge", "default": "Memory" },
-    { "type": "text", "id": "popular_label", "label": "Badge", "default": "Most chosen" },
+    { "type": "text", "id": "popular_label", "label": "Badge", "default": "Our pick" },
     { "type": "text", "id": "size_option", "label": "Size option name", "default": "Size" },
     { "type": "checkbox", "id": "require_size", "label": "Shopper must pick a size", "default": true, "info": "No size is preselected, so nobody orders the wrong one by accident." },
-    { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized, dropped shoulder. Take your usual size for the intended fit." },
+    { "type": "text", "id": "fit_note", "label": "Fit note", "default": "Oversized fit: take your usual size, or size down for a closer fit." },
     { "type": "textarea", "id": "size_guide", "label": "Size guide table", "default": "Size, Chest, Length, Sleeve\nS, 58, 70, 23\nM, 61, 72, 24\nL, 64, 74, 25\nXL, 67, 76, 26", "info": "One row per line, cells separated by commas. The first line is the header. Leave blank to hide the size guide." },
-    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized cut. Take your usual size." },
+    { "type": "text", "id": "size_guide_note", "label": "Size guide note", "default": "Garment measured flat, in cm. Oversized fit: take your usual size, or size down for a closer fit." },
     { "type": "checkbox", "id": "upload_required_personalised", "label": "Require the first eye photo on personalised products", "default": true, "info": "Products with custom.print_lines or the personalized tag. Add to cart stays blocked until a photo is added. The second photo is always optional." },
     { "type": "checkbox", "id": "upload_all_tiers", "label": "Show eye photo uploads on every tier", "default": true, "info": "Up to two photos. Optional except on the tier below." },
     { "type": "text", "id": "upload_tier", "label": "Tier that requires a photo", "default": "Signature", "info": "Leave blank to never require one." },
@@ -725,11 +775,13 @@
     { "type": "text", "id": "line_note", "label": "Line step note", "default": "Printed under the eyes" },
     { "type": "range", "id": "line_max", "label": "Custom line length", "min": 12, "max": 48, "step": 1, "default": 36 },
     { "type": "text", "id": "memory_note", "label": "Memory note", "default": "Your memory (photo, voice or video) is added after checkout. You'll get a link right away." },
-    { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Made to order, ships in 5 to 7 business days · memory added after checkout" },
-    { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 3 to 4 weeks · memory added after checkout" },
+    { "type": "text", "id": "ship_hint", "label": "Ready hint", "default": "Ships in 5 to 7 business days, made to order · memory added after checkout" },
+    { "type": "text", "id": "ship_hint_upload", "label": "Ready hint (photo tier)", "default": "Ships in 5 to 7 business days, made to order · memory added after checkout" },
     { "type": "number", "id": "upload_min_width", "label": "Eye photo minimum width (px)", "default": 2000 },
     { "type": "textarea", "id": "option_labels", "label": "Option labels", "default": "Tee 1 size: First tee size\nTee 2 size: Second tee size", "info": "One per line: option name: label shown on the page. Any option with \"size\" in its name must be chosen before adding to cart." },
     { "type": "checkbox", "id": "sticky_bar", "label": "Sticky add to cart on phones", "default": true },
+    { "type": "product", "id": "pair_single", "label": "Single tee to compare pairs against", "info": "On products with two size options (couples), shows the saving against two of this tee in the same tier." },
+    { "type": "text", "id": "pair_text", "label": "Pair saving text", "default": "Pair saves [amount]", "info": "[amount] is replaced by the saving." },
     { "type": "checkbox", "id": "mobile_thumbs", "label": "Show thumbnails on phones", "default": true },
     { "type": "header", "content": "Features" },
     { "type": "text", "id": "features_kicker", "label": "Kicker", "default": "What you're wearing" },
@@ -742,7 +794,7 @@
     { "type": "text", "id": "pricing_kicker", "label": "Kicker", "default": "Compare tiers" },
     { "type": "text", "id": "pricing_title", "label": "Title", "default": "Three ways to keep it." },
     { "type": "header", "content": "Quote" },
-    { "type": "text", "id": "quote", "label": "Quote", "default": "I scanned the hem before I even tried it on. It played the voicemail I almost deleted." },
+    { "type": "text", "id": "quote", "label": "Quote", "default": "I tapped the chest logo before I even tried it on. It played the voicemail I almost deleted." },
     { "type": "text", "id": "quote_by", "label": "Attribution", "default": "From the first drop, Essential" },
     { "type": "header", "content": "Closing banner" },
     { "type": "text", "id": "close_line1", "label": "Line 1", "default": "300 made." },
@@ -757,7 +809,7 @@
       "limit": 3,
       "settings": [
         { "type": "text", "id": "value", "label": "Value", "default": "5 to 7 days", "info": "Use [free_shipping] for the AED amount from Theme settings > US CODE. A block using it shows \"Shipping, calculated at checkout\" when no amount is set." },
-        { "type": "text", "id": "label", "label": "Label", "default": "Ships from print" }
+        { "type": "text", "id": "label", "label": "Label", "default": "Made to order" }
       ]
     },
     {
@@ -786,12 +838,28 @@
       ]
     },
     {
+      "type": "timeline",
+      "name": "After you order",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "After you order" },
+        { "type": "text", "id": "step_1", "label": "Step 1", "default": "Order" },
+        { "type": "text", "id": "note_1", "label": "Step 1 note" },
+        { "type": "text", "id": "step_2", "label": "Step 2", "default": "Upload your photo/memory" },
+        { "type": "text", "id": "note_2", "label": "Step 2 note" },
+        { "type": "text", "id": "step_3", "label": "Step 3", "default": "We print & pair your chip" },
+        { "type": "text", "id": "note_3", "label": "Step 3 note", "default": "5 to 7 business days" },
+        { "type": "text", "id": "step_4", "label": "Step 4", "default": "Tap to play" },
+        { "type": "text", "id": "note_4", "label": "Step 4 note" }
+      ]
+    },
+    {
       "type": "tier",
       "name": "Tier",
       "limit": 3,
       "settings": [
         { "type": "text", "id": "name", "label": "Name", "default": "Essential", "info": "If the product has an option value with this exact name, the button selects it." },
-        { "type": "text", "id": "price", "label": "Price", "default": "$48" },
+        { "type": "text", "id": "price", "label": "Price", "info": "Leave blank to use the product's live price for this tier." },
         { "type": "textarea", "id": "short_description", "label": "Line under the tier picker", "info": "Leave blank to use the description." },
         { "type": "textarea", "id": "description", "label": "Description" },
         { "type": "text", "id": "features", "label": "Features (separate with |)" },
