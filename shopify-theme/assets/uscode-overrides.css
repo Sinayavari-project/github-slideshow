@@ -84,3 +84,13 @@ html body .skip-to-content-link:focus-visible {
   html #header-component .header-actions__cart-icon > span:first-child:not(.svg-wrapper) { display: none; }
   html #header-component .header-actions__action .svg-wrapper { display: flex !important; }
 }
+
+/* Shopify Inbox chat bubble sits in the bottom-right corner on phones and tablets.
+   Keep our fixed bottom bars' buttons out of that corner. */
+:root { --uscode-chat-clearance: 84px; }
+@media screen and (max-width: 989px) {
+  html .uh-sticky,
+  html .uscode-pdp__sticky {
+    padding-right: calc(var(--uscode-chat-clearance) + env(safe-area-inset-right, 0px));
+  }
+}

@@ -51,8 +51,31 @@
     text-decoration: none;
   }
   .uscode-footer__cols a:hover { color: {{ section.settings.accent_color }}; }
+  .uscode-footer__support { margin: 14px 0 0; font-family: var(--font-body); font-size: 13px; line-height: 20px; max-width: 34ch; }
+  .uscode-footer__support a { color: {{ section.settings.text_color }}; text-decoration: underline; text-underline-offset: 3px; }
+  .uscode-footer__support span { display: block; opacity: 0.7; }
+  .uscode-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid {{ section.settings.divider_color }};
+    font-family: var(--font-body);
+    font-size: 12px;
+  }
+  .uscode-footer__bottom ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  .uscode-footer__bottom a { color: {{ section.settings.text_color }}; text-decoration: none; }
+  .uscode-footer__bottom a:hover { color: {{ section.settings.accent_color }}; }
   @media (max-width: 720px) {
     .uscode-footer__cols { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 989px) {
+    .uscode-footer__cols a, .uscode-footer__bottom a { display: inline-flex; align-items: center; min-height: 44px; }
+    .uscode-footer__cols ul { gap: 0; }
+    /* keep the last line clear of the chat bubble in the bottom-right corner */
+    .uscode-footer { padding-bottom: calc(32px + var(--uscode-chat-clearance, 84px)); }
   }
 </style>
 
@@ -64,19 +87,75 @@
         US CODE
       </span>
       <p class="uscode-footer__tagline">{{ section.settings.tagline }}</p>
+      {%- if section.settings.support_email != blank or section.settings.chat_note != blank -%}
+        <p class="uscode-footer__support">
+          {%- if section.settings.support_email != blank -%}
+            <a href="mailto:{{ section.settings.support_email | strip }}">{{ section.settings.support_email | strip }}</a>
+          {%- endif -%}
+          {%- if section.settings.chat_note != blank -%}<span>{{ section.settings.chat_note }}</span>{%- endif -%}
+        </p>
+      {%- endif -%}
     </div>
     {% for block in section.blocks %}
       <div {{ block.shopify_attributes }}>
         <h4>{{ block.settings.title }}</h4>
         <ul>
-          {% assign links = block.settings.links | split: '|' %}
-          {% assign urls = block.settings.urls | split: '|' %}
-          {% for link in links %}
-            <li><a href="{% if urls[forloop.index0] != blank %}{{ urls[forloop.index0] }}{% else %}#{% endif %}">{{ link }}</a></li>
-          {% endfor %}
+          {%- if block.type == 'tiers' -%}
+            {%- liquid
+              assign tp = block.settings.product
+              assign tier_option = block.settings.option_name | default: 'Tier' | downcase
+              assign t_index = -1
+              for option in tp.options_with_values
+                assign oname = option.name | downcase
+                if oname == tier_option
+                  assign t_index = forloop.index0
+                endif
+              endfor
+            -%}
+            {%- if tp != blank and t_index >= 0 -%}
+              {%- for value in tp.options_with_values[t_index].values -%}
+                {%- liquid
+                  assign tier_variant = nil
+                  for v in tp.variants
+                    if v.options[t_index] == value and v.available
+                      assign tier_variant = v
+                      break
+                    endif
+                  endfor
+                  if tier_variant == nil
+                    for v in tp.variants
+                      if v.options[t_index] == value
+                        assign tier_variant = v
+                        break
+                      endif
+                    endfor
+                  endif
+                -%}
+                <li><a href="{{ tp.url }}?variant={{ tier_variant.id }}">{{ value }}</a></li>
+              {%- endfor -%}
+            {%- elsif tp != blank -%}
+              <li><a href="{{ tp.url }}">{{ tp.title }}</a></li>
+            {%- endif -%}
+          {%- else -%}
+            {% assign links = block.settings.links | split: '|' %}
+            {% assign urls = block.settings.urls | split: '|' %}
+            {% for link in links %}
+              <li><a href="{% if urls[forloop.index0] != blank %}{{ urls[forloop.index0] }}{% else %}#{% endif %}">{{ link }}</a></li>
+            {% endfor %}
+          {%- endif -%}
         </ul>
       </div>
     {% endfor %}
+  </div>
+
+  <div class="uscode-footer__bottom">
+    <span>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.brand | default: 'US CODE' }}</span>
+    <ul role="list" aria-label="Policies">
+      {%- comment -%} shop.policies lists every policy that has content: privacy, refund, shipping, terms {%- endcomment -%}
+      {%- for policy in shop.policies -%}
+        <li><a href="{{ policy.url }}">{{ policy.title }}</a></li>
+      {%- endfor -%}
+    </ul>
   </div>
 </footer>
 
@@ -86,11 +165,24 @@
   "tag": "div",
   "settings": [
     { "type": "text", "id": "tagline", "label": "Tagline", "default": "Printed once. Verified forever. uscode.co" },
+    { "type": "text", "id": "brand", "label": "Name in copyright line", "default": "US CODE" },
+    { "type": "text", "id": "support_email", "label": "Support email", "default": "support@theuscode.com" },
+    { "type": "text", "id": "chat_note", "label": "Live chat line", "default": "Live chat: tap the bubble bottom-right, we reply within a few hours (GST)." },
     { "type": "color", "id": "text_color", "label": "Text color", "default": "#1F1E1C" },
     { "type": "color", "id": "accent_color", "label": "Accent color", "default": "#582123" },
     { "type": "color", "id": "divider_color", "label": "Divider color", "default": "#D8D6D1" }
   ],
   "blocks": [
+    {
+      "type": "tiers",
+      "name": "Tier links",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Column title", "default": "Shop" },
+        { "type": "product", "id": "product", "label": "Product", "info": "One link per tier, each opening that tier's variant (?variant=)." },
+        { "type": "text", "id": "option_name", "label": "Tier option name", "default": "Tier" }
+      ]
+    },
     {
       "type": "column",
       "name": "Link column",
