@@ -1,0 +1,52 @@
+{
+  "type": "footer",
+  "name": "t:names.footer",
+  "sections": {
+    "uscode_footer": {
+      "type": "uscode-site-footer",
+      "blocks": {
+        "col_shop": {
+          "type": "tiers",
+          "settings": {
+            "title": "Shop",
+            "product": "us-code-eyes-only-memory-tee-personalized-edition",
+            "option_name": "Tier"
+          }
+        },
+        "col_about": {
+          "type": "column",
+          "settings": {
+            "title": "About",
+            "links": "The story|How NFC works|Verify a piece",
+            "urls": "/pages/story|/pages/about|/pages/verify"
+          }
+        },
+        "col_help": {
+          "type": "column",
+          "settings": {
+            "title": "Help",
+            "links": "FAQ|Shipping|Care guide|Contact",
+            "urls": "/pages/faq|/pages/faq|/pages/faq|/pages/contact"
+          }
+        }
+      },
+      "block_order": [
+        "col_shop",
+        "col_about",
+        "col_help"
+      ],
+      "settings": {
+        "tagline": "Printed once. Verified forever. uscode.co",
+        "text_color": "#1F1E1C",
+        "accent_color": "#582123",
+        "divider_color": "#D8D6D1",
+        "brand": "US CODE",
+        "support_email": "support@theuscode.com",
+        "chat_note": "Live chat: tap the bubble bottom-right, we reply within a few hours (GST)."
+      }
+    }
+  },
+  "order": [
+    "uscode_footer"
+  ]
+}

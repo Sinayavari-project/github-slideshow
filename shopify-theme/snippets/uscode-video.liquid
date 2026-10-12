@@ -1,0 +1,52 @@
+{%- doc -%}
+  A <video> from a Shopify-hosted video (Files) or a link / theme asset filename.
+  @param {object} [video] - Video setting value (Shopify Files)
+  @param {string} [url] - Full URL, or a theme asset filename such as founders-memory.mp4
+  @param {object} [poster] - Image to show before playback
+  @param {string} [attrs] - Extra attributes, e.g. muted loop playsinline
+  @param {string} [label] - Accessible label
+  @param {string} [size] - 'small' plays only the lightest mp4 rendition (for thumbnails and insets)
+  @param {number} [poster_width] - Poster width in px, default 900
+  @param {string} [preload] - none, metadata (default) or auto
+{%- enddoc -%}
+{%- liquid
+  assign src = url | strip
+  if src != blank
+    assign lead = src | slice: 0
+    unless src contains '//' or lead == '/'
+      assign src = src | asset_url
+    endunless
+  endif
+  assign poster_url = ''
+  assign pw = poster_width | default: 900
+  if poster != blank
+    assign poster_url = poster | image_url: width: pw
+  elsif video != blank
+    assign poster_url = video.preview_image | image_url: width: pw
+  endif
+
+  # For small players, keep only the lightest mp4 instead of letting the browser take the 1080p file
+  assign small_source = nil
+  if size == 'small' and video != blank
+    for source in video.sources
+      if source.mime_type == 'video/mp4'
+        if small_source == nil or source.height < small_source.height
+          assign small_source = source
+        endif
+      endif
+    endfor
+  endif
+-%}
+{%- if video != blank or src != blank -%}
+  <video {{ attrs }} preload="{{ preload | default: 'metadata' }}"{% if poster_url != '' %} poster="{{ poster_url }}"{% endif %}{% if label != blank %} aria-label="{{ label | escape }}"{% endif %}>
+    {%- if small_source -%}
+      <source src="{{ small_source.url }}" type="video/mp4">
+    {%- elsif video != blank -%}
+      {%- for source in video.sources -%}
+        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+      {%- endfor -%}
+    {%- else -%}
+      <source src="{{ src }}" type="video/mp4">
+    {%- endif -%}
+  </video>
+{%- endif -%}

@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "main": {
+      "type": "uscode-collection",
+      "settings": {
+        "filter_layout": "sidebar",
+        "open_groups": 5,
+        "enable_sorting": true,
+        "products_per_page": 24,
+        "hover_swap": true,
+        "quick_add": true,
+        "show_stock": true,
+        "edition_size": 300,
+        "low_stock": 50,
+        "background_color": "#F2F2F2",
+        "text_color": "#1F1E1C",
+        "show_tabs": true,
+        "shop_url": "/collections/all",
+        "head_style": "drop",
+        "drop_collections": [
+          "drop-01"
+        ],
+        "tab_collections": [
+          "drop-01"
+        ],
+        "heading": "For your eyes only.",
+        "subheading": "Five back prints, each built from a real photograph of real eyes. 300 of each, numbered to the chip in the hem. When a print closes, it closes for good.",
+        "kicker": "Collection · Drop 01",
+        "numeral": "01",
+        "image": "shopify://shop_images/uscode-tee-torn-black.webp",
+        "prints_count": "5",
+        "restocks": "0",
+        "edition_total": 1500,
+        "closing_label": "Drop 01 closing"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

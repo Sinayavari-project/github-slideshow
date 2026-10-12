@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "uscode-verify-lookup",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

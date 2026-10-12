@@ -1,0 +1,47 @@
+/* US CODE — brand tokens (v2). Drop into assets/uscode-tokens.css and load in layout/theme.liquid. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap');
+
+:root {
+  /* Color */
+  --color-bg: #F2F2F2;          /* Off-White — page ground */
+  --color-surface: #E8E7E4;
+  --color-text: #1F1E1C;        /* Warm Near-Black — ink, dark fields */
+  --color-accent: #582123;      /* Deep Maroon — the one accent */
+  --color-divider: #D8D6D1;
+
+  --color-neutral-100: #F7F6F4; --color-neutral-200: #EAE9E6; --color-neutral-300: #D8D6D1;
+  --color-neutral-400: #B6B3AE; --color-neutral-500: #8C8983; --color-neutral-600: #6F6C67;
+  --color-neutral-700: #55534F; --color-neutral-800: #3A3936; --color-neutral-900: #26251F;
+
+  --color-accent-100: #F4EDED; --color-accent-200: #E7D7D7; --color-accent-300: #CDB0B1;
+  --color-accent-400: #A2767A; --color-accent-500: #6E2E31; --color-accent-600: #4A1B1D;
+  --color-accent-700: #582123; --color-accent-800: #421819; --color-accent-900: #2E1011;
+
+  /* Type */
+  --font-heading: "Archivo", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, sans-serif;
+  --font-heading-weight: 700;
+  --leading: 26px;              /* baseline unit; section padding = multiples of this */
+
+  /* Space / shape */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+  --radius: 0;                  /* no rounded corners anywhere */
+  --rule: 2px solid var(--color-divider);
+  --edge: clamp(20px, 5vw, 64px);
+}
+
+body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+a { color: var(--color-text); }
+a:hover { color: var(--color-accent); }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.wordmark { font-family: var(--font-heading); font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; }
+.wordmark svg { margin-right: 0.6em; flex: none; }
+
+.btn { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 12px 20px; border: 2px solid var(--color-text);
+  font-family: var(--font-heading); font-weight: 700; font-size: 15px; border-radius: 0; cursor: pointer; background: transparent; color: var(--color-text); }
+.btn-primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); border-color: var(--color-accent-600); }
+.btn-ghost:hover, .btn-secondary:hover { background: var(--color-accent-100); }
+
+.kicker { display: block; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-700); }

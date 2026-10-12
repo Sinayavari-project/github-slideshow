@@ -2,3 +2,7 @@ _site/
 .sass-cache/
 .jekyll-metadata
 .bundle
+
+# Local secrets (e.g. SHOPIFY_ADMIN_TOKEN)
+.env
+.env.*

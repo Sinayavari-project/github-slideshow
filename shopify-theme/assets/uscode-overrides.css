@@ -1,0 +1,96 @@
+/* US CODE brand overrides — maps the base theme's font variables onto the brand tokens (assets/uscode-tokens.css). */
+:root {
+  --font-heading--family: var(--font-heading);
+  --font-body--family: var(--font-body);
+  --font-subheading--family: var(--font-body);
+  --font-accent--family: var(--font-heading);
+}
+
+body {
+  letter-spacing: 0.01em;
+}
+
+.header-menu, .menu-list__link {
+  letter-spacing: 0.06em;
+}
+
+/* Skip link: hidden until it gets keyboard focus. */
+html body .skip-to-content-link:not(:focus-visible) {
+  position: absolute !important;
+  inset-inline-start: auto;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+html body .skip-to-content-link:focus-visible {
+  position: fixed;
+  z-index: 1000;
+  top: 12px;
+  inset-inline-start: 12px;
+  min-height: 44px;
+  padding: 12px 20px;
+  background: var(--color-bg, #f2f2f2);
+  color: var(--color-text, #1f1e1c);
+  outline: 2px solid var(--color-accent, #582123);
+  outline-offset: 2px;
+}
+
+/* Header below 990px: drawer menu and search on the left, logo centred,
+   account and cart side by side on the right, cart count on the cart icon. */
+@media screen and (max-width: 989px) {
+  html #header-component .header__columns {
+    --header-template-columns: 44px 44px 1fr 44px 44px;
+    grid-template-columns: var(--header-template-columns);
+    grid-template-areas: 'leftA leftB center rightA rightB';
+    grid-column: 1 / -1;
+    column-gap: 0;
+    align-items: center;
+    padding-inline: var(--page-margin);
+  }
+  html #header-component .header__column { display: contents; }
+  html #header-component .header-logo { grid-area: center; justify-self: center; }
+  html #header-component .search-action { grid-area: leftB; }
+  html #header-component .header__columns:has(shopify-account) header-actions,
+  html #header-component .header__columns:has(.account-button) header-actions {
+    grid-area: auto;
+    grid-row: 1;
+    grid-column: rightA-start / rightB-end;
+  }
+  html #header-component header-actions {
+    justify-self: end;
+    flex-wrap: nowrap;
+    gap: 0;
+    margin: 0;
+  }
+  html #header-component .header-actions__action {
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+  html #header-component .header-actions__cart-icon .cart-bubble { position: absolute; }
+}
+
+/* Tablet widths (750–989px) get the phone layout too: drawer menu instead of the inline menu. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  html #header-component[data-menu-style] .header__drawer { display: flex; min-height: 60px; }
+  html #header-component[data-menu-style] :is(.header-menu, .dropdown-localization) { display: none; }
+  html #header-component[data-menu-style='menu'] .search-action--hidden-on-menu { display: none; }
+  html #header-component .header-actions__cart-icon > span:first-child:not(.svg-wrapper) { display: none; }
+  html #header-component .header-actions__action .svg-wrapper { display: flex !important; }
+}
+
+/* Shopify Inbox chat bubble sits in the bottom-right corner on phones and tablets.
+   Keep our fixed bottom bars' buttons out of that corner. */
+:root { --uscode-chat-clearance: 84px; }
+@media screen and (max-width: 989px) {
+  html .uh-sticky,
+  html .uscode-pdp__sticky {
+    padding-right: calc(var(--uscode-chat-clearance) + env(safe-area-inset-right, 0px));
+  }
+}

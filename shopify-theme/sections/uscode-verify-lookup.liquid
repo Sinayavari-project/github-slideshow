@@ -1,0 +1,54 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-home.js' | asset_url }}" defer></script>
+{%- comment -%}
+  Number lookup for printed pieces. The form reloads this page with ?number=042; the script
+  then opens the print's own page (/pages/verify/<handle>). Handles are tried as the number
+  alone ("042") and with the edition suffix ("042-300").
+{%- endcomment -%}
+<div class="uh">
+  <section class="uh-sec uh-lookup">
+    <div class="uh-wrap">
+      {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+      <h1 class="uh-h2">{{ section.settings.heading | default: page.title }}</h1>
+      {%- if section.settings.text != blank -%}<div class="uh-lede">{{ section.settings.text }}</div>{%- endif -%}
+
+      <form
+        class="uh-verify"
+        action="{{ request.path }}"
+        method="get"
+        role="search"
+        data-uh-verify
+        data-uh-lookup
+        data-base="{{ section.settings.print_base | escape }}"
+        data-suffix="{{ section.settings.handle_suffix | escape }}"
+      >
+        <label>
+          <span>{{ section.settings.label }}</span>
+          <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="042" autocomplete="off" name="number" required>
+        </label>
+        <button type="submit" class="btn btn-primary">{{ section.settings.button }}</button>
+      </form>
+      <p class="uh-vhint" role="status" aria-live="polite" data-uh-lookup-status></p>
+      <noscript><p class="uh-vhint">Number lookup needs JavaScript. Tapping the chest logo opens the same page.</p></noscript>
+      {%- if section.settings.hint != blank -%}<p class="uh-vhint">{{ section.settings.hint }}</p>{%- endif -%}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE verify lookup",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Verify" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Check a piece" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Enter the 3-digit number printed on the hang tag and inside the chest pocket.</p>" },
+    { "type": "text", "id": "label", "label": "Field label", "default": "Number on your tag" },
+    { "type": "text", "id": "button", "label": "Button", "default": "Verify a piece" },
+    { "type": "text", "id": "hint", "label": "Hint", "default": "Tapping the chest logo opens the same page." },
+    { "type": "text", "id": "print_base", "label": "Print pages path", "default": "/pages/verify/", "info": "Where each print's page lives (the US CODE print metaobject web page)." },
+    { "type": "text", "id": "handle_suffix", "label": "Handle suffix", "default": "-300", "info": "Print handles look like 001-300. The number is tried on its own first, then with this suffix." }
+  ],
+  "presets": [{ "name": "US CODE verify lookup" }]
+}
+{% endschema %}

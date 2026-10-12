@@ -1,0 +1,44 @@
+<style>
+  .uscode-support {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px clamp(20px, 5vw, 48px) 8px;
+    text-align: {{ section.settings.alignment }};
+    font-family: var(--font-body);
+    color: var(--color-text, #1f1e1c);
+  }
+  .uscode-support p { margin: 0 0 8px; font-size: 15px; line-height: 23px; }
+  .uscode-support a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .uscode-support__chat { opacity: 0.75; }
+</style>
+
+<div class="uscode-support">
+  {%- if section.settings.email != blank -%}
+    <p>{{ section.settings.email_label }} <a href="mailto:{{ section.settings.email | strip }}">{{ section.settings.email | strip }}</a></p>
+  {%- endif -%}
+  {%- if section.settings.chat_note != blank -%}
+    <p class="uscode-support__chat">{{ section.settings.chat_note }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "US CODE support",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "email_label", "label": "Email label", "default": "Email us:" },
+    { "type": "text", "id": "email", "label": "Support email", "default": "support@theuscode.com" },
+    { "type": "text", "id": "chat_note", "label": "Live chat line", "default": "Live chat: tap the bubble bottom-right, we reply within a few hours (GST)." },
+    { "type": "select", "id": "alignment", "label": "Alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }], "default": "center" }
+  ],
+  "presets": [{ "name": "US CODE support" }]
+}
+{% endschema %}

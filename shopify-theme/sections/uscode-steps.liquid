@@ -1,0 +1,51 @@
+{{ 'uscode-home.css' | asset_url | stylesheet_tag }}
+<div class="uh">
+  <section class="uh-sec{% if section.settings.rule_above %} uh-rule{% endif %}" id="{{ section.settings.anchor | default: 'how' | handleize }}">
+    <div class="uh-wrap">
+      <div class="uh-sechead">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}<span class="uh-eyebrow">{{ section.settings.eyebrow }}</span>{%- endif -%}
+          <h2 class="uh-h2">{{ section.settings.heading }}</h2>
+        </div>
+      </div>
+      <div class="uh-steps">
+        {%- for block in section.blocks -%}
+          <div class="uh-step" {{ block.shopify_attributes }}>
+            <div class="uh-step__top"><span class="uh-step__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>{% render 'uscode-icon', name: block.settings.icon %}</div>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE how it works",
+  "tag": "div",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "How it works" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Three steps. No app." },
+    { "type": "text", "id": "anchor", "label": "Link anchor", "default": "how", "info": "Buttons linking to #how scroll here." },
+    { "type": "checkbox", "id": "rule_above", "label": "Line above", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "limit": 3,
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "options": [
+          { "value": "layers", "label": "Layers" }, { "value": "upload", "label": "Upload" }, { "value": "tap", "label": "Phone tap" },
+          { "value": "lock", "label": "Lock" }, { "value": "eye", "label": "Eye" }, { "value": "check", "label": "Check" }
+        ], "default": "layers" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Choose your tier" },
+        { "type": "textarea", "id": "text", "label": "Text" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "US CODE how it works", "blocks": [{ "type": "step" }, { "type": "step" }, { "type": "step" }] }]
+}
+{% endschema %}

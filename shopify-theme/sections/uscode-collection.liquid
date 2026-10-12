@@ -1,0 +1,892 @@
+{{ 'uscode-overrides.css' | asset_url | stylesheet_tag }}
+{{ 'uscode-collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'uscode-collection.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign layout = section.settings.head_style
+  if layout == 'auto'
+    assign layout = 'shop_all'
+    for c in section.settings.drop_collections
+      if c.handle == collection.handle
+        assign layout = 'drop'
+      endif
+    endfor
+  endif
+
+  assign edition_default = section.settings.edition_size | default: 300
+  assign low_stock = section.settings.low_stock | default: 50
+  assign per_page = section.settings.products_per_page | default: 24
+
+  assign root_class = 'uscode-col'
+  if section.settings.filter_layout == 'drawer'
+    assign root_class = root_class | append: ' uscode-col--drawer'
+  endif
+  if section.settings.hover_swap
+    assign root_class = root_class | append: ' uscode-col--hs'
+  endif
+
+  if section.settings.filter_layout == 'drawer'
+    assign dens_a = 3
+    assign dens_b = 4
+  else
+    assign dens_a = 2
+    assign dens_b = 3
+  endif
+
+  assign shop_url = section.settings.shop_url | default: routes.all_products_collection_url
+-%}
+
+<div
+  class="{{ root_class }}"
+  data-uscode-collection
+  data-section-id="{{ section.id }}"
+  data-collection-url="{{ collection.url }}"
+  data-dens-default="{{ dens_b }}"
+  data-dens-options="{{ dens_a }},{{ dens_b }}"
+  data-cart-url="{{ routes.cart_url }}"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+  style="--uscode-col-bg: {{ section.settings.background_color }}; --uscode-col-text: {{ section.settings.text_color }};"
+>
+  <div class="uscode-col__wrap">
+    {%- if layout == 'drop' -%}
+      {%- liquid
+        assign left_total = 0
+        assign edition_total = 0
+        assign print_count = 0
+        for p in collection.products limit: 50
+          assign p_left = 0
+          assign p_tracked = false
+          for v in p.variants
+            if v.inventory_management == 'shopify' and v.inventory_quantity > 0
+              assign p_left = p_left | plus: v.inventory_quantity
+              assign p_tracked = true
+            elsif v.inventory_management == 'shopify'
+              assign p_tracked = true
+            endif
+          endfor
+          if p_tracked and p.gift_card? == false
+            assign p_edition = p.metafields.custom.edition_size.value | default: edition_default
+            assign left_total = left_total | plus: p_left
+            assign edition_total = edition_total | plus: p_edition
+            assign print_count = print_count | plus: 1
+          endif
+        endfor
+
+        if section.settings.edition_total > 0
+          assign edition_total = section.settings.edition_total
+        endif
+        if section.settings.prints_count != blank
+          assign prints_label = section.settings.prints_count
+        elsif print_count > 0
+          assign prints_label = print_count
+        else
+          assign prints_label = collection.products_count
+        endif
+
+        assign left_pct = 0
+        if edition_total > 0
+          assign left_pct = left_total | times: 100.0 | divided_by: edition_total | round: 1
+          if left_pct > 100
+            assign left_pct = 100
+          endif
+        endif
+
+        assign hero_image = collection.image | default: section.settings.image | default: collection.featured_image
+        assign hero_title = section.settings.heading | default: collection.title
+        assign hero_kicker = section.settings.kicker
+        if hero_kicker == blank
+          assign hero_kicker = collection.title | prepend: 'Collection · '
+        endif
+        assign closing_label = section.settings.closing_label
+        if closing_label == blank
+          assign closing_label = collection.title | append: ' closing'
+        endif
+      -%}
+      <header class="uscode-col__hero">
+        {%- if section.settings.numeral != blank -%}
+          <span class="uscode-col__numeral" aria-hidden="true">{{ section.settings.numeral }}</span>
+        {%- endif -%}
+        <div class="uscode-col__hero-copy">
+          <nav class="uscode-col__crumbs" aria-label="Breadcrumb">
+            <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+            <a href="{{ shop_url }}">Shop</a><span aria-hidden="true">/</span>
+            <span aria-current="page">{{ collection.title }}</span>
+          </nav>
+          <span class="uscode-col__kicker">{{ hero_kicker }}</span>
+          <h1 class="uscode-col__display">{{ hero_title }}</h1>
+          {%- if section.settings.subheading != blank -%}
+            <p class="uscode-col__sub">{{ section.settings.subheading }}</p>
+          {%- elsif collection.description != blank -%}
+            <p class="uscode-col__sub">{{ collection.description | strip_html | truncatewords: 60 }}</p>
+          {%- endif -%}
+          <dl class="uscode-col__stats">
+            <div><dt>Prints</dt><dd>{{ prints_label }}</dd></div>
+            {%- if edition_total > 0 -%}
+              <div><dt>Pieces left</dt><dd>{{ left_total }}</dd></div>
+            {%- endif -%}
+            {%- if section.settings.restocks != blank -%}
+              <div><dt>Restocks</dt><dd>{{ section.settings.restocks }}</dd></div>
+            {%- endif -%}
+          </dl>
+        </div>
+        <figure class="uscode-col__hero-fig">
+          {%- if hero_image != blank -%}
+            {{ hero_image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '480, 720, 960, 1200, 1400', sizes: '(min-width: 801px) 42vw, 100vw', alt: hero_image.alt | default: collection.title }}
+          {%- else -%}
+            <div class="uscode-col__hero-empty">{% render 'eye-mark', size: 72 %}</div>
+          {%- endif -%}
+        </figure>
+      </header>
+      {%- if edition_total > 0 -%}
+        <div class="uscode-col__closebar">
+          <span>{{ closing_label }}</span>
+          <div
+            class="uscode-col__track"
+            role="progressbar"
+            aria-label="Pieces left"
+            aria-valuemin="0"
+            aria-valuemax="{{ edition_total }}"
+            aria-valuenow="{{ left_total }}"
+          >
+            <div class="uscode-col__fill" style="width: {{ left_pct }}%;"></div>
+          </div>
+          <span>{{ left_total }} / {{ edition_total }} left</span>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      {%- liquid
+        if section.settings.heading != blank
+          assign head_title = section.settings.heading
+        elsif collection.handle == 'all'
+          assign head_title = 'Shop all'
+        else
+          assign head_title = collection.title
+        endif
+      -%}
+      <header class="uscode-col__phead">
+        <nav class="uscode-col__crumbs" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+          {%- if collection.handle != 'all' -%}
+            <a href="{{ shop_url }}">Shop</a><span aria-hidden="true">/</span>
+          {%- endif -%}
+          <span aria-current="page">{{ head_title }}</span>
+        </nav>
+        <div class="uscode-col__phead-row">
+          <h1 class="uscode-col__ptitle">{{ head_title }}</h1>
+          {%- if collection.handle != 'all' and collection.description != blank -%}
+            <p class="uscode-col__psub">{{ collection.description | strip_html | truncatewords: 40 }}</p>
+          {%- elsif section.settings.subheading != blank -%}
+            <p class="uscode-col__psub">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+        </div>
+        {%- if collection.handle != 'all' and collection.image != blank -%}
+          <figure class="uscode-col__banner">
+            {{ collection.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600, 900, 1200, 1600, 2000, 2400', sizes: '(min-width: 1200px) 1160px, 100vw', alt: collection.image.alt | default: collection.title }}
+          </figure>
+        {%- endif -%}
+        {%- if section.settings.show_tabs -%}
+          <nav class="uscode-col__tabs" aria-label="Collections">
+            <a
+              class="uscode-col__tab"
+              href="{{ routes.all_products_collection_url }}"
+              {% if collection.handle == 'all' %}
+                aria-current="page"
+              {% endif %}
+            >
+              All<span>{{ collections.all.all_products_count }}</span>
+            </a>
+            {%- for c in section.settings.tab_collections -%}
+              <a
+                class="uscode-col__tab"
+                href="{{ c.url }}"
+                {% if c.handle == collection.handle %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{- c.title -}}
+                <span>{{ c.all_products_count }}</span>
+              </a>
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+      </header>
+    {%- endif -%}
+
+    {%- paginate collection.products by per_page -%}
+      {%- liquid
+        assign active_count = 0
+        for filter in collection.filters
+          if filter.type == 'price_range'
+            if filter.min_value.value != nil or filter.max_value.value != nil
+              assign active_count = active_count | plus: 1
+            endif
+          else
+            assign active_count = active_count | plus: filter.active_values.size
+          endif
+        endfor
+        assign n = collection.products_count
+        assign clear_url = collection.url
+        if collection.sort_by != blank
+          assign clear_url = collection.url | append: '?sort_by=' | append: collection.sort_by
+        endif
+      -%}
+      <div class="uscode-col__shop" data-results>
+        <div class="uscode-col__backdrop" data-drawer-close hidden></div>
+        <aside class="uscode-col__filters" id="UscodeFilters-{{ section.id }}" aria-label="Filters" data-filters>
+          <div class="uscode-col__dhead">
+            <span>Filter</span>
+            <button type="button" class="btn btn-ghost" data-drawer-close>Close</button>
+          </div>
+          <form
+            id="UscodeFilterForm-{{ section.id }}"
+            class="uscode-col__form"
+            action="{{ collection.url }}"
+            method="get"
+            data-filter-form
+          >
+            {%- if collection.sort_by != blank -%}
+              <input type="hidden" name="sort_by" value="{{ collection.sort_by }}" data-sort-mirror>
+            {%- endif -%}
+            {%- for filter in collection.filters -%}
+              {%- liquid
+                assign group_open = false
+                if forloop.index <= section.settings.open_groups
+                  assign group_open = true
+                endif
+                if filter.type == 'price_range'
+                  if filter.min_value.value != nil or filter.max_value.value != nil
+                    assign group_open = true
+                  endif
+                elsif filter.active_values.size > 0
+                  assign group_open = true
+                endif
+                assign is_color = false
+                assign flabel = filter.label | downcase
+                if flabel contains 'color' or flabel contains 'colour'
+                  assign is_color = true
+                endif
+              -%}
+              {%- if filter.type == 'list' and filter.values.size < 2 and filter.active_values.size == 0 -%}
+                {%- continue -%}
+              {%- endif -%}
+              <details class="uscode-col__fgroup" data-filter-key="{{ filter.param_name | escape }}" {% if group_open %}open{% endif %}>
+                <summary class="uscode-col__fhead">
+                  <span>{{ filter.label }}</span>
+                  <span class="uscode-col__pm" aria-hidden="true"></span>
+                </summary>
+                {%- if filter.type == 'price_range' -%}
+                  {%- liquid
+                    assign pmin = ''
+                    assign pmax = ''
+                    if filter.min_value.value != nil
+                      assign pmin = filter.min_value.value | money_without_currency | remove: ',' | remove: '.00'
+                    endif
+                    if filter.max_value.value != nil
+                      assign pmax = filter.max_value.value | money_without_currency | remove: ',' | remove: '.00'
+                    endif
+                  -%}
+                  <div class="uscode-col__price">
+                    <label>
+                      From
+                      <input
+                        class="input"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        name="{{ filter.min_value.param_name }}"
+                        value="{{ pmin }}"
+                        placeholder="{{ 0 | money_without_trailing_zeros }}"
+                        id="UscodePriceMin-{{ section.id }}"
+                      >
+                    </label>
+                    <label>
+                      To
+                      <input
+                        class="input"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        step="any"
+                        name="{{ filter.max_value.param_name }}"
+                        value="{{ pmax }}"
+                        placeholder="{{ filter.range_max | money_without_trailing_zeros }}"
+                        id="UscodePriceMax-{{ section.id }}"
+                      >
+                    </label>
+                  </div>
+                {%- else -%}
+                  <div class="uscode-col__fopts">
+                    {%- for value in filter.values -%}
+                      {%- liquid
+                        assign disabled = false
+                        if value.count == 0 and value.active == false
+                          assign disabled = true
+                        endif
+                        assign input_id = 'Filter-' | append: section.id | append: '-' | append: filter.param_name | append: '-' | append: forloop.index | handleize
+                      -%}
+                      <label class="uscode-col__fopt{% if disabled %} is-disabled{% endif %}" for="{{ input_id }}">
+                        <input
+                          type="checkbox"
+                          id="{{ input_id }}"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}
+                            checked
+                          {% endif %}
+                          {% if disabled %}
+                            disabled
+                          {% endif %}
+                        >
+                        {%- if value.swatch.color -%}
+                          <span class="uscode-col__sw" style="background: {{ value.swatch.color }};" aria-hidden="true"></span>
+                        {%- elsif value.swatch.image -%}
+                          <span class="uscode-col__sw" style="background: url({{ value.swatch.image | image_url: width: 40 }}) center / cover;" aria-hidden="true"></span>
+                        {%- elsif is_color -%}
+                          <span class="uscode-col__sw" style="background: {{ value.label | downcase | remove: ' ' }};" aria-hidden="true"></span>
+                        {%- endif -%}
+                        <span class="uscode-col__ol">{{ value.label }}</span>
+                        <span class="uscode-col__oc">{{ value.count }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </details>
+            {%- endfor -%}
+            <noscript><button type="submit" class="btn btn-secondary">Apply</button></noscript>
+          </form>
+          <div class="uscode-col__dfoot">
+            <a class="btn btn-ghost" href="{{ clear_url }}" data-filter-link>Clear</a>
+            <button type="button" class="btn btn-primary btn-block" data-drawer-close>
+              Show {{ n }} result{% if n != 1 %}s{% endif %}
+            </button>
+          </div>
+        </aside>
+
+        <div class="uscode-col__main">
+          <div class="uscode-col__toolbar">
+            <button
+              type="button"
+              class="btn btn-secondary uscode-col__fbtn"
+              data-drawer-open
+              aria-controls="UscodeFilters-{{ section.id }}"
+              aria-expanded="false"
+            >
+              Filter{% if active_count > 0 %} ({{ active_count }}){% endif %}
+            </button>
+            <p class="uscode-col__count" aria-live="polite" data-count>
+              {{ n }} product{% if n != 1 %}s{% endif %}
+            </p>
+            <div class="uscode-col__tools">
+              {%- if section.settings.enable_sorting -%}
+                {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                <label class="uscode-col__sortl" for="UscodeSort-{{ section.id }}">
+                  <span>Sort</span>
+                  <select
+                    class="input"
+                    id="UscodeSort-{{ section.id }}"
+                    name="sort_by"
+                    form="UscodeFilterForm-{{ section.id }}"
+                    data-sort
+                    data-default="{{ collection.default_sort_by }}"
+                  >
+                    {%- for option in collection.sort_options -%}
+                      <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+                        {{- option.name -}}
+                      </option>
+                    {%- endfor -%}
+                  </select>
+                </label>
+              {%- endif -%}
+              <div class="uscode-col__dens" role="group" aria-label="Grid density">
+                {%- for cols in (dens_a..dens_b) -%}
+                  <button type="button" aria-pressed="{% if cols == dens_b %}true{% else %}false{% endif %}" aria-label="{{ cols }} per row" data-dens="{{ cols }}">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true" focusable="false">
+                      {%- liquid
+                        case cols
+                          when 2
+                            assign cell = 6
+                          when 3
+                            assign cell = 3.6
+                          else
+                            assign cell = 2.5
+                        endcase
+                        assign step = 14.0 | divided_by: cols
+                      -%}
+                      {%- for r in (0..1) -%}
+                        {%- for c in (1..cols) -%}
+                          <rect x="{{ c | minus: 1 | times: step }}" y="{{ r | times: 8 }}" width="{{ cell }}" height="{{ cell }}"/>
+                        {%- endfor -%}
+                      {%- endfor -%}
+                    </svg>
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          </div>
+
+          {%- if active_count > 0 -%}
+            <div class="uscode-col__chips">
+              {%- for filter in collection.filters -%}
+                {%- if filter.type == 'price_range' -%}
+                  {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                    <a class="uscode-col__chip" href="{{ filter.url_to_remove }}" data-filter-link aria-label="Remove price filter">
+                      {{- filter.label }}:
+                      {{ filter.min_value.value | default: 0 | money_without_trailing_zeros }} to
+                      {% if filter.max_value.value != nil %}{{ filter.max_value.value | money_without_trailing_zeros }}{% else %}∞{% endif -%}
+                      <b aria-hidden="true">×</b>
+                    </a>
+                  {%- endif -%}
+                {%- else -%}
+                  {%- for value in filter.active_values -%}
+                    <a class="uscode-col__chip" href="{{ value.url_to_remove }}" data-filter-link aria-label="Remove {{ filter.label | escape }}: {{ value.label | escape }}">
+                      {{- filter.label }}: {{ value.label -}}
+                      <b aria-hidden="true">×</b>
+                    </a>
+                  {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <a class="uscode-col__clear" href="{{ clear_url }}" data-filter-link>Clear all</a>
+            </div>
+          {%- endif -%}
+
+          {%- if collection.products.size > 0 -%}
+            <ul class="uscode-col__grid" data-grid data-cols="{{ dens_b }}" role="list">
+              {%- for product in collection.products -%}
+                {%- liquid
+                  # Admin media order: first image on the card, second on hover
+                  assign media_1 = product.media[0]
+                  assign media_2 = product.media[1]
+
+                  assign p_left = 0
+                  assign p_tracked = false
+                  for v in product.variants
+                    if v.inventory_management == 'shopify'
+                      assign p_tracked = true
+                      if v.inventory_quantity > 0
+                        assign p_left = p_left | plus: v.inventory_quantity
+                      endif
+                    endif
+                  endfor
+                  assign p_edition = product.metafields.custom.edition_size.value | default: edition_default
+
+                  assign badge = ''
+                  assign badge_class = 'uscode-col__badge'
+                  if product.available == false
+                    assign badge = 'Sold out'
+                    assign badge_class = 'uscode-col__badge uscode-col__badge--out'
+                  elsif p_tracked and p_left < low_stock and product.gift_card? == false
+                    assign badge = p_left | append: ' left'
+                    assign badge_class = 'uscode-col__badge uscode-col__badge--hot'
+                  elsif product.tags contains 'new' or product.tags contains 'New'
+                    assign badge = 'New'
+                  endif
+
+                  assign stock = product.metafields.custom.stock_note.value
+                  if stock == blank and section.settings.show_stock and p_tracked and product.available and product.gift_card? == false
+                    assign stock = p_left | append: ' of ' | append: p_edition | append: ' left'
+                  endif
+
+                  assign sub = product.metafields.custom.subtitle.value | default: product.type
+
+                  if product.price_varies
+                    if product.gift_card?
+                      capture price_label
+                        echo product.price_min | money_without_trailing_zeros
+                        echo ' to '
+                        echo product.price_max | money_without_trailing_zeros
+                      endcapture
+                    else
+                      assign price_label = product.price_min | money_without_trailing_zeros | prepend: 'From '
+                    endif
+                  else
+                    assign price_label = product.price | money_without_trailing_zeros
+                  endif
+
+                  assign size_index = -1
+                  for opt in product.options_with_values
+                    assign oname = opt.name | downcase
+                    if oname == 'size'
+                      assign size_index = forloop.index0
+                    endif
+                  endfor
+                -%}
+                <li class="uscode-col__card{% unless product.available %} is-sold{% endunless %}">
+                  <div class="uscode-col__media">
+                    <a href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+                      {%- if media_1 != blank -%}
+                        {{ media_1.preview_image | image_url: width: 900 | image_tag: class: 'uscode-col__im1', loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 1100px) 360px, (min-width: 701px) 30vw, 50vw', alt: '' }}
+                        {%- if media_2 != blank and section.settings.hover_swap -%}
+                          {{ media_2.preview_image | image_url: width: 900 | image_tag: class: 'uscode-col__im2', loading: 'lazy', widths: '360, 540, 720, 900', sizes: '(min-width: 1100px) 360px, (min-width: 701px) 30vw, 50vw', alt: '' }}
+                        {%- endif -%}
+                      {%- else -%}
+                        {%- liquid
+                          assign tile_class = 'uscode-col__tile'
+                          if product.gift_card?
+                            assign tile_class = 'uscode-col__tile uscode-col__tile--accent'
+                          endif
+                          if product.gift_card?
+                            assign tile_big = product.metafields.custom.tile_heading.value | default: price_label
+                          else
+                            assign tile_big = product.metafields.custom.tile_heading.value | default: product.title
+                          endif
+                          assign tile_small = product.metafields.custom.tile_note.value | default: product.type
+                        -%}
+                        <div class="{{ tile_class }}">
+                          {% render 'eye-mark', size: 34 %}
+                          <div>
+                            <p class="uscode-col__tbig">{{ tile_big }}</p>
+                            {%- if tile_small != blank -%}
+                              <p class="uscode-col__tsmall">{{ tile_small }}</p>
+                            {%- endif -%}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    </a>
+                    {%- if badge != '' -%}
+                      <span class="{{ badge_class }}">{{ badge }}</span>
+                    {%- endif -%}
+                    {%- if section.settings.quick_add and product.available and product.gift_card? == false -%}
+                      {%- if size_index >= 0 -%}
+                        {%- liquid
+                          assign fixed_label = ''
+                          for opt in product.options_with_values
+                            if forloop.index0 != size_index and opt.values.size > 1
+                              assign fixed_label = fixed_label | append: opt.values.first | append: ' '
+                            endif
+                          endfor
+                          assign fixed_label = fixed_label | strip
+                          assign size_option = product.options_with_values[size_index]
+                          assign qa_price = nil
+                        -%}
+                        <div class="uscode-col__qa" data-quick-add>
+                          {%- capture qa_buttons -%}
+                            {%- for size in size_option.values -%}
+                              {%- liquid
+                                assign match = nil
+                                for v in product.variants
+                                  assign ok = true
+                                  for opt in product.options_with_values
+                                    assign oi = forloop.index0
+                                    if oi == size_index
+                                      if v.options[oi] != size
+                                        assign ok = false
+                                      endif
+                                    elsif v.options[oi] != opt.values.first
+                                      assign ok = false
+                                    endif
+                                  endfor
+                                  if ok
+                                    assign match = v
+                                    break
+                                  endif
+                                endfor
+                                if match and qa_price == nil
+                                  assign qa_price = match.price
+                                endif
+                              -%}
+                              <button
+                                type="button"
+                                {% if match %}
+                                  data-variant-id="{{ match.id }}"
+                                {% endif %}
+                                data-product-title="{{ product.title | escape }}"
+                                data-variant-label="{{ size | escape }}{% if fixed_label != '' %}, {{ fixed_label | escape }}{% endif %}"
+                                aria-label="Add {{ product.title | escape }}, size {{ size | escape }}{% if match == nil or match.available == false %} (sold out){% endif %}"
+                                {% if match == nil or match.available == false %}
+                                  disabled
+                                {% endif %}
+                              >
+                                {{ size }}
+                              </button>
+                            {%- endfor -%}
+                          {%- endcapture -%}
+                          <p>
+                            Quick add ·
+                            {%- if fixed_label != '' %} {{ fixed_label }}{% endif %}
+                            {%- if qa_price %} {{ qa_price | money_without_trailing_zeros }}{% endif -%}
+                          </p>
+                          <div class="uscode-col__sizes">{{ qa_buttons }}</div>
+                        </div>
+                      {%- elsif product.has_only_default_variant -%}
+                        <div class="uscode-col__qa" data-quick-add>
+                          <div class="uscode-col__sizes">
+                            <button
+                              type="button"
+                              data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                              data-product-title="{{ product.title | escape }}"
+                              data-variant-label=""
+                              aria-label="Add {{ product.title | escape }} to cart"
+                            >
+                              Add to cart · {{ product.price | money_without_trailing_zeros }}
+                            </button>
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </div>
+                  <div class="uscode-col__pinfo">
+                    <div class="uscode-col__prow">
+                      <a class="uscode-col__pt" href="{{ product.url }}">{{ product.title }}</a>
+                      <span class="uscode-col__pp">{{ price_label }}</span>
+                    </div>
+                    {%- if sub != blank -%}
+                      <p class="uscode-col__pm2">{{ sub }}</p>
+                    {%- endif -%}
+                    {%- if stock != blank -%}
+                      <p class="uscode-col__stock">{{ stock }}</p>
+                    {%- endif -%}
+                  </div>
+                </li>
+              {%- endfor -%}
+            </ul>
+            {%- if paginate.pages > 1 -%}
+              <nav class="uscode-col__pages" aria-label="Pagination">
+                {%- if paginate.previous -%}
+                  <a href="{{ paginate.previous.url }}" data-filter-link>Previous</a>
+                {%- endif -%}
+                {%- for part in paginate.parts -%}
+                  {%- if part.is_link -%}
+                    <a href="{{ part.url }}" data-filter-link>{{ part.title }}</a>
+                  {%- elsif part.title == paginate.current_page -%}
+                    <span aria-current="page">{{ part.title }}</span>
+                  {%- else -%}
+                    <span>{{ part.title }}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if paginate.next -%}
+                  <a href="{{ paginate.next.url }}" data-filter-link>Next</a>
+                {%- endif -%}
+              </nav>
+            {%- endif -%}
+          {%- else -%}
+            <div class="uscode-col__empty">
+              {%- if active_count > 0 -%}
+                <h2>Nothing matches those filters.</h2>
+                <p>Loosen a filter or two, or start over.</p>
+                <a class="btn btn-primary" href="{{ clear_url }}" data-filter-link>Clear all filters</a>
+              {%- else -%}
+                <h2>Nothing here yet.</h2>
+                <p>The next drop is on its way.</p>
+                <a class="btn btn-primary" href="{{ routes.all_products_collection_url }}">Shop all</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endpaginate -%}
+  </div>
+
+  <div class="uscode-col__toast" role="status" aria-live="polite" data-toast hidden>
+    <span data-toast-text></span>
+    <a href="{{ routes.cart_url }}">View cart</a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "US CODE collection",
+  "tag": "section",
+  "class": "section-uscode-collection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Page head"
+    },
+    {
+      "type": "select",
+      "id": "head_style",
+      "label": "Head style",
+      "options": [
+        { "value": "auto", "label": "Automatic" },
+        { "value": "shop_all", "label": "Shop all (title and tabs)" },
+        { "value": "drop", "label": "Drop (hero, stats, closing bar)" }
+      ],
+      "default": "auto",
+      "info": "Automatic uses the drop hero for the collections picked below and the Shop all head everywhere else."
+    },
+    {
+      "type": "collection_list",
+      "id": "drop_collections",
+      "label": "Drop collections",
+      "info": "Collections that get the drop hero when head style is Automatic."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave blank to use the collection title."
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "info": "Leave blank to use the collection description."
+    },
+    {
+      "type": "url",
+      "id": "shop_url",
+      "label": "Shop link in breadcrumbs"
+    },
+    {
+      "type": "header",
+      "content": "Shop all head"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tabs",
+      "label": "Show collection tabs",
+      "default": true
+    },
+    {
+      "type": "collection_list",
+      "id": "tab_collections",
+      "label": "Tabs after All",
+      "limit": 8
+    },
+    {
+      "type": "header",
+      "content": "Drop hero"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker",
+      "info": "Defaults to \"Collection · [title]\"."
+    },
+    {
+      "type": "text",
+      "id": "numeral",
+      "label": "Background numeral",
+      "default": "01"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Used only when the collection has no image of its own (Products > Collections > Collection image)."
+    },
+    {
+      "type": "text",
+      "id": "prints_count",
+      "label": "Prints stat",
+      "info": "Leave blank to count products with tracked stock."
+    },
+    {
+      "type": "text",
+      "id": "restocks",
+      "label": "Restocks stat",
+      "default": "0"
+    },
+    {
+      "type": "number",
+      "id": "edition_total",
+      "label": "Total pieces in the drop",
+      "info": "Leave blank to add up each product's edition size.",
+      "default": 1500
+    },
+    {
+      "type": "text",
+      "id": "closing_label",
+      "label": "Closing bar label",
+      "info": "Defaults to \"[title] closing\"."
+    },
+    {
+      "type": "header",
+      "content": "Filters and grid"
+    },
+    {
+      "type": "select",
+      "id": "filter_layout",
+      "label": "Filter layout",
+      "options": [
+        { "value": "sidebar", "label": "Sidebar" },
+        { "value": "drawer", "label": "Drawer" }
+      ],
+      "default": "sidebar",
+      "info": "Filters always move into a drawer below 900px."
+    },
+    {
+      "type": "range",
+      "id": "open_groups",
+      "label": "Filter groups open by default",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Show sort",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 6,
+      "max": 48,
+      "step": 3,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Product card"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_swap",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "quick_add",
+      "label": "Quick add",
+      "default": true,
+      "info": "Adds the first value of every other option (for example the Essential tier) in the size picked."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock",
+      "label": "Show pieces left",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "edition_size",
+      "label": "Edition size",
+      "default": 300,
+      "info": "Used in \"N of 300 left\". Override per product with the custom.edition_size metafield."
+    },
+    {
+      "type": "number",
+      "id": "low_stock",
+      "label": "Low-stock badge below",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#F2F2F2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1F1E1C"
+    }
+  ],
+  "presets": [
+    {
+      "name": "US CODE collection"
+    }
+  ]
+}
+{% endschema %}

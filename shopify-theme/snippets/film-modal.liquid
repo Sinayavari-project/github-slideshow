@@ -1,0 +1,24 @@
+{%- doc -%}
+  Full-screen film player with sound. Opened by any [data-film-open] button (assets/film-modal.js).
+  Only one dialog is kept on the page, even if the hero is added twice.
+  @param {object} [video] - Video setting value (Shopify Files)
+  @param {string} [url] - Fallback link or theme asset filename
+  @param {string} [title] - Top bar title
+  @param {string} [tagline] - Footer line
+  @param {string} [cta_label] - Footer button label
+  @param {string} [cta_link] - Footer button link
+  @param {string} [captions] - Captions (.vtt) URL
+{%- enddoc -%}
+<dialog class="film-dialog" aria-label="{{ title | default: 'The film' | escape }}" data-film-dialog>
+  <div class="film-top">
+    <span class="wordmark">{{ title }}</span>
+    <button type="button" class="btn btn-ghost" data-film-close>Close</button>
+  </div>
+  <div class="film-stage" data-film-stage>
+    {% render 'uscode-video', video: video, url: url, attrs: 'controls playsinline data-film-video', preload: 'none', poster_width: 1200, track: captions %}
+  </div>
+  <div class="film-foot">
+    {%- if tagline != blank -%}<span>{{ tagline }}</span>{%- endif -%}
+    {%- if cta_label != blank -%}<a class="btn btn-primary" href="{{ cta_link }}">{{ cta_label }}</a>{%- endif -%}
+  </div>
+</dialog>
